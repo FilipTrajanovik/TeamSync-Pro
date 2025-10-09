@@ -1,0 +1,596 @@
+/* Modern Task Dialog */
+.modern-task-dialog {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+    border-radius: 24px !important;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Animated Background */
+.task-dialog-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.floating-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.3;
+    animation: float 20s ease-in-out infinite;
+}
+
+.orb-1 {
+    width: 300px;
+    height: 300px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    top: -150px;
+    right: -100px;
+    animation-delay: 0s;
+}
+
+.orb-2 {
+    width: 250px;
+    height: 250px;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    bottom: -100px;
+    left: -80px;
+    animation-delay: 5s;
+}
+
+.orb-3 {
+    width: 200px;
+    height: 200px;
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation-delay: 10s;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translate(0, 0) scale(1);
+    }
+    33% {
+        transform: translate(30px, -30px) scale(1.1);
+    }
+    66% {
+        transform: translate(-20px, 20px) scale(0.9);
+    }
+}
+
+/* Header */
+.modern-task-header {
+    position: relative;
+    z-index: 1;
+    padding: 32px 40px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.header-icon-wrapper {
+    position: relative;
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+}
+
+.header-icon {
+    font-size: 36px !important;
+    color: white;
+    animation: iconPulse 2s ease-in-out infinite;
+}
+
+.icon-pulse {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    opacity: 0.5;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0;
+    }
+}
+
+.header-title {
+    font-weight: 800 !important;
+    color: white !important;
+    font-size: 32px !important;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #fff 0%, #a8b2ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.header-subtitle {
+    color: rgba(255, 255, 255, 0.6) !important;
+    font-size: 14px !important;
+    margin-top: 4px !important;
+}
+
+.modern-close-btn {
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease !important;
+}
+
+.modern-close-btn:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    transform: rotate(90deg);
+}
+
+.modern-close-btn svg {
+    color: white;
+}
+
+/* Content */
+.modern-task-content {
+    position: relative;
+    z-index: 1;
+    padding: 40px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.modern-task-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modern-task-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.modern-task-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+}
+
+.info-section {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 24px;
+    transition: all 0.3s ease;
+}
+
+.info-section:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.section-label {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: white !important;
+    margin-bottom: 16px !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Modern Inputs */
+.modern-input-wrapper {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.modern-input-wrapper.focused {
+    transform: scale(1.02);
+}
+
+.modern-input .MuiOutlinedInput-root {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.modern-input .MuiOutlinedInput-root:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.modern-input .MuiOutlinedInput-root.Mui-focused {
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+}
+
+.modern-input .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.modern-input .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.modern-input .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: #667eea;
+    border-width: 2px;
+}
+
+.modern-input label {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.modern-input label.Mui-focused {
+    color: #667eea !important;
+}
+
+.modern-input input,
+.modern-input textarea {
+    color: white !important;
+}
+
+.modern-input .MuiFormHelperText-root {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.modern-input .MuiFormHelperText-root.Mui-error {
+    color: #f87171 !important;
+}
+
+/* Priority Selector */
+.priority-selector {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.priority-pill {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.priority-pill::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.priority-pill:hover::before {
+    opacity: 1;
+}
+
+.priority-pill.selected {
+    border-color: transparent;
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.priority-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.priority-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+}
+
+/* Status Section */
+.status-date-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.status-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.status-chip {
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    font-weight: 600 !important;
+    padding: 8px 16px !important;
+    height: auto !important;
+}
+
+.status-chip:hover {
+    transform: translateY(-2px);
+}
+
+.date-input {
+    position: relative;
+}
+
+.date-input .input-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.4);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.date-input input {
+    padding-left: 45px !important;
+}
+
+/* Select Wrappers */
+.modern-select-wrapper {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.modern-select-wrapper.focused {
+    transform: scale(1.02);
+}
+
+.select-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.4);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.modern-select .MuiOutlinedInput-root {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    padding-left: 45px;
+}
+
+.modern-select .MuiOutlinedInput-root:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.modern-select .MuiOutlinedInput-root.Mui-focused {
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+}
+
+.modern-select .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.modern-select .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.modern-select .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: #667eea;
+    border-width: 2px;
+}
+
+.modern-select label {
+    color: rgba(255, 255, 255, 0.6) !important;
+    padding-left: 40px;
+}
+
+.modern-select label.Mui-focused,
+.modern-select label.MuiFormLabel-filled {
+    padding-left: 0;
+    color: #667eea !important;
+}
+
+.modern-select .MuiSelect-select {
+    color: white !important;
+}
+
+.modern-select .MuiSelect-icon {
+    color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Footer */
+.modern-task-footer {
+    position: relative;
+    z-index: 1;
+    padding: 24px 40px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+}
+
+.cancel-btn {
+    padding: 12px 32px !important;
+    border-radius: 12px !important;
+    text-transform: none !important;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    transition: all 0.3s ease !important;
+}
+
+.cancel-btn:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    transform: translateY(-2px);
+}
+
+.submit-btn {
+    position: relative;
+    padding: 12px 40px !important;
+    border-radius: 12px !important;
+    text-transform: none !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    border: none !important;
+    overflow: hidden;
+    transition: all 0.3s ease !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.5);
+}
+
+.btn-icon {
+    font-size: 20px;
+}
+
+.btn-text {
+    position: relative;
+    z-index: 1;
+}
+
+.btn-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.submit-btn:hover .btn-glow {
+    opacity: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .modern-task-header {
+        padding: 24px 20px;
+    }
+
+    .header-icon-wrapper {
+        width: 50px;
+        height: 50px;
+    }
+
+    .header-icon {
+        font-size: 28px !important;
+    }
+
+    .header-title {
+        font-size: 24px !important;
+    }
+
+    .modern-task-content {
+        padding: 24px 20px;
+    }
+
+    .priority-selector {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .status-chips {
+        flex-direction: column;
+    }
+
+    .status-chip {
+        width: 100%;
+    }
+
+    .modern-task-footer {
+        padding: 20px;
+        flex-direction: column;
+    }
+
+    .cancel-btn,
+    .submit-btn {
+        width: 100%;
+    }
+}
+
+/* Menu Paper Override for Select Dropdowns */
+.MuiMenu-paper {
+    background: rgba(26, 26, 46, 0.95) !important;
+    backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+}
+
+.MuiMenuItem-root {
+    color: white !important;
+    transition: all 0.2s ease !important;
+}
+
+.MuiMenuItem-root:hover {
+    background: rgba(102, 126, 234, 0.2) !important;
+}
+
+.MuiMenuItem-root.Mui-selected {
+    background: rgba(102, 126, 234, 0.3) !important;
+}
+
+.MuiMenuItem-root.Mui-selected:hover {
+    background: rgba(102, 126, 234, 0.4) !important;
+}

@@ -1,0 +1,67 @@
+/* Task Delete Dialog */
+.task-delete-dialog {
+    border-radius: 20px !important;
+    overflow: hidden;
+}
+
+/* Header */
+.task-delete-header {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.task-delete-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: float 4s ease-in-out infinite;
+}
+
+.warning-icon-wrapper {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translate(0, 0);
+    }
+    50% {
+        transform: translate(-20px, -20px);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .task-delete-header {
+        padding: 1.25rem 1.5rem;
+    }
+}
