@@ -1,0 +1,324 @@
+/**
+ * ============================================
+ * USER VIEW DIALOG STYLES
+ * Apple-Inspired Design System
+ * ============================================
+ *
+ * Design Principles Applied:
+ * - Frosted glass effect (backdrop-filter)
+ * - Generous spacing and padding
+ * - Soft shadows for depth
+ * - Smooth transitions for interactions
+ * - Clean, minimal aesthetic
+ */
+
+/* ========== DIALOG CONTAINER ========== */
+/**
+ * The main dialog paper (the white box)
+ *
+ * backdrop-filter: blur() - Creates the frosted glass effect
+ * saturate(180%) - Makes colors more vibrant
+ * border-radius: Large rounded corners for Apple feel
+ */
+.apple-view-dialog {
+    background: rgba(255, 255, 255, 0.95) !important; /* Semi-transparent white */
+    backdrop-filter: blur(40px) saturate(180%) !important; /* Frosted glass */
+    border-radius: 28px !important; /* Large rounded corners */
+    box-shadow:
+            0 25px 60px rgba(0, 0, 0, 0.15),  /* Large soft shadow */
+            0 0 0 0.5px rgba(0, 0, 0, 0.05) !important; /* Subtle border */
+    overflow: hidden; /* Keeps content inside rounded corners */
+}
+
+/* ========== HEADER SECTION ========== */
+/**
+ * Top section with close button
+ * Minimal header - just close button aligned right
+ */
+.apple-view-header {
+    display: flex;
+    justify-content: flex-end; /* Align to right */
+    padding: 20px 20px 0 20px;
+}
+
+/* ========== CONTENT SECTION ========== */
+/**
+ * Main content area containing all user information
+ *
+ * text-align: center - Centers all text and elements
+ * This creates a clean, focused view of user info
+ */
+.apple-view-content {
+    padding: 20px 32px 32px 32px;
+    text-align: center;
+}
+
+/* ========== USER AVATAR ========== */
+/**
+ * Large circular avatar with user initials
+ *
+ * Gradient background matches Apple's colorful avatars
+ * box-shadow creates depth and makes it "pop"
+ */
+.user-avatar {
+    width: 100px !important;
+    height: 100px !important;
+    margin: 0 auto 20px !important; /* Center with bottom margin */
+    background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%) !important;
+    font-size: 36px !important; /* Large initials */
+    font-weight: 700 !important; /* Bold text */
+    box-shadow: 0 12px 32px rgba(0, 122, 255, 0.3); /* Blue glow */
+}
+
+/* ========== USER NAME ========== */
+/**
+ * Large, bold display of user's full name
+ *
+ * letter-spacing: negative value brings letters closer (Apple style)
+ */
+.user-name {
+    font-size: 32px !important;
+    font-weight: 700 !important; /* Bold */
+    color: #1d1d1f !important; /* Apple's near-black color */
+    margin-bottom: 8px !important;
+    letter-spacing: -0.8px; /* Tighter letter spacing */
+}
+
+/* ========== USERNAME ========== */
+/**
+ * Smaller text showing @username below the name
+ *
+ * Subdued color to create visual hierarchy
+ */
+.user-username {
+    font-size: 17px !important;
+    color: #86868b !important; /* Apple's gray color */
+    margin-bottom: 16px !important;
+}
+
+/* ========== ROLE BADGE ========== */
+/**
+ * Chip/badge displaying user's role with icon
+ *
+ * Dynamic styling applied via sx prop in component
+ * This class provides base spacing and sizing
+ */
+.user-role-badge {
+    font-weight: 600 !important;
+    padding: 8px 20px !important;
+    font-size: 14px !important;
+    height: auto !important; /* Override default height */
+    margin-bottom: 32px !important; /* Space before info cards */
+}
+
+/* ========== INFO CARDS CONTAINER ========== */
+/**
+ * Flexbox container for all information cards
+ *
+ * flex-direction: column - Stack cards vertically
+ * gap: Space between cards (modern CSS property)
+ */
+.info-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* Space between each card */
+}
+
+/* ========== INDIVIDUAL INFO CARD ========== */
+/**
+ * Each card displaying one piece of information
+ *
+ * backdrop-filter: Maintains frosted glass theme
+ * transition: Smooth animation for hover effects
+ */
+.info-card {
+    background: rgba(255, 255, 255, 0.6); /* Semi-transparent */
+    backdrop-filter: blur(20px); /* Frosted glass */
+    border: 1px solid rgba(0, 0, 0, 0.06); /* Subtle border */
+    border-radius: 16px; /* Rounded corners */
+    padding: 20px;
+    text-align: left; /* Left-align text inside card */
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth animation */
+}
+
+/**
+ * Hover effect for info cards
+ *
+ * Creates subtle lift effect on hover
+ * Makes interface feel responsive and interactive
+ */
+.info-card:hover {
+    background: rgba(255, 255, 255, 0.8); /* More opaque on hover */
+    transform: scale(1.02); /* Slightly larger (2%) */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); /* Lift shadow */
+}
+
+/* ========== INFO CARD HEADER ========== */
+/**
+ * Top part of each card with icon and label
+ *
+ * Flexbox: Aligns icon and text horizontally
+ */
+.info-card-header {
+    display: flex;
+    align-items: center; /* Vertical center alignment */
+    gap: 10px; /* Space between icon and text */
+    margin-bottom: 8px;
+}
+
+/* ========== CARD ICON ========== */
+/**
+ * Icon displayed in card header
+ *
+ * Blue color matches Apple's system blue
+ */
+.card-icon {
+    color: #007AFF; /* Apple blue */
+    font-size: 20px;
+}
+
+/* ========== CARD LABEL ========== */
+/**
+ * Small uppercase label describing the field
+ *
+ * text-transform: uppercase - Makes text all caps
+ * letter-spacing: Spreads letters for readability in uppercase
+ */
+.card-label {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #86868b !important; /* Gray color */
+    text-transform: uppercase;
+    letter-spacing: 0.5px; /* Slightly spread letters */
+}
+
+/* ========== CARD VALUE ========== */
+/**
+ * The actual data/information being displayed
+ *
+ * Larger and darker than label for hierarchy
+ */
+.card-value {
+    font-size: 17px !important;
+    font-weight: 500 !important; /* Medium weight */
+    color: #1d1d1f !important; /* Near-black */
+    line-height: 1.5; /* Spacing between lines */
+}
+
+/* ========== FOOTER SECTION ========== */
+/**
+ * Bottom section containing action buttons
+ *
+ * Gradient background creates subtle visual separation
+ */
+.apple-view-footer {
+    padding: 20px 32px 28px 32px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06); /* Subtle divider */
+    background: linear-gradient(
+            180deg,
+            rgba(249, 249, 249, 0.8) 0%,
+            rgba(255, 255, 255, 0.8) 100%
+    );
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+/**
+ * Adjustments for mobile/tablet screens
+ *
+ * @media: CSS rule that applies only when condition is met
+ * max-width: 768px means "screens 768px or smaller"
+ */
+@media (max-width: 768px) {
+    /* Reduce padding on smaller screens */
+    .apple-view-content {
+        padding: 20px;
+    }
+
+    /* Smaller name text on mobile */
+    .user-name {
+        font-size: 28px !important;
+    }
+
+    /* Smaller avatar on mobile */
+    .user-avatar {
+        width: 80px !important;
+        height: 80px !important;
+        font-size: 28px !important;
+    }
+
+    /* Reduce footer padding */
+    .apple-view-footer {
+        padding: 16px 20px 24px 20px;
+    }
+
+    /* Make buttons stack vertically on mobile */
+    .apple-button {
+        width: 100%;
+    }
+}
+
+/**
+ * ============================================
+ * CSS SPECIFICITY & !important
+ * ============================================
+ *
+ * !important: Forces a style to override other styles
+ * Use sparingly! Only needed when:
+ * - Overriding Material-UI default styles
+ * - Third-party library styles need to be changed
+ *
+ * Better approach when possible: Increase specificity
+ * Example: .parent .child instead of just .child
+ */
+
+/**
+ * ============================================
+ * BOX MODEL REMINDER
+ * ============================================
+ *
+ * Every element has:
+ * 1. Content (the actual content)
+ * 2. Padding (space inside border)
+ * 3. Border (line around padding)
+ * 4. Margin (space outside border)
+ *
+ * Example:
+ * padding: 20px - 20px space inside element
+ * margin: 20px - 20px space outside element
+ */
+
+/**
+ * ============================================
+ * COLOR SYSTEM
+ * ============================================
+ *
+ * rgba(red, green, blue, alpha)
+ * - RGB values: 0-255
+ * - Alpha: 0 (transparent) to 1 (opaque)
+ *
+ * Example:
+ * rgba(255, 255, 255, 0.95) = 95% opaque white
+ * rgba(0, 0, 0, 0.06) = 6% opaque black (light gray)
+ *
+ * Apple's Color Palette Used:
+ * #007AFF - System Blue
+ * #1d1d1f - Near Black (text)
+ * #86868b - Gray (secondary text)
+ */
+
+/**
+ * ============================================
+ * TRANSITIONS & ANIMATIONS
+ * ============================================
+ *
+ * transition: property duration timing-function
+ *
+ * Example:
+ * transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1)
+ *
+ * - all: Animate all changing properties
+ * - 0.2s: Animation takes 0.2 seconds
+ * - cubic-bezier: Easing function (how animation accelerates/decelerates)
+ *
+ * Apple uses cubic-bezier for natural, smooth motion
+ */

@@ -1,0 +1,122 @@
+/* Apple View Dialog */
+.apple-view-dialog {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(40px) saturate(180%) !important;
+    border-radius: 28px !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15), 0 0 0 0.5px rgba(0, 0, 0, 0.05) !important;
+    overflow: hidden;
+}
+
+/* Header */
+.apple-view-header {
+    display: flex;
+    justify-content: flex-end;
+    padding: 20px 20px 0 20px;
+}
+
+/* Content */
+.apple-view-content {
+    padding: 20px 32px 32px 32px;
+    text-align: center;
+}
+
+.client-avatar {
+    width: 100px !important;
+    height: 100px !important;
+    margin: 0 auto 20px !important;
+    background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%) !important;
+    font-size: 36px !important;
+    font-weight: 700 !important;
+    box-shadow: 0 12px 32px rgba(0, 122, 255, 0.3);
+}
+
+.client-name {
+    font-size: 32px !important;
+    font-weight: 700 !important;
+    color: #1d1d1f !important;
+    margin-bottom: 12px !important;
+    letter-spacing: -0.8px;
+}
+
+.client-badge {
+    background: rgba(0, 122, 255, 0.1) !important;
+    color: #007AFF !important;
+    font-weight: 600 !important;
+    border: none !important;
+    padding: 8px 20px !important;
+    font-size: 14px !important;
+    height: auto !important;
+    margin-bottom: 32px !important;
+}
+
+/* Info Cards */
+.info-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.info-card {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: left;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.info-card:hover {
+    background: rgba(255, 255, 255, 0.8);
+    transform: scale(1.02);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.info-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.card-icon {
+    color: #007AFF;
+    font-size: 20px;
+}
+
+.card-label {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #86868b !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.card-value {
+    font-size: 17px !important;
+    font-weight: 500 !important;
+    color: #1d1d1f !important;
+    line-height: 1.5;
+}
+
+/* Footer */
+.apple-view-footer {
+    padding: 20px 32px 28px 32px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    background: linear-gradient(180deg, rgba(249, 249, 249, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .apple-view-content {
+        padding: 20px;
+    }
+
+    .client-name {
+        font-size: 28px !important;
+    }
+
+    .apple-view-footer {
+        padding: 16px 20px 24px 20px;
+    }
+}

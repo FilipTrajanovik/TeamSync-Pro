@@ -1,0 +1,28 @@
+.user-dashboard {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.stat-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-radius: 12px !important;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12) !important;
+}
+
+.task-card {
+    border-radius: 12px !important;
+}
+
+.user-dashboard .MuiPaper-root {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 768px) {
+    .user-dashboard {
+        padding: 16px;
+    }
+}

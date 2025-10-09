@@ -1,0 +1,150 @@
+.apple-delete-dialog {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(40px) saturate(180%) !important;
+    border-radius: 28px !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15), 0 0 0 0.5px rgba(0, 0, 0, 0.05) !important;
+    overflow: hidden;
+}
+
+.apple-delete-header {
+    display: flex;
+    justify-content: flex-end;
+    padding: 20px 20px 0 20px;
+}
+
+.apple-delete-content {
+    padding: 20px 32px 32px 32px;
+    text-align: center;
+}
+
+.warning-avatar {
+    width: 80px !important;
+    height: 80px !important;
+    margin: 0 auto 20px !important;
+    background: linear-gradient(135deg, #FF3B30 0%, #FF9500 100%) !important;
+    box-shadow: 0 12px 32px rgba(255, 59, 48, 0.3);
+}
+
+.warning-avatar svg {
+    font-size: 40px;
+}
+
+.delete-title {
+    font-size: 28px !important;
+    font-weight: 700 !important;
+    color: #1d1d1f !important;
+    margin-bottom: 12px !important;
+    letter-spacing: -0.5px;
+}
+
+.delete-message {
+    font-size: 16px !important;
+    color: #86868b !important;
+    line-height: 1.5;
+    margin-bottom: 24px !important;
+}
+
+.delete-message strong {
+    color: #1d1d1f;
+    font-weight: 600;
+}
+
+.user-info-box {
+    background: rgba(255, 59, 48, 0.06);
+    border: 1px solid rgba(255, 59, 48, 0.12);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: left;
+    margin-bottom: 16px;
+}
+
+.info-label {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #86868b !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px !important;
+}
+
+.info-text {
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    color: #1d1d1f !important;
+    margin-bottom: 4px !important;
+}
+
+.info-subtext {
+    font-size: 15px !important;
+    color: #86868b !important;
+    margin-bottom: 12px !important;
+}
+
+.info-role-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.warning-box {
+    background: #fef3c7;
+    border: 1px solid #fcd34d;
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.warning-text {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #92400e !important;
+}
+
+.apple-delete-footer {
+    display: flex;
+    gap: 12px;
+    padding: 20px 32px 28px 32px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    background: linear-gradient(180deg, rgba(249, 249, 249, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%);
+}
+
+.apple-button.danger {
+    background: linear-gradient(135deg, #FF3B30 0%, #FF9500 100%) !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(255, 59, 48, 0.3);
+    flex: 1;
+}
+
+.apple-button.danger:hover {
+    box-shadow: 0 8px 20px rgba(255, 59, 48, 0.4);
+    transform: translateY(-1px);
+}
+
+.apple-button.secondary {
+    flex: 1;
+}
+
+@media (max-width: 768px) {
+    .apple-delete-content {
+        padding: 20px;
+    }
+
+    .delete-title {
+        font-size: 24px !important;
+    }
+
+    .apple-delete-footer {
+        padding: 16px 20px 24px 20px;
+        flex-direction: column-reverse;
+    }
+
+    .apple-button {
+        width: 100%;
+    }
+
+    .warning-avatar {
+        width: 70px !important;
+        height: 70px !important;
+    }
+}

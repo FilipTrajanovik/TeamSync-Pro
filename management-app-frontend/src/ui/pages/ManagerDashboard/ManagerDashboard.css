@@ -1,0 +1,41 @@
+/*.manager-dashboard {*/
+/*    min-height: 100vh;*/
+/*    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);*/
+/*}*/
+
+/*.stat-card {*/
+/*    transition: transform 0.2s, box-shadow 0.2s;*/
+/*    border-radius: 12px !important;*/
+/*}*/
+
+/*.stat-card:hover {*/
+/*    transform: translateY(-4px);*/
+/*    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12) !important;*/
+/*}*/
+
+/*.manager-dashboard .MuiPaper-root {*/
+/*    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);*/
+/*}*/
+
+/*.manager-dashboard .MuiTableRow-root:hover {*/
+/*    background-color: rgba(102, 126, 234, 0.04);*/
+/*}*/
+
+/*.manager-dashboard .MuiTableCell-head {*/
+/*    background-color: #f8f9fa;*/
+/*    font-weight: 600;*/
+/*}*/
+
+/*.manager-dashboard .MuiButton-contained {*/
+/*    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);*/
+/*}*/
+
+/*.manager-dashboard .MuiButton-contained:hover {*/
+/*    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);*/
+/*}*/
+
+/*@media (max-width: 768px) {*/
+/*    .manager-dashboard {*/
+/*        padding: 16px;*/
+/*    }*/
+/*}*/

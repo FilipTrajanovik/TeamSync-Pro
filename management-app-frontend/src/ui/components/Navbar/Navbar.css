@@ -1,0 +1,40 @@
+/* Navbar styles - most styling is handled by MUI sx props */
+
+.navbar-container {
+    position: sticky;
+    top: 0;
+    z-index: 1100;
+}
+
+/* Custom animations for navbar */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.navbar-menu-item {
+    transition: all 0.2s ease;
+}
+
+.navbar-menu-item:hover {
+    background-color: rgba(102, 126, 234, 0.08);
+}
+
+
+@media (max-width: 600px) {
+    .user-info-desktop {
+        display: none !important;
+    }
+}
+
+@media (max-width: 960px) {
+    .navbar-logo-text {
+        font-size: 1.1rem;
+    }
+}

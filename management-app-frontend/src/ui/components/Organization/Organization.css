@@ -1,0 +1,35 @@
+/* OrganizationForm.css */
+
+.organization-form-dialog {
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Custom scrollbar for dialog content */
+.MuiDialogContent-root::-webkit-scrollbar {
+    width: 8px;
+}
+
+.MuiDialogContent-root::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.MuiDialogContent-root::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 10px;
+}
+
+.MuiDialogContent-root::-webkit-scrollbar-thumb:hover {
+    background: #5568d3;
+}
