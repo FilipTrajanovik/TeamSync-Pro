@@ -14,4 +14,5 @@ public interface OrganizationApplicationService {
     Optional<DisplayOrganizationDto> save(CreateOrganizationDto organization);
     Optional<DisplayOrganizationDto> update(Long id,CreateOrganizationDto organization);
     void delete(Long organizationId);
+    List<DisplayOrganizationDto> findByUserUsername(String username);
 }

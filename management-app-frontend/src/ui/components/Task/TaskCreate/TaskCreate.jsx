@@ -51,7 +51,14 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
                 organizationId: task.organizationId || ''
             });
         } else {
-            resetForm();
+            if (isManagerView && organizations.length > 0) {
+                setFormData(prev => ({
+                    ...prev,
+                    organizationId: organizations[0].id
+                }));
+            } else {
+                resetForm();
+            }
         }
     }, [task, open]);
 
@@ -64,11 +71,10 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
             dueDate: '',
             clientId: '',
             assignedToUserId: '',
-            organizationId: ''
+            organizationId: isManagerView && organizations.length > 0 ? organizations[0].id : ''
         });
         setErrors({});
     };
-
     const priorities = [
         { value: 'LOW', label: 'Low', icon: '🟢', gradient: 'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)' },
         { value: 'MEDIUM', label: 'Medium', icon: '🟡', gradient: 'linear-gradient(135deg, #ffd89b 0%, #19547b 100%)' },
@@ -97,6 +103,16 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
         if (!formData.title.trim()) newErrors.title = 'Title is required';
         if (!formData.description.trim()) newErrors.description = 'Description is required';
         if (!formData.organizationId) newErrors.organizationId = 'Organization is required';
+
+        if(isManagerView)
+        {
+            if(!formData.clientId) newErrors.clientId = 'Client is required'
+            if(!formData.assignedToUserId) newErrors.assignedToUserId = 'User assignment is required'
+        }else {
+            // For admins, organization is required
+            if (!formData.organizationId) newErrors.organizationId = 'Organization is required';
+        }
+
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -229,6 +245,91 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
                                 </Box>
                             </Box>
                         </Grid>
+
+                        {/* Client, User & Due Date Selection - For Managers */}
+                        {isManagerView && (
+                            <Grid item xs={12}>
+                                <Box className="info-section">
+                                    <Typography className="section-label">👥 Assignment Details</Typography>
+                                    <Grid container spacing={2}>
+                                        {/* Client Selection */}
+                                        <Grid item xs={12} md={4}>
+                                            <Box className={`modern-select-wrapper ${focusedField === 'client' ? 'focused' : ''}`}>
+                                                <PersonIcon className="select-icon" />
+                                                <FormControl fullWidth required>
+                                                    <InputLabel>Select Client</InputLabel>
+                                                    <Select
+                                                        name="clientId"
+                                                        value={formData.clientId}
+                                                        onChange={handleChange}
+                                                        onFocus={() => setFocusedField('client')}
+                                                        onBlur={() => setFocusedField('')}
+                                                        label="Select Client"
+                                                        className="modern-select"
+                                                    >
+                                                        <MenuItem value="">
+                                                            <em>Select a client</em>
+                                                        </MenuItem>
+                                                        {clients.map((client) => (
+                                                            <MenuItem key={client.id} value={client.id}>
+                                                                {client.firstName} {client.lastName}
+                                                            </MenuItem>
+                                                        ))}
+                                                    </Select>
+                                                </FormControl>
+                                            </Box>
+                                        </Grid>
+
+                                        {/* User Assignment */}
+                                        <Grid item xs={12} md={4}>
+                                            <Box className={`modern-select-wrapper ${focusedField === 'user' ? 'focused' : ''}`}>
+                                                <GroupIcon className="select-icon" />
+                                                <FormControl fullWidth required>
+                                                    <InputLabel>Assign To User</InputLabel>
+                                                    <Select
+                                                        name="assignedToUserId"
+                                                        value={formData.assignedToUserId}
+                                                        onChange={handleChange}
+                                                        onFocus={() => setFocusedField('user')}
+                                                        onBlur={() => setFocusedField('')}
+                                                        label="Assign To User"
+                                                        className="modern-select"
+                                                    >
+                                                        <MenuItem value="">
+                                                            <em>Select a team member</em>
+                                                        </MenuItem>
+                                                        {users.map((user) => (
+                                                            <MenuItem key={user.id} value={user.username}>
+                                                                {user.name} {user.surname} (@{user.username})
+                                                            </MenuItem>
+                                                        ))}
+                                                    </Select>
+                                                </FormControl>
+                                            </Box>
+                                        </Grid>
+
+                                        {/* Due Date */}
+                                        <Grid item xs={12} md={4}>
+                                            <Box className={`modern-input-wrapper date-input ${focusedField === 'dueDate' ? 'focused' : ''}`}>
+                                                <CalendarIcon className="input-icon" />
+                                                <TextField
+                                                    name="dueDate"
+                                                    label="Due Date"
+                                                    type="date"
+                                                    fullWidth
+                                                    value={formData.dueDate}
+                                                    onChange={handleChange}
+                                                    onFocus={() => setFocusedField('dueDate')}
+                                                    onBlur={() => setFocusedField('')}
+                                                    InputLabelProps={{ shrink: true }}
+                                                    className="modern-input"
+                                                />
+                                            </Box>
+                                        </Grid>
+                                    </Grid>
+                                </Box>
+                            </Grid>
+                        )}
 
                         {/* Status & Date Section - Only for Admin */}
                         {!isManagerView && (

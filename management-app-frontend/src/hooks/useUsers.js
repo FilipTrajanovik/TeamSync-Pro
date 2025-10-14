@@ -52,11 +52,27 @@ const useUsers = () => {
             .catch((error) => console.log(error));
     }, [fetchUsers]);
 
+    const fetchUsersByOrganizations = useCallback((organizationId) => {
+        setState(prev => ({...prev, loading: true}));
+        userRepository.findByOrganization(organizationId)
+            .then((response) => {
+                setState({
+                    users: response.data,
+                    loading: false,
+                })
+            })
+            .catch((error) => {
+                console.log(error)
+                setState({ users: [], loading: false });
+            });
+
+    },[])
+
     useEffect(() => {
         fetchUsers();
     }, [fetchUsers]);
 
-    return {...state, onAdd, onEdit, onDelete};
+    return {...state, onAdd, onEdit, onDelete, fetchUsersByOrganizations};
 };
 
 export default useUsers;

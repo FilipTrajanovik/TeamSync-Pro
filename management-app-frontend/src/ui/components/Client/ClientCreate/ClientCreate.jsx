@@ -1,31 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
-    Dialog,
-    TextField,
-    Grid,
-    Box,
-    Typography,
-    IconButton,
-    Button,
     Avatar,
+    Box,
+    Button,
+    Dialog,
     FormControl,
+    Grid,
+    IconButton,
     InputLabel,
+    MenuItem,
     Select,
-    MenuItem
+    TextField,
+    Typography
 } from '@mui/material';
 import {
-    Close as CloseIcon,
-    Person as PersonIcon,
-    Email as EmailIcon,
-    Phone as PhoneIcon,
-    Home as HomeIcon,
     Business as BusinessIcon,
     CalendarToday as CalendarIcon,
-    Notes as NotesIcon
+    Close as CloseIcon,
+    Email as EmailIcon,
+    Home as HomeIcon,
+    Notes as NotesIcon,
+    Person as PersonIcon,
+    Phone as PhoneIcon
 } from '@mui/icons-material';
 import './ClientCreate.css';
 
-const ClientCreate = ({ open, onClose, onSubmit, client = null, organizations = [] }) => {
+const ClientCreate = ({open, onClose, onSubmit, client = null, organizations = [], isManagerView = false, defaultOrganizationId=null}) => {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -59,9 +59,23 @@ const ClientCreate = ({ open, onClose, onSubmit, client = null, organizations = 
                 organizationId: client.organizationId || ''
             });
         } else {
-            resetForm();
+
+            if (isManagerView && defaultOrganizationId) {
+                setFormData({
+                    firstName: '',
+                    lastName: '',
+                    email: '',
+                    phoneNumber: '',
+                    address: '',
+                    dateOfBirth: '',
+                    notes: '',
+                    organizationId: defaultOrganizationId
+                });
+            }else {
+                resetForm();
+            }
         }
-    }, [client, open]);
+    }, [client, open, organizations, isManagerView, defaultOrganizationId]);
 
     const resetForm = () => {
         setFormData({
@@ -72,16 +86,16 @@ const ClientCreate = ({ open, onClose, onSubmit, client = null, organizations = 
             address: '',
             dateOfBirth: '',
             notes: '',
-            organizationId: ''
+            organizationId: isManagerView && defaultOrganizationId ? defaultOrganizationId : ''
         });
         setErrors({});
     };
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        const {name, value} = e.target;
+        setFormData(prev => ({...prev, [name]: value}));
         if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: '' }));
+            setErrors(prev => ({...prev, [name]: ''}));
         }
     };
 
@@ -94,7 +108,17 @@ const ClientCreate = ({ open, onClose, onSubmit, client = null, organizations = 
         } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
             newErrors.email = 'Email is invalid';
         }
-        if (!formData.organizationId) newErrors.organizationId = 'Organization is required';
+
+        // Check for both empty string and null/undefined
+        if (!isManagerView && (!formData.organizationId || formData.organizationId === '')) {
+            newErrors.organizationId = 'Organization is required';
+        }
+
+        // CRITICAL: For managers, ensure organizationId is set
+        if (isManagerView && (!formData.organizationId || formData.organizationId === '')) {
+            console.error('❌ Organization ID is missing for manager!');
+            newErrors.organizationId = 'Organization ID is required';
+        }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -102,8 +126,14 @@ const ClientCreate = ({ open, onClose, onSubmit, client = null, organizations = 
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        console.log('=== CLIENT SUBMIT DEBUG ===');
+        console.log('Form Data:', formData);
+        console.log('Organization ID:', formData.organizationId);
+        console.log('Is Manager View:', isManagerView);
+        console.log('Organizations:', organizations);
+
         if (validate()) {
-            // Convert to match backend DTO format
             const clientData = {
                 firstName: formData.firstName,
                 lastName: formData.lastName,
@@ -114,11 +144,12 @@ const ClientCreate = ({ open, onClose, onSubmit, client = null, organizations = 
                 notes: formData.notes || null,
                 organizationId: formData.organizationId
             };
+
+            console.log('Submitting client data:', clientData);
             onSubmit(clientData);
             handleClose();
         }
     };
-
     const handleClose = () => {
         resetForm();
         onClose();
@@ -138,7 +169,7 @@ const ClientCreate = ({ open, onClose, onSubmit, client = null, organizations = 
             <Box className="apple-dialog-header">
                 <Box className="header-content">
                     <Avatar className="header-avatar">
-                        <PersonIcon />
+                        <PersonIcon/>
                     </Avatar>
                     <Box>
                         <Typography className="header-title">
@@ -150,7 +181,7 @@ const ClientCreate = ({ open, onClose, onSubmit, client = null, organizations = 
                     </Box>
                 </Box>
                 <IconButton onClick={handleClose} className="close-button">
-                    <CloseIcon />
+                    <CloseIcon/>
                 </IconButton>
             </Box>
 
@@ -163,7 +194,7 @@ const ClientCreate = ({ open, onClose, onSubmit, client = null, organizations = 
                         <Grid container spacing={2}>
                             <Grid item xs={12} md={6}>
                                 <Box className="apple-input-group">
-                                    <PersonIcon className="input-icon" />
+                                    <PersonIcon className="input-icon"/>
                                     <TextField
                                         name="firstName"
                                         label="First Name"
@@ -180,7 +211,7 @@ const ClientCreate = ({ open, onClose, onSubmit, client = null, organizations = 
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <Box className="apple-input-group">
-                                    <PersonIcon className="input-icon" />
+                                    <PersonIcon className="input-icon"/>
                                     <TextField
                                         name="lastName"
                                         label="Last Name"
@@ -197,7 +228,7 @@ const ClientCreate = ({ open, onClose, onSubmit, client = null, organizations = 
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <Box className="apple-input-group">
-                                    <CalendarIcon className="input-icon" />
+                                    <CalendarIcon className="input-icon"/>
                                     <TextField
                                         name="dateOfBirth"
                                         label="Date of Birth"
@@ -207,7 +238,7 @@ const ClientCreate = ({ open, onClose, onSubmit, client = null, organizations = 
                                         onChange={handleChange}
                                         className="apple-input"
                                         variant="outlined"
-                                        InputLabelProps={{ shrink: true }}
+                                        InputLabelProps={{shrink: true}}
                                     />
                                 </Box>
                             </Grid>
@@ -220,7 +251,7 @@ const ClientCreate = ({ open, onClose, onSubmit, client = null, organizations = 
                         <Grid container spacing={2}>
                             <Grid item xs={12} md={6}>
                                 <Box className="apple-input-group">
-                                    <EmailIcon className="input-icon" />
+                                    <EmailIcon className="input-icon"/>
                                     <TextField
                                         name="email"
                                         label="Email Address"
@@ -238,7 +269,7 @@ const ClientCreate = ({ open, onClose, onSubmit, client = null, organizations = 
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <Box className="apple-input-group">
-                                    <PhoneIcon className="input-icon" />
+                                    <PhoneIcon className="input-icon"/>
                                     <TextField
                                         name="phoneNumber"
                                         label="Phone Number"
@@ -252,7 +283,7 @@ const ClientCreate = ({ open, onClose, onSubmit, client = null, organizations = 
                             </Grid>
                             <Grid item xs={12}>
                                 <Box className="apple-input-group">
-                                    <HomeIcon className="input-icon" />
+                                    <HomeIcon className="input-icon"/>
                                     <TextField
                                         name="address"
                                         label="Street Address"
@@ -271,39 +302,41 @@ const ClientCreate = ({ open, onClose, onSubmit, client = null, organizations = 
                     <Box className="form-section">
                         <Typography className="section-title">Organization & Notes</Typography>
                         <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <Box className="apple-input-group">
-                                    <BusinessIcon className="input-icon" />
-                                    <FormControl fullWidth required error={!!errors.organizationId}>
-                                        <InputLabel>Organization</InputLabel>
-                                        <Select
-                                            name="organizationId"
-                                            value={formData.organizationId}
-                                            onChange={handleChange}
-                                            label="Organization"
-                                            className="apple-select"
-                                        >
-                                            <MenuItem value="">
-                                                <em>Select Organization</em>
-                                            </MenuItem>
-                                            {organizations.map((org) => (
-
-                                                <MenuItem key={org.id} value={org.id}>
-                                                    {org.name}
+                            {!isManagerView && (
+                                <Grid item xs={12}>
+                                    <Box className="apple-input-group">
+                                        <BusinessIcon className="input-icon"/>
+                                        <FormControl fullWidth required error={!!errors.organizationId}>
+                                            <InputLabel>Organization</InputLabel>
+                                            <Select
+                                                name="organizationId"
+                                                value={formData.organizationId}
+                                                onChange={handleChange}
+                                                label="Organization"
+                                                className="apple-select"
+                                            >
+                                                <MenuItem value="">
+                                                    <em>Select Organization</em>
                                                 </MenuItem>
-                                            ))}
-                                        </Select>
-                                        {errors.organizationId && (
-                                            <Typography color="error" variant="caption" sx={{ mt: 0.5, ml: 2 }}>
-                                                {errors.organizationId}
-                                            </Typography>
-                                        )}
-                                    </FormControl>
-                                </Box>
-                            </Grid>
+                                                {organizations.map((org) => (
+
+                                                    <MenuItem key={org.id} value={org.id}>
+                                                        {org.name}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                            {errors.organizationId && (
+                                                <Typography color="error" variant="caption" sx={{mt: 0.5, ml: 2}}>
+                                                    {errors.organizationId}
+                                                </Typography>
+                                            )}
+                                        </FormControl>
+                                    </Box>
+                                </Grid>
+                            )}
                             <Grid item xs={12}>
                                 <Box className="apple-input-group">
-                                    <NotesIcon className="input-icon" />
+                                    <NotesIcon className="input-icon"/>
                                     <TextField
                                         name="notes"
                                         label="Notes"

@@ -56,7 +56,21 @@ const useClients = () => {
         fetchClients();
     }, [fetchClients]);
 
-    return {...state, onAdd, onEdit, onDelete};
+    const fetchClientsByOrganization = useCallback((organizationId) => {
+        clientRepository.findByOrganization(organizationId)
+            .then((response) => {
+                setState({
+                    clients: response.data,
+                    loading: false,
+                })
+            })
+            .catch((err) => {
+                console.log(err);
+                setState({ clients: [], loading: false });
+            })
+    },[])
+
+    return {...state, onAdd, onEdit, onDelete, fetchClientsByOrganization};
 };
 
 export default useClients;

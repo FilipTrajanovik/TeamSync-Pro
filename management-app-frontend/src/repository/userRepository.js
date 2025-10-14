@@ -13,6 +13,9 @@ const userRepository = {
     },
     findAll: async () => {
         return axiosInstance.get("/users");
+    },
+    findByOrganization: async(organizationId) => {
+        return axiosInstance.get(`/users/organizations/${organizationId}`);
     }
 };
 export default userRepository;
