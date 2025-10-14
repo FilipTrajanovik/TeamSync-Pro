@@ -53,6 +53,9 @@ const UseOrganizations = () => {
             .catch((error) => console.log(error));
     }, [fetchOrganizations]);
 
+
+
+
     useEffect(() => {
         fetchOrganizations();
     },[fetchOrganizations])

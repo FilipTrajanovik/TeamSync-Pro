@@ -47,4 +47,9 @@ public class OrganizationApplicationServiceImpl implements OrganizationApplicati
     public void delete(Long organizationId) {
         organizationService.delete(organizationId);
     }
+
+    @Override
+    public List<DisplayOrganizationDto> findByUserUsername(String username) {
+        return organizationService.findByUsername(username).stream().map(DisplayOrganizationDto::from).toList();
+    }
 }

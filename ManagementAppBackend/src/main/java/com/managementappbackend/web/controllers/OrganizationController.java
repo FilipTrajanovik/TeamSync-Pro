@@ -5,9 +5,10 @@ import com.managementappbackend.dto.DisplayOrganizationDto;
 import com.managementappbackend.model.domain.Organization;
 import com.managementappbackend.service.application.OrganizationApplicationService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.security.core.Authentication;
 import java.util.List;
 
 @RestController
@@ -55,7 +56,16 @@ public class OrganizationController {
             return ResponseEntity.notFound().build();
         }
     }
-
+    @Operation(
+    summary = "Get my organizations",
+    description = "Retrieves all organizations that the authenticated user belongs to"
+            )
+    @ApiResponse(responseCode = "200", description = "Organizations retrieved successfully")
+    @GetMapping("/my-organizations")
+    public List<DisplayOrganizationDto> getMyOrganizations(Authentication authentication) {
+        String username = authentication.getName();
+        return organizationApplicationService.findByUserUsername(username);
+    }
 
 
 

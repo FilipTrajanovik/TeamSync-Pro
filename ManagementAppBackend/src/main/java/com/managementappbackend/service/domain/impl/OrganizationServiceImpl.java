@@ -55,4 +55,9 @@ public class OrganizationServiceImpl implements OrganizationService {
     public void delete(Long organizationId) {
         organizationRepository.deleteById(organizationId);
     }
+
+    @Override
+    public List<Organization> findByUsername(String username) {
+        return organizationRepository.findByUsersUsername(username);
+    }
 }

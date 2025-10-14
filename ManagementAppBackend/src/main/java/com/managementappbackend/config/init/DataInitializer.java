@@ -41,7 +41,9 @@ public class DataInitializer {
 
     @PostConstruct
     public void init() {
-        // Create Users
+        // ========================================
+        // 1. CREATE USERS FIRST
+        // ========================================
         User admin = new User(
                 "admin",
                 passwordEncoder.encode("admin123"),
@@ -49,7 +51,6 @@ public class DataInitializer {
                 "User",
                 Role.ADMIN
         );
-
         userRepository.save(admin);
 
         User manager = new User(
@@ -59,20 +60,20 @@ public class DataInitializer {
                 "Smith",
                 Role.MANAGER
         );
-
         userRepository.save(manager);
 
-        User user = new User(
+        User regularUser = new User(
                 "user",
                 passwordEncoder.encode("user123"),
                 "Regular",
                 "User",
                 Role.USER
         );
+        userRepository.save(regularUser);
 
-        userRepository.save(user);
-
-        // Create Organizations
+        // ========================================
+        // 2. CREATE ORGANIZATIONS
+        // ========================================
         Organization hospital = new Organization();
         hospital.setName("City Hospital");
         hospital.setDescription("Main city hospital providing general healthcare");
@@ -97,12 +98,24 @@ public class DataInitializer {
         autoShop.setUpdatedAt(LocalDateTime.now());
         organizationRepository.save(autoShop);
 
+        // ========================================
+        // 3. LINK USERS TO ORGANIZATIONS
+        // ========================================
+        admin.getOrganizations().add(hospital);
+        admin.getOrganizations().add(autoShop); // Admin can see both organizations
 
+        manager.getOrganizations().add(autoShop); // Manager belongs to Auto Shop
+
+        regularUser.getOrganizations().add(hospital); // Regular user belongs to Hospital
+
+        // CRITICAL: Save users again after linking organizations
         userRepository.save(admin);
         userRepository.save(manager);
-        userRepository.save(user);
+        userRepository.save(regularUser);
 
-        // Create Clients
+        // ========================================
+        // 4. CREATE CLIENTS
+        // ========================================
         Client client1 = new Client();
         client1.setFirstName("John");
         client1.setLastName("Doe");
@@ -139,7 +152,9 @@ public class DataInitializer {
         client3.setUpdatedAt(LocalDateTime.now());
         clientRepository.save(client3);
 
-        // Create Tasks
+        // ========================================
+        // 5. CREATE TASKS
+        // ========================================
         Task task1 = new Task();
         task1.setTitle("General Checkup");
         task1.setDescription("Annual physical examination for patient");
@@ -147,7 +162,7 @@ public class DataInitializer {
         task1.setPriority(ServicePriority.MEDIUM);
         task1.setDueDate(LocalDateTime.now().plusDays(7));
         task1.setClient(client1);
-        task1.setAssignedToUserId(user);
+        task1.setAssignedToUserId(regularUser);
         task1.setCreatedByUserId(admin);
         task1.setOrganization(hospital);
         task1.setCreatedDate(LocalDateTime.now());
@@ -161,7 +176,7 @@ public class DataInitializer {
         task2.setPriority(ServicePriority.HIGH);
         task2.setDueDate(LocalDateTime.now().plusDays(2));
         task2.setClient(client2);
-        task2.setAssignedToUserId(admin);
+        task2.setAssignedToUserId(regularUser);
         task2.setCreatedByUserId(admin);
         task2.setOrganization(hospital);
         task2.setCreatedDate(LocalDateTime.now());
@@ -197,7 +212,9 @@ public class DataInitializer {
         task4.setUpdatedDate(LocalDateTime.now());
         taskRepository.save(task4);
 
-        // Create Records
+        // ========================================
+        // 6. CREATE RECORDS
+        // ========================================
         Record record1 = new Record();
         record1.setClient(client1);
         record1.setProfileType("MEDICAL");
@@ -222,20 +239,16 @@ public class DataInitializer {
         record3.setUpdatedAt(LocalDateTime.now());
         recordRepository.save(record3);
 
-        // Link users to organizations
-//        admin.setOrganization(hospital);
-//        manager.setOrganization(autoShop);
-//        user.setOrganization(hospital);
-         admin.getOrganizations().add(hospital);
-         manager.getOrganizations().add(autoShop);
-         user.getOrganizations().add(hospital);
-
-
         System.out.println("✅ Data initialization completed!");
         System.out.println("👤 Users created: admin/admin123, manager/manager123, user/user123");
         System.out.println("🏢 Organizations: City Hospital, Quick Fix Auto Repair");
-        System.out.println("👥 Clients: 3 clients created");
-        System.out.println("📋 Tasks: 4 tasks created");
+        System.out.println("👥 Clients: 3 clients created (2 Hospital, 1 Auto Shop)");
+        System.out.println("📋 Tasks: 4 tasks created (2 Hospital, 2 Auto Shop)");
         System.out.println("📄 Records: 3 records created");
+        System.out.println("");
+        System.out.println("🔗 User-Organization Links:");
+        System.out.println("   - admin: Hospital + Auto Shop (can manage both)");
+        System.out.println("   - manager: Auto Shop only");
+        System.out.println("   - user: Hospital only");
     }
 }

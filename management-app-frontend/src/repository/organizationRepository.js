@@ -15,6 +15,9 @@ const organizationRepository = {
     },
     delete: async (id) => {
         return axiosInstance.delete(`/organizations/delete/${id}`);
+    },
+    myOrganizations: async() => {
+        return axiosInstance.get("/organizations/my-organizations");
     }
 };
 

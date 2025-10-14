@@ -12,5 +12,6 @@ public interface OrganizationService {
     Optional<Organization> save(Organization organization);
     Optional<Organization> update(Long id,Organization organization);
     void delete(Long organizationId);
+    List<Organization> findByUsername(String username);
 
 }

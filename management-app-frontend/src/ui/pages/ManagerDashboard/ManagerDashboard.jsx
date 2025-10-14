@@ -44,22 +44,32 @@ import {useAuth} from '../../../hooks/useAuth';
 import useClients from '../../../hooks/useClients';
 import useTasks from '../../../hooks/useTasks';
 import useUsers from '../../../hooks/useUsers';
-import useOrganizations from '../../../hooks/useOrganizations';
+import useMyOrganizations from '../../../hooks/useMyOrganizations';
 import ThemeToggle from '../../components/ThemeToggle/ThemeToggle.jsx';
 
 const ManagerDashboard = () => {
     const [activeTab, setActiveTab] = useState(0);
     const {user} = useAuth();
+
+    useEffect(() => {
+        console.log('=== MANAGER DASHBOARD USER DEBUG ===');
+        console.log('User object:', user);
+        console.log('User organizations:', user?.organizations);
+        console.log('First org:', user?.organizations?.[0]);
+    }, [user]);
+
     const {
         clients,
         loading: clientsLoading,
         onAdd: addClient,
         onEdit: editClient,
-        onDelete: deleteClient
+        onDelete: deleteClient,
+        fetchClientsByOrganization
     } = useClients();
     const {tasks, loading: tasksLoading, onAdd: addTask, onEdit: editTask, onDelete: deleteTask} = useTasks();
-    const {users, loading: usersLoading, onAdd: addUser, onEdit: editUser, onDelete: deleteUser} = useUsers();
-    const {organizations, loading: orgsLoading} = useOrganizations();
+    const {users, loading: usersLoading, onAdd: addUser, onEdit: editUser, onDelete: deleteUser, fetchUsersByOrganization} = useUsers();
+    const {organizations, loading: orgsLoading, fetchMyOrganizations} = useMyOrganizations();
+    const managerOrganizationId = organizations.length > 0 ? organizations[0].id : null;
     const [stats, setStats] = useState({
         totalClients: 0,
         totalTasks: 0,
@@ -93,6 +103,17 @@ const ManagerDashboard = () => {
             });
         }
     }, [tasks, clients, users, tasksLoading, clientsLoading, usersLoading]);
+
+    useEffect(() => {
+        if (user && user.organizationId) {
+            console.log('Fetching data for organization:', user.organizationId);
+            fetchUsersByOrganization(user.organizationId);
+            fetchClientsByOrganization(user.organizationId);
+        }
+    }, [user?.organizationId])
+
+
+
 
     const showSnackbar = (message, severity = 'success') => {
         setSnackbar({open: true, message, severity});
@@ -744,7 +765,7 @@ const ManagerDashboard = () => {
                     </Box>
                 </Paper>
 
-                {/* Reusable Dialogs */}
+
                 <TaskCreate
                     open={openTaskDialog}
                     onClose={() => {
@@ -768,6 +789,8 @@ const ManagerDashboard = () => {
                     onSubmit={handleClientSubmit}
                     client={editingClient}
                     organizations={organizations}
+                    isManagerView={true}
+                    defaultOrganizationId={managerOrganizationId}
                 />
 
                 <UserCreate
