@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {Alert, Box, Button, Container, IconButton, InputAdornment, Paper, TextField, Typography} from '@mui/material';
 import {Business, LockPerson, Login as LoginIcon, Visibility, VisibilityOff} from '@mui/icons-material';
-import {useAuth} from '../../../hooks/useAuth';
+import {useAuth} from '../../../../hooks/useAuth.js';
 import './ManagerLogin.css';
 
 const ManagerLogin = () => {

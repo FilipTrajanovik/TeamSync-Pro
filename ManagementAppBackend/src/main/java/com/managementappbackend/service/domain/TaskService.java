@@ -15,4 +15,5 @@ public interface TaskService {
     List<Task> findByClientId(Long clientId);
     List<Task> findByAssignedTo(User user);
     void delete(Long id);
+    Optional<Task> toggleFinished(Long id, String username);
 }

@@ -24,6 +24,9 @@ const taskRepository = {
     },
     findByAssigned: async (username) => {
         return axiosInstance.get(`/tasks/assigned/${username}`)
+    },
+    toggleFinish: async (id) => {
+        return axiosInstance.put(`/tasks/toggle-finish?id=${id}`)
     }
 
 

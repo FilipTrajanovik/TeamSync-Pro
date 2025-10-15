@@ -62,20 +62,25 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/swagger-resources/**",
                                 "/webjars/**",
-                                "/api/users/register",
+                                "/api/users/register",  // ✅ Only once
                                 "/api/users/login",
                                 "/h2-console/**",
                                 "/"
                         ).permitAll()
+                        .requestMatchers(
+                                "/api/tasks/toggle-finish", // or whatever your endpoint is
+                                "/api/tasks/*/update"
+                        ).hasAnyRole("USER", "MANAGER", "ADMIN", "OWNER")
+                        .requestMatchers("/api/users/create").hasAnyRole("MANAGER", "ADMIN", "OWNER")
                         .requestMatchers("/api/users/managers").hasAnyRole("ADMIN", "OWNER")
-                        .requestMatchers("/api/users/**").hasAnyRole("ADMIN", "OWNER","MANAGER")
+                        .requestMatchers("/api/users/organization/**").hasAnyRole("MANAGER", "ADMIN", "OWNER")  // ✅ Add this for your org-specific endpoints
+
                         .requestMatchers("/api/organizations/**").hasAnyRole("ADMIN", "OWNER","MANAGER")
                         .requestMatchers(
                                 "/api/clients/**",
                                 "/api/tasks/**",
                                 "/api/records/**"
                         ).hasAnyRole("USER", "MANAGER", "ADMIN", "OWNER")
-                        .requestMatchers("/api/organizations/**").hasAnyRole("ADMIN", "OWNER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -32,7 +32,8 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
         dueDate: '',
         clientId: '',
         assignedToUserId: '',
-        organizationId: ''
+        organizationId: '',
+        finished: false
     });
 
     const [errors, setErrors] = useState({});
@@ -48,7 +49,9 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
                 dueDate: task.dueDate ? task.dueDate.split('T')[0] : '',
                 clientId: task.clientId || '',
                 assignedToUserId: task.assignedToUserId || '',
-                organizationId: task.organizationId || ''
+                organizationId: task.organizationId || '',
+                finished: task.finished || false
+
             });
         } else {
             if (isManagerView && organizations.length > 0) {
@@ -71,7 +74,8 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
             dueDate: '',
             clientId: '',
             assignedToUserId: '',
-            organizationId: isManagerView && organizations.length > 0 ? organizations[0].id : ''
+            organizationId: isManagerView && organizations.length > 0 ? organizations[0].id : '',
+            finished: false
         });
         setErrors({});
     };

@@ -42,10 +42,12 @@ public class Task {
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
 
+    private boolean finished;
+
     public Task() {
     }
 
-    public Task(String title, String description, ServiceStatus status, ServicePriority priority, LocalDateTime dueDate, LocalDateTime completedDate, Client client, User assignedToUserId, User createdByUserId, Organization organization, LocalDateTime createdDate, LocalDateTime updatedDate) {
+    public Task(String title, String description, ServiceStatus status, ServicePriority priority, LocalDateTime dueDate, LocalDateTime completedDate, Client client, User assignedToUserId, User createdByUserId, Organization organization, LocalDateTime createdDate, LocalDateTime updatedDate, boolean finished) {
         this.title = title;
         this.description = description;
         this.status = status;
@@ -58,8 +60,16 @@ public class Task {
         this.organization = organization;
         this.createdDate = createdDate;
         this.updatedDate = updatedDate;
+        this.finished=finished;
     }
 
+    public boolean isFinished() {
+        return finished;
+    }
+
+    public void setFinished(boolean finished) {
+        this.finished = finished;
+    }
 
     public Long getId() {
         return Id;

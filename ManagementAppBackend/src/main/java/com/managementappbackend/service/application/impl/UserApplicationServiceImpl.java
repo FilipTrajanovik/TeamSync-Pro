@@ -39,7 +39,8 @@ public class UserApplicationServiceImpl implements UserApplicationService {
                 createUserDto.repeatPassword(),
                 createUserDto.name(),
                 createUserDto.surname(),
-                createUserDto.role()
+                createUserDto.role(),
+                null
         );
         return Optional.of(DisplayUserDto.from(user));
     }
@@ -73,6 +74,25 @@ public class UserApplicationServiceImpl implements UserApplicationService {
                 .stream()
                 .map(DisplayUserDto::from)
                 .toList();
+    }
+
+    @Override
+    public List<DisplayUserDto> findByOrganizationIdAndRole(Long organizationId) {
+        return userService.findByOrganizationIdAndRole(organizationId, Role.USER).stream().map(DisplayUserDto::from).toList();
+    }
+
+    @Override
+    public Optional<DisplayUserDto> createUser(CreateUserDto createUserDto) {
+        User user = userService.register(
+                createUserDto.username(),
+                createUserDto.password(),
+                createUserDto.repeatPassword(),
+                createUserDto.name(),
+                createUserDto.surname(),
+                createUserDto.role(),
+                createUserDto.organizationId()
+        );
+        return Optional.of(DisplayUserDto.from(user));
     }
 
 

@@ -52,11 +52,20 @@ const useTasks = () => {
             .catch((error) => console.log(error));
     }, [fetchTasks]);
 
+    const toggleFinish = useCallback((id) => {
+        taskRepository.toggleFinish(id)
+        .then(() => {
+            console.log(`Successfully toggled the task with ID ${id}.`);
+            fetchTasks();
+        })
+        .catch((error) => console.log(error));
+    }, [fetchTasks]);
+
     useEffect(() => {
         fetchTasks();
     }, [fetchTasks]);
 
-    return {...state, onAdd, onEdit, onDelete};
+    return {...state, onAdd, onEdit, onDelete, toggleFinish};
 };
 
 export default useTasks;

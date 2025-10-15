@@ -189,7 +189,8 @@ const AdminDashboard = () => {
                 ...taskData,
                 dueDate: taskData.dueDate ? `${taskData.dueDate}T00:00:00` : null,
                 assignedToUserId: taskData.assignedToUserId || null,
-                clientId: taskData.clientId || null
+                clientId: taskData.clientId || null,
+                finished: false
             };
 
             if (editingTask) {

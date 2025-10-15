@@ -35,21 +35,27 @@ import {
     PersonAdd,
     PersonOutline,
     Schedule,
-    TrendingUp
+    TrendingUp,
+    Settings
 } from '@mui/icons-material';
-import ClientCreate from '../../components/Client/ClientCreate/ClientCreate.jsx'
-import TaskCreate from '../../components/Task/TaskCreate/TaskCreate.jsx';
-import UserCreate from '../../components/Users/UserCreate/UserCreate.jsx';
-import {useAuth} from '../../../hooks/useAuth';
-import useClients from '../../../hooks/useClients';
-import useTasks from '../../../hooks/useTasks';
-import useUsers from '../../../hooks/useUsers';
-import useMyOrganizations from '../../../hooks/useMyOrganizations';
-import ThemeToggle from '../../components/ThemeToggle/ThemeToggle.jsx';
+import ClientCreate from '../../../components/Client/ClientCreate/ClientCreate.jsx'
+import TaskCreate from '../../../components/Task/TaskCreate/TaskCreate.jsx';
+import UserCreate from '../../../components/Users/UserCreate/UserCreate.jsx';
+import {useAuth} from '../../../../hooks/useAuth.js';
+
+import useMyClients from '../../../../hooks/useMyClients.js'
+import useTasks from '../../../../hooks/useTasks.js';
+import useUsers from '../../../../hooks/useUsers.js';
+import useMyOrganizations from '../../../../hooks/useMyOrganizations.js';
+import ThemeToggle from '../../../components/ThemeToggle/ThemeToggle.jsx';
+import useMyUsers from "../../../../hooks/useMyUsers.js";
+import {useNavigate} from "react-router-dom";
 
 const ManagerDashboard = () => {
     const [activeTab, setActiveTab] = useState(0);
     const {user} = useAuth();
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         console.log('=== MANAGER DASHBOARD USER DEBUG ===');
@@ -65,10 +71,11 @@ const ManagerDashboard = () => {
         onEdit: editClient,
         onDelete: deleteClient,
         fetchClientsByOrganization
-    } = useClients();
+    } = useMyClients();
     const {tasks, loading: tasksLoading, onAdd: addTask, onEdit: editTask, onDelete: deleteTask} = useTasks();
-    const {users, loading: usersLoading, onAdd: addUser, onEdit: editUser, onDelete: deleteUser, fetchUsersByOrganization} = useUsers();
-    const {organizations, loading: orgsLoading, fetchMyOrganizations} = useMyOrganizations();
+    const {onAdd: addUser, onEdit: editUser, onDelete: deleteUser, fetchUsersByOrganization} = useUsers();
+    const {users, loading: usersLoading, fetchMyUsers} = useMyUsers();
+    const {organizations, loading: orgsLoading} = useMyOrganizations();
     const managerOrganizationId = organizations.length > 0 ? organizations[0].id : null;
     const [stats, setStats] = useState({
         totalClients: 0,
@@ -105,14 +112,12 @@ const ManagerDashboard = () => {
     }, [tasks, clients, users, tasksLoading, clientsLoading, usersLoading]);
 
     useEffect(() => {
-        if (user && user.organizationId) {
-            console.log('Fetching data for organization:', user.organizationId);
-            fetchUsersByOrganization(user.organizationId);
-            fetchClientsByOrganization(user.organizationId);
+        if (managerOrganizationId) {
+            console.log('Fetching data for organization:', managerOrganizationId);
+            fetchMyUsers(managerOrganizationId);
+            fetchClientsByOrganization(managerOrganizationId);
         }
-    }, [user?.organizationId])
-
-
+    }, [managerOrganizationId, fetchMyUsers, fetchClientsByOrganization]);
 
 
     const showSnackbar = (message, severity = 'success') => {
@@ -128,16 +133,55 @@ const ManagerDashboard = () => {
         setOpenTaskDialog(true);
     };
 
-    const handleTaskSubmit = (taskData) => {
-        if (editingTask) {
-            editTask(editingTask.id, taskData);
-            showSnackbar('Task updated successfully');
-        } else {
-            addTask(taskData);
-            showSnackbar('Task created successfully');
+    const handleTaskSubmit = async (taskData) => {
+        try {
+            // ✅ Clean and format the task data properly
+            const taskDataWithOrg = {
+                title: taskData.title,
+                description: taskData.description,
+                status: taskData.status || 'PENDING',
+                priority: taskData.priority || 'MEDIUM',
+                dueDate: taskData.dueDate ? `${taskData.dueDate}T00:00:00` : null,  // ✅ Convert to LocalDateTime format
+                completedDate: null,  // ✅ Add this field
+                clientId: taskData.clientId || null,  // ✅ Convert empty string to null
+                assignedToUserId: taskData.assignedToUserId || null,  // ✅ Convert empty string to null
+                organizationId: taskData.organizationId || managerOrganizationId,
+                finished: false
+            };
+
+            console.log('=== TASK SUBMIT DEBUG ===');
+            console.log('📤 Original taskData:', taskData);
+            console.log('📤 Cleaned taskDataWithOrg:', taskDataWithOrg);
+            console.log('📤 Required fields:');
+            console.log('  ✅ title:', taskDataWithOrg.title);
+            console.log('  ✅ description:', taskDataWithOrg.description);
+            console.log('  ✅ clientId:', taskDataWithOrg.clientId);
+            console.log('  ✅ assignedToUserId:', taskDataWithOrg.assignedToUserId);
+            console.log('  ✅ organizationId:', taskDataWithOrg.organizationId);
+            console.log('  ✅ dueDate:', taskDataWithOrg.dueDate);
+
+            if (editingTask) {
+                await editTask(editingTask.id, taskDataWithOrg);
+                showSnackbar('Task updated successfully');
+            } else {
+                await addTask(taskDataWithOrg);
+                showSnackbar('Task created successfully');
+            }
+
+            setOpenTaskDialog(false);
+            setEditingTask(null);
+
+        } catch (error) {
+            console.error('❌ Task submit error:', error);
+            console.error('❌ Error response:', error.response);
+            console.error('❌ Error data:', error.response?.data);
+            console.error('❌ Error status:', error.response?.status);
+
+            showSnackbar(
+                `Failed to ${editingTask ? 'update' : 'create'} task: ${error.response?.data?.message || error.message}`,
+                'error'
+            );
         }
-        setOpenTaskDialog(false);
-        setEditingTask(null);
     };
 
     const handleDeleteTask = (id) => {
@@ -152,16 +196,26 @@ const ManagerDashboard = () => {
         setOpenClientDialog(true);
     };
 
-    const handleClientSubmit = (clientData) => {
-        if (editingClient) {
-            editClient(editingClient.id, clientData);
-            showSnackbar('Client updated successfully');
-        } else {
-            addClient(clientData);
-            showSnackbar('Client added successfully');
+    const handleClientSubmit = async (clientData) => {
+        try {
+            console.log('📤 Submitting client data:', clientData);
+
+            if (editingClient) {
+                await editClient(editingClient.id, clientData);
+                showSnackbar('Client updated successfully');
+            } else {
+                await addClient(clientData);
+                showSnackbar('Client added successfully');
+            }
+
+            // ✅ No need to manually refresh - it's automatic now!
+            setOpenClientDialog(false);
+            setEditingClient(null);
+
+        } catch (error) {
+            console.error('❌ Client submit error:', error);
+            showSnackbar('Failed to save client: ' + error.message, 'error');
         }
-        setOpenClientDialog(false);
-        setEditingClient(null);
     };
     const handleDeleteClient = (id) => {
         if (window.confirm('Are you sure you want to delete this client?')) {
@@ -175,16 +229,38 @@ const ManagerDashboard = () => {
         setOpenUserDialog(true);
     };
 
-    const handleUserSubmit = (userData) => {
-        if (editingUser) {
-            editUser(editingUser.id, userData);
-            showSnackbar('User updated successfully');
-        } else {
-            addUser(userData);
-            showSnackbar('User added successfully');
+    const handleUserSubmit = async (userData) => {
+        try {
+            const userDataWithOrg = {
+                ...userData,
+                organizationId: userData.organizationId || managerOrganizationId
+            };
+
+            console.log('📤 Submitting user data:', userDataWithOrg);
+
+            if (editingUser) {
+                await editUser(editingUser.id, userDataWithOrg);
+            } else {
+                await addUser(userDataWithOrg);
+            }
+
+
+            if (managerOrganizationId) {
+                await fetchMyUsers(managerOrganizationId);
+            }
+
+            showSnackbar(editingUser ? 'User updated successfully' : 'User added successfully');
+            setOpenUserDialog(false);
+            setEditingUser(null);
+
+        } catch (error) {
+            console.error('❌ User submit error:', error);
+            console.error('Error response:', error.response?.data);
+            showSnackbar(
+                `Failed to ${editingUser ? 'update' : 'add'} user: ${error.response?.data?.message || error.message}`,
+                'error'
+            );
         }
-        setOpenUserDialog(false);
-        setEditingUser(null);
     };
 
     const handleDeleteUser = (id) => {
@@ -304,6 +380,7 @@ const ManagerDashboard = () => {
     return (
         <Box sx={{bgcolor: 'background.default', minHeight: '100vh', py: 4}}>
             <Container maxWidth="xl">
+                {/* UPDATED HEADER WITH EDIT ORGANIZATION BUTTON */}
                 <Box mb={4} display="flex" justifyContent="space-between" alignItems="center">
                     <Box>
                         <Typography
@@ -317,7 +394,31 @@ const ManagerDashboard = () => {
                             Welcome back, {user?.name}! Manage your organization
                         </Typography>
                     </Box>
-                    <ThemeToggle />
+                    <Box display="flex" alignItems="center" gap={2}>
+                        {/* NEW: Edit Organization Button */}
+                        <Button
+                            variant="contained"
+                            startIcon={<Settings />}
+                            onClick={() => navigate('/manager/edit-organization')}
+                            sx={{
+                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                borderRadius: '12px',
+                                textTransform: 'none',
+                                fontWeight: 600,
+                                px: 3,
+                                py: 1.5,
+                                boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
+                                '&:hover': {
+                                    boxShadow: '0 6px 16px rgba(102, 126, 234, 0.5)',
+                                    transform: 'translateY(-2px)',
+                                    transition: 'all 0.2s'
+                                }
+                            }}
+                        >
+                            Edit Organization
+                        </Button>
+                        <ThemeToggle />
+                    </Box>
                 </Box>
 
                 <Grid container spacing={3} mb={4}>
@@ -452,12 +553,31 @@ const ManagerDashboard = () => {
                                                             </Typography>
                                                         </TableCell>
                                                         <TableCell>
-                                                            <Typography variant="body2">
-                                                                {task.clientName || 'Unassigned'}
-                                                            </Typography>
+                                                            {task.clientId ? (
+                                                                <Box display="flex" alignItems="center" gap={1}>
+                                                                    <Avatar sx={{
+                                                                        width: 32,
+                                                                        height: 32,
+                                                                        fontSize: '0.875rem',
+                                                                        bgcolor: '#6366f1'
+                                                                    }}>
+                                                                        {task.clientName
+                                                                            ? task.clientName.split(' ').map(n => n[0]).join('')
+                                                                            : 'CL'
+                                                                        }
+                                                                    </Avatar>
+                                                                    <Typography variant="body2">
+                                                                        {task.clientName || `Client #${task.clientId}`}
+                                                                    </Typography>
+                                                                </Box>
+                                                            ) : (
+                                                                <Typography variant="body2" color="text.secondary">
+                                                                    No Client
+                                                                </Typography>
+                                                            )}
                                                         </TableCell>
                                                         <TableCell>
-                                                            {task.assignedToUserName ? (
+                                                            {task.assignedToUserId ? (
                                                                 <Box display="flex" alignItems="center" gap={1}>
                                                                     <Avatar sx={{
                                                                         width: 32,
@@ -465,10 +585,13 @@ const ManagerDashboard = () => {
                                                                         fontSize: '0.875rem',
                                                                         bgcolor: '#8b5cf6'
                                                                     }}>
-                                                                        {task.assignedToUserName.split(' ').map(n => n[0]).join('')}
+                                                                        {task.assignedToUserName
+                                                                            ? task.assignedToUserName.split(' ').map(n => n[0]).join('')
+                                                                            : task.assignedToUserId.substring(0, 2).toUpperCase()
+                                                                        }
                                                                     </Avatar>
                                                                     <Typography variant="body2">
-                                                                        {task.assignedToUserName}
+                                                                        {task.assignedToUserName || `@${task.assignedToUserId}`}
                                                                     </Typography>
                                                                 </Box>
                                                             ) : (
@@ -801,6 +924,8 @@ const ManagerDashboard = () => {
                     }}
                     onSubmit={handleUserSubmit}
                     user={editingUser}
+                    isManagerView={true}
+                    defaultOrganizationId={managerOrganizationId}
                 />
 
                 <Snackbar

@@ -5,11 +5,16 @@ import com.managementappbackend.model.enumerations.Role;
 
 import java.util.List;
 
-public record CreateUserDto(String username, String password, String repeatPassword, String name, String surname, Role role) {
+public record CreateUserDto(String username, String password, String repeatPassword, String name, String surname, Role role, Long organizationId) {
 
 
     public static CreateUserDto from(User user) {
-        return new CreateUserDto(user.getUsername(), user.getPassword(), user.getPassword(), user.getName(), user.getSurname(), user.getRole());
+
+        Long orgId = user.getOrganizations() != null && !user.getOrganizations().isEmpty()
+                ? user.getOrganizations().get(0).getId()
+                : null;
+
+        return new CreateUserDto(user.getUsername(), user.getPassword(), user.getPassword(), user.getName(), user.getSurname(), user.getRole(), orgId);
     }
 
     public static List<CreateUserDto> from(List<User> users)

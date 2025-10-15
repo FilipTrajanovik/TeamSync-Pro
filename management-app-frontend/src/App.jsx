@@ -4,16 +4,16 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './ui/components/routing/ProtectedRoute.jsx';
 import PortalSelection from './ui/pages/PortalSelection/PortalSelection.jsx';
 import AdminLogin from './ui/pages/AdminLogin/login.jsx';
-import ManagerLogin from './ui/pages/ManagerLogin/ManagerLogin.jsx';
+import ManagerLogin from './ui/pages/Manager/ManagerLogin/ManagerLogin.jsx';
 import UserLogin from './ui/pages/UserLogin/UserLogin.jsx';
 import Register from './ui/pages/register/register.jsx';
 import Dashboard from './ui/pages/dashboard/dashboard.jsx';
 import AdminDashboard from './ui/pages/AdminDashboard/AdminDashboard.jsx';
-import ManagerDashboard from './ui/pages/ManagerDashboard/ManagerDashboard';
+import ManagerDashboard from './ui/pages/Manager/ManagerDashboard/ManagerDashboard';
 import UserDashboard from './ui/pages/UserDashboard/UserDashboard';
 import './App.css';
 import { ThemeProvider } from './context/ThemeContext';
-
+import EditMyOrganization from "./ui/pages/Manager/EditMyOrganization/EditMyOrganization.jsx";
 function App() {
     return (
         <Router>
@@ -58,6 +58,16 @@ function App() {
                         element={
                             <ProtectedRoute allowedRoles={['MANAGER']}>
                                 <ManagerDashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    {/*Manager Edit Organization Route */}
+                    <Route
+                        path="/manager/edit-organization"
+                        element={
+                            <ProtectedRoute allowedRoles={['MANAGER']}>
+                                <EditMyOrganization />
                             </ProtectedRoute>
                         }
                     />

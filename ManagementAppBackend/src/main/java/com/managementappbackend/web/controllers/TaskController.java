@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.security.core.Authentication;
 import java.util.List;
 
 @RestController
@@ -72,5 +72,13 @@ public class TaskController {
     public ResponseEntity<DisplayTaskDto> findByTitle(@RequestParam String title){
         return taskApplicationService.findByTitle(title).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
-
+    @Operation(
+            summary = "Toggle task finish status",
+            description = "Toggles the finished status of a task. Users can only toggle their own assigned tasks."
+    )
+    @PutMapping("/toggle-finish")
+    public ResponseEntity<DisplayTaskDto> toggleFinishStatus(@RequestParam Long id, Authentication authentication){
+        String username = authentication.getName();
+        return taskApplicationService.toggleFinished(id, username).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
 }

@@ -20,14 +20,15 @@ import {
 } from '@mui/icons-material';
 import './UserCreate.css';
 
-const UserCreate = ({ open, onClose, onSubmit, user = null }) => {
+const UserCreate = ({ open, onClose, onSubmit, user = null ,isManagerView =false, defaultOrganizationId=null}) => {
     const [formData, setFormData] = useState({
         username: '',
         name: '',
         surname: '',
         password: '',
         repeatPassword: '',
-        role: 'USER'
+        role: 'USER',
+        organizationId: ''
     });
 
     const [errors, setErrors] = useState({});
@@ -43,12 +44,25 @@ const UserCreate = ({ open, onClose, onSubmit, user = null }) => {
                 surname: user.surname || '',
                 password: '',
                 repeatPassword: '',
-                role: user.role || 'USER'
+                role: user.role || 'USER',
+                organizationId: user.organizationId || ''
             });
         } else {
-            resetForm();
+            if (isManagerView && defaultOrganizationId) {
+                setFormData({
+                    username: '',
+                    name: '',
+                    surname: '',
+                    password: '',
+                    repeatPassword: '',
+                    role: 'USER',
+                    organizationId: defaultOrganizationId  // ✅ Auto-populate
+                });
+            } else {
+                resetForm();
+            }
         }
-    }, [user, open]);
+    }, [user, open, isManagerView, defaultOrganizationId]);
 
     const resetForm = () => {
         setFormData({
@@ -57,7 +71,9 @@ const UserCreate = ({ open, onClose, onSubmit, user = null }) => {
             surname: '',
             password: '',
             repeatPassword: '',
-            role: 'USER'
+            role: 'USER',
+            organizationId: isManagerView && defaultOrganizationId ? defaultOrganizationId : ''
+
         });
         setErrors({});
     };
@@ -98,12 +114,23 @@ const UserCreate = ({ open, onClose, onSubmit, user = null }) => {
             }
         }
 
+        if (isManagerView && (!formData.organizationId || formData.organizationId === '')) {
+            console.error('❌ Organization ID is missing for manager!');
+            newErrors.organizationId = 'Organization ID is required';
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        console.log('=== USER SUBMIT DEBUG ===');
+        console.log('Form Data:', formData);
+        console.log('Organization ID:', formData.organizationId);
+        console.log('Is Manager View:', isManagerView);
+
         if (validate()) {
             const userData = {
                 username: formData.username,
@@ -111,7 +138,8 @@ const UserCreate = ({ open, onClose, onSubmit, user = null }) => {
                 surname: formData.surname,
                 password: formData.password,
                 repeatPassword: formData.repeatPassword,
-                role: formData.role
+                role: formData.role,
+                organizationId: formData.organizationId,
             };
 
             onSubmit(userData);
