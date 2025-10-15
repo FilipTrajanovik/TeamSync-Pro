@@ -2,11 +2,15 @@ package com.managementappbackend.service.domain.impl;
 
 import com.managementappbackend.model.domain.Task;
 import com.managementappbackend.model.domain.User;
+import com.managementappbackend.model.enumerations.ServiceStatus;
+import com.managementappbackend.model.exceptions.NotOwnedTaskException;
+import com.managementappbackend.model.exceptions.TaskNotFoundException;
 import com.managementappbackend.repository.TaskRepository;
 import com.managementappbackend.service.domain.TaskService;
 import org.springframework.stereotype.Service;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,5 +72,24 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void delete(Long id) {
         taskRepository.deleteById(id);
+    }
+
+    @Override
+    public Optional<Task> toggleFinished(Long id, String username) {
+        if(taskRepository.findById(id).isPresent()) {
+            Task task = taskRepository.findById(id).get();
+
+            if(!task.getAssignedToUserId().getUsername().equals(username)) {
+                throw new NotOwnedTaskException("You can only toggle your own assigned tasks");
+            }
+
+            task.setFinished(!task.isFinished());
+            task.setUpdatedDate(LocalDateTime.now());
+            task.setCompletedDate(LocalDateTime.now());
+            task.setStatus(ServiceStatus.COMPLETED);
+            return Optional.of(taskRepository.save(task));
+        }else{
+            throw new TaskNotFoundException("Task with ID:" + id + "has not been found");
+        }
     }
 }

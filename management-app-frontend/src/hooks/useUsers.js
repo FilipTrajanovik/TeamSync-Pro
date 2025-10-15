@@ -11,7 +11,7 @@ const useUsers = () => {
 
     const fetchUsers = useCallback(() => {
         setState(initialState);
-        userRepository
+         userRepository
             .findAll()
             .then((response) => {
                 setState({
@@ -24,7 +24,7 @@ const useUsers = () => {
 
     const onAdd = useCallback((data) => {
         userRepository
-            .register(data)
+            .createUser(data)
             .then(() => {
                 console.log("Successfully added a new user.");
                 fetchUsers();

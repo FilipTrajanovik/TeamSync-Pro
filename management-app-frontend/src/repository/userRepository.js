@@ -16,6 +16,14 @@ const userRepository = {
     },
     findByOrganization: async(organizationId) => {
         return axiosInstance.get(`/users/organizations/${organizationId}`);
+    },
+    findByOrganizationAndRole: async (organizationId) => {
+        return axiosInstance.get(`/users/organization/users`, {
+            params: {organizationId},
+        });
+    },
+    createUser: async (data) => {
+        return axiosInstance.post("/users/create", data);
     }
 };
 export default userRepository;

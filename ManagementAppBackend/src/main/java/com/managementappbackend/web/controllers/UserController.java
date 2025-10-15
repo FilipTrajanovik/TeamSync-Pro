@@ -86,5 +86,33 @@ public class UserController {
         return userApplicationService.findByOrganizationId(organizationId);
     }
 
+    @Operation(
+            summary = "Get users by organization",
+            description = "Retrieves all users with USER role belonging to a specific organization"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Users retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Organization not found")
+    })
+    @GetMapping("/organization/users")
+    public List<DisplayUserDto> findUsersByOrganization(@RequestParam Long organizationId) {
+        return userApplicationService.findByOrganizationIdAndRole(organizationId);
+    }
+
+    @Operation(summary = "Create a user (Manager/Admin only)",
+            description = "Creates a new user and assigns to an organization")
+    @ApiResponses(
+            value = {@ApiResponse(
+                    responseCode = "200",
+                    description = "User created successfully"
+            ), @ApiResponse(
+                    responseCode = "400", description = "Invalid input or passwords do not match"
+            )}
+    )
+    @PostMapping("/create")
+    public ResponseEntity<DisplayUserDto> create(@RequestBody CreateUserDto createUserDto) {
+        return userApplicationService.createUser(createUserDto).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
 
 }

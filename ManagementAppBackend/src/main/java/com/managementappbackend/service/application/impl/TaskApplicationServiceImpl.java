@@ -83,6 +83,11 @@ public class TaskApplicationServiceImpl implements TaskApplicationService {
     }
 
     @Override
+    public Optional<DisplayTaskDto> toggleFinished(Long id, String username) {
+        return taskService.toggleFinished(id, username).map(DisplayTaskDto::from);
+    }
+
+    @Override
     public void delete(Long id) {
         taskService.delete(id);
     }

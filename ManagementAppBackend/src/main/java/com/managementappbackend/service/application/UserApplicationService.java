@@ -20,4 +20,6 @@ public interface UserApplicationService {
     Optional<DisplayUserDto>  findByUsername(String username);
     List<DisplayUserDto> findByRole(Role role);
     List<DisplayUserDto> findByOrganizationId(Long organizationId);
+    List<DisplayUserDto> findByOrganizationIdAndRole(Long organizationId);
+    Optional<DisplayUserDto> createUser(CreateUserDto createUserDto);
 }
