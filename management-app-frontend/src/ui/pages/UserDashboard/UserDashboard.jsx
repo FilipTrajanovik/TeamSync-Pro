@@ -27,7 +27,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../../../hooks/useAuth';
 import useMyTasks from '../../../hooks/useMyTasks';
-import TaskView from '../../components/Task/TaskView/TaskView.jsx';
+import TaskView from "../../components/Task/UserTaskView/UserTaskView.jsx";
 import './UserDashboard.css';
 
 const UserDashboard = () => {
@@ -117,68 +117,68 @@ const UserDashboard = () => {
         : 0;
 
     return (
-        <Box className="user-dashboard-modern">
+        <Box className="usr-dash-container">
             <Container maxWidth="xl">
                 {/* Header */}
-                <Box className="dashboard-header">
-                    <Typography variant="h3" className="header-title">
+                <Box className="usr-dash-header">
+                    <Typography variant="h3" className="usr-dash-title">
                         My Tasks
                     </Typography>
-                    <Typography className="header-subtitle">
+                    <Typography className="usr-dash-subtitle">
                         Welcome back, {user?.username || 'User'}! Track and manage your assignments.
                     </Typography>
                 </Box>
 
                 {/* Stats Grid */}
-                <Grid container spacing={3} className="stats-grid">
+                <Grid container spacing={3} className="usr-dash-stats-grid">
                     <Grid item xs={12} sm={6} lg={3}>
-                        <Card className="stat-card">
-                            <CardContent className="stat-content">
-                                <Avatar className="stat-avatar" sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+                        <Card className="usr-dash-stat-card">
+                            <CardContent className="usr-dash-stat-content">
+                                <Avatar className="usr-dash-stat-avatar">
                                     <Assignment />
                                 </Avatar>
-                                <Box className="stat-info">
-                                    <Typography className="stat-label">Total Tasks</Typography>
-                                    <Typography className="stat-value">{stats.totalTasks}</Typography>
+                                <Box className="usr-dash-stat-info">
+                                    <Typography className="usr-dash-stat-label">Total Tasks</Typography>
+                                    <Typography className="usr-dash-stat-value">{stats.totalTasks}</Typography>
                                 </Box>
                             </CardContent>
                         </Card>
                     </Grid>
                     <Grid item xs={12} sm={6} lg={3}>
-                        <Card className="stat-card">
-                            <CardContent className="stat-content">
-                                <Avatar className="stat-avatar" sx={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
+                        <Card className="usr-dash-stat-card">
+                            <CardContent className="usr-dash-stat-content">
+                                <Avatar className="usr-dash-stat-avatar">
                                     <Schedule />
                                 </Avatar>
-                                <Box className="stat-info">
-                                    <Typography className="stat-label">Pending</Typography>
-                                    <Typography className="stat-value">{stats.pendingTasks}</Typography>
+                                <Box className="usr-dash-stat-info">
+                                    <Typography className="usr-dash-stat-label">Pending</Typography>
+                                    <Typography className="usr-dash-stat-value">{stats.pendingTasks}</Typography>
                                 </Box>
                             </CardContent>
                         </Card>
                     </Grid>
                     <Grid item xs={12} sm={6} lg={3}>
-                        <Card className="stat-card">
-                            <CardContent className="stat-content">
-                                <Avatar className="stat-avatar" sx={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>
+                        <Card className="usr-dash-stat-card">
+                            <CardContent className="usr-dash-stat-content">
+                                <Avatar className="usr-dash-stat-avatar">
                                     <PriorityHigh />
                                 </Avatar>
-                                <Box className="stat-info">
-                                    <Typography className="stat-label">Completed</Typography>
-                                    <Typography className="stat-value">{stats.completedTasks}</Typography>
+                                <Box className="usr-dash-stat-info">
+                                    <Typography className="usr-dash-stat-label">Completed</Typography>
+                                    <Typography className="usr-dash-stat-value">{stats.completedTasks}</Typography>
                                 </Box>
                             </CardContent>
                         </Card>
                     </Grid>
                     <Grid item xs={12} sm={6} lg={3}>
-                        <Card className="stat-card">
-                            <CardContent className="stat-content">
-                                <Avatar className="stat-avatar" sx={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }}>
+                        <Card className="usr-dash-stat-card">
+                            <CardContent className="usr-dash-stat-content">
+                                <Avatar className="usr-dash-stat-avatar">
                                     <CheckCircle />
                                 </Avatar>
-                                <Box className="stat-info">
-                                    <Typography className="stat-label">Finished</Typography>
-                                    <Typography className="stat-value">{stats.finishedTasks}</Typography>
+                                <Box className="usr-dash-stat-info">
+                                    <Typography className="usr-dash-stat-label">Finished</Typography>
+                                    <Typography className="usr-dash-stat-value">{stats.finishedTasks}</Typography>
                                 </Box>
                             </CardContent>
                         </Card>
@@ -186,46 +186,46 @@ const UserDashboard = () => {
                 </Grid>
 
                 {/* Progress Card */}
-                <Paper className="progress-card">
-                    <Box className="progress-header">
-                        <Typography className="progress-title">
+                <Paper className="usr-dash-progress-card">
+                    <Box className="usr-dash-progress-header">
+                        <Typography className="usr-dash-progress-title">
                             Overall Progress
                         </Typography>
-                        <Typography className="progress-percentage">
+                        <Typography className="usr-dash-progress-percentage">
                             {completionRate.toFixed(0)}%
                         </Typography>
                     </Box>
-                    <Box className="progress-bar-container">
+                    <Box className="usr-dash-progress-bar-container">
                         <Box
-                            className="progress-bar-fill"
+                            className="usr-dash-progress-bar-fill"
                             sx={{ width: `${completionRate}%` }}
                         />
                     </Box>
                 </Paper>
 
                 {/* Tasks List */}
-                <Paper className="tasks-section">
-                    <Box className="tasks-header">
-                        <Typography className="tasks-title">
+                <Paper className="usr-dash-tasks-section">
+                    <Box className="usr-dash-tasks-header">
+                        <Typography className="usr-dash-tasks-title">
                             Your Assigned Tasks
                         </Typography>
                         <Chip
                             label={tasks.length}
-                            className="task-count-badge"
+                            className="usr-dash-task-count-badge"
                         />
                     </Box>
 
                     {loading ? (
-                        <Box className="empty-state">
+                        <Box className="usr-dash-empty-state">
                             <Typography>Loading your tasks...</Typography>
                         </Box>
                     ) : tasks.length === 0 ? (
-                        <Box className="empty-state">
-                            <Assignment className="empty-icon" />
-                            <Typography variant="h6" className="empty-title">
+                        <Box className="usr-dash-empty-state">
+                            <Assignment className="usr-dash-empty-icon" />
+                            <Typography variant="h6" className="usr-dash-empty-title">
                                 No tasks assigned yet
                             </Typography>
-                            <Typography className="empty-text">
+                            <Typography className="usr-dash-empty-text">
                                 Check back later for new assignments from your manager
                             </Typography>
                         </Box>
@@ -235,42 +235,43 @@ const UserDashboard = () => {
                             return (
                                 <Card
                                     key={task.id}
-                                    className={`task-card ${task.finished ? 'finished' : ''}`}
+                                    className={`usr-dash-task-card ${task.finished ? 'usr-dash-task-finished' : ''}`}
                                 >
-                                    <CardContent className="task-card-content">
-                                        <Box className="task-header">
-                                            <Box className="task-left">
-                                                <Box className="task-checkbox-wrapper">
+                                    <CardContent className="usr-dash-task-content">
+                                        <Box className="usr-dash-task-header">
+                                            <Box className="usr-dash-task-left">
+                                                <Box className="usr-dash-checkbox-wrapper">
                                                     <Checkbox
                                                         checked={task.finished || false}
                                                         onChange={() => handleToggleFinish(task.id)}
                                                         icon={<RadioButtonUnchecked />}
                                                         checkedIcon={<CheckCircleOutline />}
-                                                        className={`task-checkbox ${task.finished ? 'checked' : ''}`}
+                                                        className={`usr-dash-checkbox ${task.finished ? 'usr-dash-checkbox-checked' : ''}`}
                                                     />
                                                 </Box>
-                                                <Box className="task-info">
+                                                <Box className="usr-dash-task-info">
                                                     <Typography
-                                                        className={`task-title ${task.finished ? 'finished' : ''}`}
+                                                        className={`usr-dash-task-title ${task.finished ? 'usr-dash-task-title-finished' : ''}`}
                                                     >
                                                         {task.title}
                                                     </Typography>
-                                                    <Typography className={`task-description ${task.finished ? 'finished' : ''}`}>
+                                                    <Typography className={`usr-dash-task-description ${task.finished ? 'usr-dash-task-description-finished' : ''}`}>
                                                         {task.description?.substring(0, 100)}
                                                         {task.description?.length > 100 ? '...' : ''}
                                                     </Typography>
-                                                    <Box className="task-meta">
-                                                        <Box className="meta-item">
+                                                    <Box className="usr-dash-task-meta">
+                                                        <Box className="usr-dash-meta-item">
                                                             <Chip
                                                                 label={task.priority}
                                                                 size="small"
-                                                                className={`priority-badge priority-${task.priority?.toLowerCase()}`}
+                                                                className={`usr-dash-priority-badge usr-dash-priority-${task.priority?.toLowerCase()}`}
                                                             />
                                                         </Box>
-                                                        <Box className="meta-item">
+                                                        <Box className="usr-dash-meta-item">
                                                             <Chip
                                                                 label={task.status?.replace('_', ' ')}
                                                                 size="small"
+                                                                className="usr-dash-status-chip"
                                                                 sx={{
                                                                     borderColor: getStatusColor(task.status),
                                                                     color: getStatusColor(task.status),
@@ -283,15 +284,15 @@ const UserDashboard = () => {
                                                                 icon={<Timer />}
                                                                 label={timeRemaining.text}
                                                                 size="small"
-                                                                className={`countdown-badge countdown-${timeRemaining.urgent ? 'danger' : timeRemaining.color === '#10b981' ? 'safe' : 'warning'}`}
+                                                                className={`usr-dash-countdown-badge usr-dash-countdown-${timeRemaining.urgent ? 'danger' : timeRemaining.color === '#10b981' ? 'safe' : 'warning'}`}
                                                             />
                                                         )}
                                                     </Box>
                                                 </Box>
                                             </Box>
-                                            <Box className="task-actions">
+                                            <Box className="usr-dash-task-actions">
                                                 <IconButton
-                                                    className="task-action-btn"
+                                                    className="usr-dash-action-btn"
                                                     onClick={() => handleViewTask(task)}
                                                     size="small"
                                                 >
@@ -326,6 +327,7 @@ const UserDashboard = () => {
                     onClose={() => setSnackbar({ ...snackbar, open: false })}
                     severity={snackbar.severity}
                     variant="filled"
+                    className="usr-dash-snackbar"
                     sx={{ borderRadius: '12px' }}
                 >
                     {snackbar.message}

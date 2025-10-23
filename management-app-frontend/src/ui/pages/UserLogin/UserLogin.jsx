@@ -9,7 +9,9 @@ import {
     IconButton,
     InputAdornment,
     Alert,
-    Paper
+    Paper,
+    Fade,
+    CircularProgress
 } from '@mui/material';
 import {
     Visibility,
@@ -33,6 +35,7 @@ const UserLogin = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [focusedField, setFocusedField] = useState('');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -54,7 +57,10 @@ const UserLogin = () => {
                 return;
             }
 
-            navigate('/user/dashboard');
+            // Success - Navigate after brief delay for visual feedback
+            setTimeout(() => {
+                navigate('/user/dashboard');
+            }, 400);
         } catch (err) {
             setError(err.response?.data?.message || 'Invalid credentials. Please try again.');
             setLoading(false);
@@ -65,15 +71,24 @@ const UserLogin = () => {
         setShowPassword(!showPassword);
     };
 
+    const handleFocus = (fieldName) => {
+        setFocusedField(fieldName);
+    };
+
+    const handleBlur = () => {
+        setFocusedField('');
+    };
+
     return (
-        <Box className="user-login-container">
-            <div className="login-bg">
-                <div className="login-grid"></div>
-                <div className="floating-particles">
+        <Box className="user-portal-login-container">
+            {/* Animated Background */}
+            <div className="user-portal-bg">
+                <div className="user-portal-grid"></div>
+                <div className="user-portal-particles">
                     {[...Array(30)].map((_, i) => (
                         <div
                             key={i}
-                            className="particle"
+                            className="user-portal-particle"
                             style={{
                                 left: `${Math.random() * 100}%`,
                                 animationDelay: `${Math.random() * 5}s`,
@@ -84,101 +99,132 @@ const UserLogin = () => {
                 </div>
             </div>
 
-            <Container maxWidth="sm" className="login-content">
-                <Paper className="login-card" elevation={0}>
-                    <div className="card-glow"></div>
+            <Container maxWidth="sm" className="user-portal-content">
+                <Fade in={true} timeout={800}>
+                    <Paper className="user-portal-card" elevation={0}>
+                        <div className="user-portal-glow"></div>
 
-                    <Box className="login-header">
-                        <div className="logo-container">
-                            <Person className="logo-icon" />
-                            <div className="logo-pulse"></div>
-                        </div>
-                        <Typography className="login-title">
-                            User Portal
-                        </Typography>
-                        <Typography className="login-subtitle">
-                            Access your personal dashboard
-                        </Typography>
-                    </Box>
-
-                    {error && (
-                        <Alert severity="error" className="error-alert" onClose={() => setError('')}>
-                            {error}
-                        </Alert>
-                    )}
-
-                    <form onSubmit={handleSubmit} className="login-form">
-                        <Box className="form-group">
-                            <TextField
-                                name="username"
-                                label="Username"
-                                fullWidth
-                                required
-                                value={formData.username}
-                                onChange={handleChange}
-                                className="cyber-input"
-                                variant="outlined"
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <LockPerson className="input-icon" />
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
+                        {/* Header */}
+                        <Box className="user-portal-header">
+                            <div className="user-portal-logo-container">
+                                <Person className="user-portal-logo-icon" />
+                                <div className="user-portal-logo-pulse"></div>
+                            </div>
+                            <Typography className="user-portal-title">
+                                User Portal
+                            </Typography>
+                            <Typography className="user-portal-subtitle">
+                                Access your personal dashboard
+                            </Typography>
                         </Box>
 
-                        <Box className="form-group">
-                            <TextField
-                                name="password"
-                                label="Password"
-                                type={showPassword ? 'text' : 'password'}
+                        {/* Error Alert */}
+                        {error && (
+                            <Fade in={true}>
+                                <Alert
+                                    severity="error"
+                                    className="user-portal-error-alert"
+                                    onClose={() => setError('')}
+                                >
+                                    {error}
+                                </Alert>
+                            </Fade>
+                        )}
+
+                        {/* Login Form */}
+                        <form onSubmit={handleSubmit} className="user-portal-form">
+                            <Box className="user-portal-form-group">
+                                <TextField
+                                    name="username"
+                                    label="Username"
+                                    fullWidth
+                                    required
+                                    value={formData.username}
+                                    onChange={handleChange}
+                                    onFocus={() => handleFocus('username')}
+                                    onBlur={handleBlur}
+                                    disabled={loading}
+                                    className={`user-portal-input ${focusedField === 'username' ? 'user-portal-input-focused' : ''}`}
+                                    variant="outlined"
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <LockPerson className="user-portal-input-icon" />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Box>
+
+                            <Box className="user-portal-form-group">
+                                <TextField
+                                    name="password"
+                                    label="Password"
+                                    type={showPassword ? 'text' : 'password'}
+                                    fullWidth
+                                    required
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    onFocus={() => handleFocus('password')}
+                                    onBlur={handleBlur}
+                                    disabled={loading}
+                                    className={`user-portal-input ${focusedField === 'password' ? 'user-portal-input-focused' : ''}`}
+                                    variant="outlined"
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <LoginIcon className="user-portal-input-icon" />
+                                            </InputAdornment>
+                                        ),
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    onClick={handleTogglePassword}
+                                                    edge="end"
+                                                    disabled={loading}
+                                                    className="user-portal-visibility-toggle"
+                                                    aria-label="toggle password visibility"
+                                                >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Box>
+
+                            <Button
+                                type="submit"
                                 fullWidth
-                                required
-                                value={formData.password}
-                                onChange={handleChange}
-                                className="cyber-input"
-                                variant="outlined"
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <LoginIcon className="input-icon" />
-                                        </InputAdornment>
-                                    ),
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                onClick={handleTogglePassword}
-                                                edge="end"
-                                                className="visibility-toggle"
-                                            >
-                                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
+                                disabled={loading || !formData.username || !formData.password}
+                                className="user-portal-button"
+                            >
+                                {loading ? (
+                                    <>
+                                        <CircularProgress
+                                            size={20}
+                                            className="user-portal-button-loader"
+                                            sx={{ color: 'white', marginRight: '10px' }}
+                                        />
+                                        <span className="user-portal-button-text">Authenticating...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span className="user-portal-button-text">Sign In</span>
+                                        <div className="user-portal-button-shimmer"></div>
+                                    </>
+                                )}
+                            </Button>
+                        </form>
+
+                        {/* Footer */}
+                        <Box className="user-portal-footer">
+                            <Typography className="user-portal-footer-text">
+                                Need help? Contact your system administrator
+                            </Typography>
                         </Box>
-
-                        <Button
-                            type="submit"
-                            fullWidth
-                            disabled={loading}
-                            className="cyber-login-button"
-                        >
-                            <span className="btn-text">
-                                {loading ? 'Authenticating...' : 'Sign In'}
-                            </span>
-                            <div className="btn-shimmer"></div>
-                        </Button>
-                    </form>
-
-                    <Box className="login-footer">
-                        <Typography className="footer-text">
-                            Need help? Contact your system administrator
-                        </Typography>
-                    </Box>
-                </Paper>
+                    </Paper>
+                </Fade>
             </Container>
         </Box>
     );
