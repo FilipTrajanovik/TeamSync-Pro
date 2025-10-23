@@ -1,15 +1,15 @@
-/* UserDashboard.css */
+/* ==================== USER DASHBOARD - POLISHED BLACK & WHITE GLASS DESIGN ==================== */
 
-.user-dashboard-modern {
+.usr-dash-container {
     min-height: 100vh;
-    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
-    padding: 48px 0 80px 0;
+    background: #0a0a0a !important;
+    padding: 40px 0 80px 0 !important;
     position: relative;
     overflow: hidden;
 }
 
-/* Animated Background */
-.user-dashboard-modern::before {
+/* Subtle Animated Background */
+.usr-dash-container::before {
     content: '';
     position: absolute;
     top: 0;
@@ -17,391 +17,502 @@
     right: 0;
     bottom: 0;
     background:
-            radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
-            radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
+            radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
+            radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.015) 0%, transparent 50%);
     pointer-events: none;
-    animation: float 20s ease-in-out infinite;
+    animation: usrDashFloat 25s ease-in-out infinite;
 }
 
-@keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
+@keyframes usrDashFloat {
+    0%, 100% { opacity: 0.5; transform: translateY(0); }
+    50% { opacity: 0.8; transform: translateY(-15px); }
 }
 
-/* Header Section */
-.dashboard-header {
+/* Header Section - Clean & Centered */
+.usr-dash-header {
     text-align: center;
-    margin-bottom: 56px;
+    margin-bottom: 48px !important;
     position: relative;
     z-index: 1;
 }
 
-.header-title {
+.usr-dash-title {
     color: #ffffff !important;
-    font-weight: 800 !important;
-    font-size: 2.5rem !important;
-    margin-bottom: 12px !important;
-    text-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
+    font-weight: 700 !important;
+    font-size: 2.25rem !important;
+    margin-bottom: 8px !important;
     letter-spacing: -0.5px;
+    text-shadow: 0 2px 20px rgba(255, 255, 255, 0.1);
 }
 
-.header-subtitle {
-    color: #9ca3af !important;
-    font-size: 1.125rem !important;
+.usr-dash-subtitle {
+    color: rgba(255, 255, 255, 0.5) !important;
+    font-size: 1rem !important;
     font-weight: 400 !important;
 }
 
-/* Stats Section */
-.stats-grid {
-    margin-bottom: 48px;
+/* Stats Section - Enhanced Glass Cards */
+.usr-dash-stats-grid {
+    margin-bottom: 40px !important;
 }
 
-.stat-card {
-    background: rgba(255, 255, 255, 0.02) !important;
-    backdrop-filter: blur(20px);
+.usr-dash-stat-card {
+    background: rgba(20, 20, 20, 0.6) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: 24px !important;
-    padding: 28px !important;
+    border-radius: 20px !important;
+    padding: 0 !important;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
 }
 
-.stat-card::before {
+/* Top accent line */
+.usr-dash-stat-card::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
     opacity: 0;
     transition: opacity 0.4s;
 }
 
-.stat-card:hover {
-    transform: translateY(-8px);
-    border-color: rgba(255, 255, 255, 0.2) !important;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+/* Glass reflection effect */
+.usr-dash-stat-card::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
+    pointer-events: none;
 }
 
-.stat-card:hover::before {
+.usr-dash-stat-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    box-shadow:
+            0 20px 50px rgba(0, 0, 0, 0.4),
+            inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+.usr-dash-stat-card:hover::before {
     opacity: 1;
 }
 
-.stat-content {
+.usr-dash-stat-content {
     display: flex;
     align-items: center;
     gap: 20px;
+    position: relative;
+    z-index: 1;
+    padding: 24px !important;
 }
 
-.stat-avatar {
-    width: 64px !important;
-    height: 64px !important;
-    background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%) !important;
-    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.15);
+.usr-dash-stat-avatar {
+    width: 56px !important;
+    height: 56px !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.15);
+    transition: all 0.3s ease;
 }
 
-.stat-avatar svg {
+.usr-dash-stat-card:hover .usr-dash-stat-avatar {
+    transform: scale(1.05);
+    box-shadow: 0 12px 28px rgba(255, 255, 255, 0.25);
+}
+
+.usr-dash-stat-avatar svg {
     color: #1a1a1a !important;
-    font-size: 28px !important;
+    font-size: 26px !important;
 }
 
-.stat-info {
+.usr-dash-stat-info {
     flex: 1;
 }
 
-.stat-label {
-    color: #9ca3af !important;
-    font-size: 0.875rem !important;
-    font-weight: 500 !important;
+.usr-dash-stat-label {
+    color: rgba(255, 255, 255, 0.5) !important;
+    font-size: 0.813rem !important;
+    font-weight: 600 !important;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin-bottom: 8px !important;
+    margin-bottom: 6px !important;
 }
 
-.stat-value {
+.usr-dash-stat-value {
     color: #ffffff !important;
-    font-size: 2.5rem !important;
+    font-size: 2.25rem !important;
     font-weight: 700 !important;
     line-height: 1;
 }
 
-/* Progress Section */
-.progress-card {
-    background: rgba(255, 255, 255, 0.02) !important;
-    backdrop-filter: blur(20px);
+/* Progress Section - Simplified Glass Design */
+.usr-dash-progress-card {
+    background: rgba(20, 20, 20, 0.6) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: 24px !important;
-    padding: 32px !important;
-    margin-bottom: 32px;
+    border-radius: 20px !important;
+    padding: 28px !important;
+    margin-bottom: 32px !important;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
 }
 
-.progress-header {
+/* Glass shine effect */
+.usr-dash-progress-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+    animation: usrDashShine 6s infinite;
+}
+
+@keyframes usrDashShine {
+    0% { left: -100%; }
+    100% { left: 200%; }
+}
+
+.usr-dash-progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.usr-dash-progress-title {
+    color: #ffffff !important;
+    font-size: 1.125rem !important;
+    font-weight: 600 !important;
+}
+
+.usr-dash-progress-percentage {
+    color: #10b981 !important;
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+}
+
+.usr-dash-progress-bar-container {
+    height: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.usr-dash-progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+    border-radius: 10px;
+    transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+    position: relative;
+}
+
+/* Animated shimmer on progress bar */
+.usr-dash-progress-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: usrDashProgressShimmer 2s infinite;
+}
+
+@keyframes usrDashProgressShimmer {
+    0% { left: -100%; }
+    100% { left: 200%; }
+}
+
+/* Tasks Section - Enhanced Glass Container */
+.usr-dash-tasks-section {
+    background: rgba(20, 20, 20, 0.6) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 20px !important;
+    padding: 28px !important;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+.usr-dash-tasks-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
 }
 
-.progress-title {
+.usr-dash-tasks-title {
     color: #ffffff !important;
-    font-size: 1.25rem !important;
+    font-size: 1.375rem !important;
     font-weight: 600 !important;
 }
 
-.progress-percentage {
-    color: #10b981 !important;
-    font-size: 1.5rem !important;
-    font-weight: 700 !important;
-}
-
-.progress-bar-container {
-    height: 12px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    overflow: hidden;
-    position: relative;
-}
-
-.progress-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
-    border-radius: 12px;
-    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
-}
-
-/* Tasks Section */
-.tasks-section {
-    background: rgba(255, 255, 255, 0.02) !important;
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: 24px !important;
-    padding: 32px !important;
-}
-
-.tasks-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 28px;
-}
-
-.tasks-title {
-    color: #ffffff !important;
-    font-size: 1.5rem !important;
-    font-weight: 600 !important;
-}
-
-.task-count-badge {
-    background: rgba(255, 255, 255, 0.1) !important;
+.usr-dash-task-count-badge {
+    background: rgba(255, 255, 255, 0.08) !important;
     color: #ffffff !important;
     font-weight: 600 !important;
-    padding: 8px 16px !important;
-    border-radius: 12px !important;
-}
-
-/* Task Cards */
-.task-card {
-    background: rgba(255, 255, 255, 0.03) !important;
+    padding: 6px 14px !important;
+    border-radius: 10px !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    font-size: 0.875rem !important;
+    height: auto !important;
+}
+
+/* Task Cards - Refined Glass Design */
+.usr-dash-task-card {
+    background: rgba(255, 255, 255, 0.03) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
     border-radius: 16px !important;
-    margin-bottom: 16px;
+    margin-bottom: 12px !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
 }
 
-.task-card:hover {
-    transform: translateX(8px);
-    border-color: rgba(255, 255, 255, 0.2) !important;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+/* Liquid hover effect */
+.usr-dash-task-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.02), transparent);
+    transition: left 0.5s;
 }
 
-.task-card-content {
-    padding: 24px !important;
+.usr-dash-task-card:hover::before {
+    left: 100%;
 }
 
-.task-header {
+.usr-dash-task-card:hover {
+    transform: translateX(6px);
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    box-shadow:
+            0 12px 35px rgba(0, 0, 0, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+.usr-dash-task-content {
+    padding: 20px !important;
+}
+
+.usr-dash-task-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 16px;
+    gap: 12px;
 }
 
-.task-left {
+.usr-dash-task-left {
     display: flex;
     align-items: flex-start;
-    gap: 16px;
+    gap: 14px;
     flex: 1;
+    min-width: 0;
 }
 
-.task-checkbox-wrapper {
-    margin-top: 4px;
+.usr-dash-checkbox-wrapper {
+    margin-top: 2px;
+    flex-shrink: 0;
 }
 
-.task-checkbox {
-    color: rgba(255, 255, 255, 0.3) !important;
+.usr-dash-checkbox {
+    color: rgba(255, 255, 255, 0.25) !important;
     transition: all 0.3s !important;
+    cursor: pointer;
+    padding: 8px !important;
 }
 
-.task-checkbox.checked {
+.usr-dash-checkbox.usr-dash-checkbox-checked {
     color: #10b981 !important;
 }
 
-.task-checkbox:hover {
-    color: rgba(255, 255, 255, 0.6) !important;
+.usr-dash-checkbox:hover {
+    color: rgba(255, 255, 255, 0.5) !important;
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.05) !important;
 }
 
-.task-info {
+.usr-dash-task-info {
     flex: 1;
+    min-width: 0;
 }
 
-.task-title {
+.usr-dash-task-title {
     color: #ffffff !important;
-    font-size: 1.125rem !important;
+    font-size: 1.063rem !important;
     font-weight: 600 !important;
-    margin-bottom: 8px !important;
+    margin-bottom: 6px !important;
     transition: all 0.3s;
+    line-height: 1.4;
 }
 
-.task-title.finished {
+.usr-dash-task-title.usr-dash-task-title-finished {
     text-decoration: line-through;
-    opacity: 0.6;
-}
-
-.task-description {
-    color: #9ca3af !important;
-    font-size: 0.875rem !important;
-    line-height: 1.6;
-    margin-bottom: 16px !important;
-    transition: all 0.3s;
-}
-
-.task-description.finished {
     opacity: 0.5;
 }
 
-.task-meta {
+.usr-dash-task-description {
+    color: rgba(255, 255, 255, 0.5) !important;
+    font-size: 0.875rem !important;
+    line-height: 1.5;
+    margin-bottom: 14px !important;
+    transition: all 0.3s;
+}
+
+.usr-dash-task-description.usr-dash-task-description-finished {
+    opacity: 0.4;
+}
+
+.usr-dash-task-meta {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 10px;
     flex-wrap: wrap;
 }
 
-.meta-item {
+.usr-dash-meta-item {
     display: flex;
     align-items: center;
-    gap: 6px;
 }
 
-.meta-item svg {
-    font-size: 16px !important;
-    color: #9ca3af !important;
-}
-
-.meta-text {
-    color: #9ca3af !important;
-    font-size: 0.875rem !important;
-}
-
-.task-actions {
+.usr-dash-task-actions {
     display: flex;
-    gap: 8px;
+    gap: 6px;
+    flex-shrink: 0;
 }
 
-.task-action-btn {
-    color: rgba(255, 255, 255, 0.6) !important;
+.usr-dash-action-btn {
+    color: rgba(255, 255, 255, 0.4) !important;
     transition: all 0.3s !important;
+    padding: 8px !important;
 }
 
-.task-action-btn:hover {
+.usr-dash-action-btn:hover {
     color: #ffffff !important;
-    background: rgba(255, 255, 255, 0.1) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    transform: scale(1.05);
 }
 
-/* Priority Badge */
-.priority-badge {
+/* Priority Badge - Cleaner Design */
+.usr-dash-priority-badge {
     font-weight: 600 !important;
-    padding: 6px 12px !important;
+    padding: 5px 11px !important;
     border-radius: 8px !important;
-    font-size: 0.75rem !important;
-    text-transform: uppercase;
+    font-size: 0.688rem !important;
+    text-transform: uppercase !important;
     letter-spacing: 0.5px;
+    border: 1px solid !important;
+    height: auto !important;
 }
 
-.priority-low {
-    background: rgba(59, 130, 246, 0.2) !important;
+.usr-dash-priority-low {
+    background: rgba(59, 130, 246, 0.15) !important;
     color: #60a5fa !important;
+    border-color: rgba(59, 130, 246, 0.3) !important;
 }
 
-.priority-medium {
-    background: rgba(251, 146, 60, 0.2) !important;
-    color: #fb923c !important;
-}
-
-.priority-high {
-    background: rgba(239, 68, 68, 0.2) !important;
-    color: #f87171 !important;
-}
-
-.priority-urgent {
-    background: rgba(220, 38, 38, 0.3) !important;
-    color: #dc2626 !important;
-    animation: pulse-urgent 2s ease-in-out infinite;
-}
-
-/* Countdown Timer */
-.countdown-badge {
-    padding: 8px 14px !important;
-    border-radius: 10px !important;
-    font-weight: 600 !important;
-    font-size: 0.875rem !important;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.countdown-badge svg {
-    font-size: 18px !important;
-}
-
-.countdown-safe {
-    background: rgba(16, 185, 129, 0.15) !important;
-    color: #10b981 !important;
-    border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
-.countdown-warning {
+.usr-dash-priority-medium {
     background: rgba(251, 146, 60, 0.15) !important;
     color: #fb923c !important;
-    border: 1px solid rgba(251, 146, 60, 0.3);
+    border-color: rgba(251, 146, 60, 0.3) !important;
 }
 
-.countdown-danger {
+.usr-dash-priority-high {
     background: rgba(239, 68, 68, 0.15) !important;
-    color: #ef4444 !important;
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    animation: pulse-urgent 2s ease-in-out infinite;
+    color: #f87171 !important;
+    border-color: rgba(239, 68, 68, 0.3) !important;
 }
 
-@keyframes pulse-urgent {
+.usr-dash-priority-urgent {
+    background: rgba(220, 38, 38, 0.2) !important;
+    color: #dc2626 !important;
+    border-color: rgba(220, 38, 38, 0.4) !important;
+    animation: usrDashPulseUrgent 2s ease-in-out infinite;
+}
+
+/* Status Chip */
+.usr-dash-status-chip {
+    height: auto !important;
+    font-size: 0.688rem !important;
+    padding: 5px 11px !important;
+    font-weight: 600 !important;
+}
+
+/* Countdown Timer - Enhanced */
+.usr-dash-countdown-badge {
+    padding: 5px 11px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    font-size: 0.75rem !important;
+    border: 1px solid !important;
+    height: auto !important;
+}
+
+.usr-dash-countdown-badge .MuiChip-icon {
+    font-size: 16px !important;
+    margin-left: 0 !important;
+    margin-right: 4px !important;
+}
+
+.usr-dash-countdown-safe {
+    background: rgba(16, 185, 129, 0.12) !important;
+    color: #10b981 !important;
+    border-color: rgba(16, 185, 129, 0.25) !important;
+}
+
+.usr-dash-countdown-warning {
+    background: rgba(251, 146, 60, 0.12) !important;
+    color: #fb923c !important;
+    border-color: rgba(251, 146, 60, 0.25) !important;
+}
+
+.usr-dash-countdown-danger {
+    background: rgba(239, 68, 68, 0.12) !important;
+    color: #ef4444 !important;
+    border-color: rgba(239, 68, 68, 0.25) !important;
+    animation: usrDashPulseUrgent 2s ease-in-out infinite;
+}
+
+@keyframes usrDashPulseUrgent {
     0%, 100% {
-        background: rgba(239, 68, 68, 0.1);
+        background: rgba(239, 68, 68, 0.08) !important;
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.3);
     }
     50% {
-        background: rgba(239, 68, 68, 0.2);
+        background: rgba(239, 68, 68, 0.15) !important;
+        box-shadow: 0 0 0 4px rgba(239, 68, 68, 0);
     }
 }
 
 /* Finished Task State */
-.task-card.finished {
+.usr-dash-task-card.usr-dash-task-finished {
     opacity: 0.7;
     border-color: rgba(16, 185, 129, 0.3) !important;
 }
 
-.task-card.finished::before {
+.usr-dash-task-card.usr-dash-task-finished::after {
     content: '';
     position: absolute;
     left: 0;
@@ -412,80 +523,124 @@
 }
 
 /* Empty State */
-.empty-state {
+.usr-dash-empty-state {
     text-align: center;
     padding: 64px 32px;
 }
 
-.empty-icon {
+.usr-dash-empty-icon {
     font-size: 80px !important;
-    color: #333333;
+    color: rgba(255, 255, 255, 0.1) !important;
     margin-bottom: 24px;
 }
 
-.empty-title {
+.usr-dash-empty-title {
     color: #ffffff !important;
     margin-bottom: 12px !important;
 }
 
-.empty-text {
-    color: #9ca3af !important;
+.usr-dash-empty-text {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Snackbar */
+.usr-dash-snackbar {
+    border-radius: 12px !important;
 }
 
 /* Responsive Design */
 @media (max-width: 900px) {
-    .user-dashboard-modern {
-        padding: 24px 0 48px 0;
+    .usr-dash-container {
+        padding: 24px 0 48px 0 !important;
     }
 
-    .header-title {
+    .usr-dash-title {
         font-size: 2rem !important;
     }
 
-    .header-subtitle {
-        font-size: 1rem !important;
+    .usr-dash-subtitle {
+        font-size: 0.938rem !important;
     }
 
-    .stat-value {
+    .usr-dash-stat-value {
         font-size: 2rem !important;
     }
 
-    .stat-avatar {
-        width: 56px !important;
-        height: 56px !important;
+    .usr-dash-stat-avatar {
+        width: 50px !important;
+        height: 50px !important;
     }
 
-    .progress-card {
+    .usr-dash-stat-avatar svg {
+        font-size: 24px !important;
+    }
+
+    .usr-dash-progress-card {
         padding: 24px !important;
     }
 
-    .tasks-section {
+    .usr-dash-tasks-section {
         padding: 24px !important;
     }
 
-    .task-card-content {
-        padding: 20px !important;
+    .usr-dash-task-content {
+        padding: 18px !important;
     }
 }
 
 @media (max-width: 600px) {
-    .header-title {
+    .usr-dash-title {
         font-size: 1.75rem !important;
     }
 
-    .progress-header {
+    .usr-dash-progress-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 12px;
     }
 
-    .task-header {
+    .usr-dash-task-header {
         flex-direction: column;
         gap: 12px;
     }
 
-    .task-actions {
+    .usr-dash-task-left {
+        width: 100%;
+    }
+
+    .usr-dash-task-actions {
         width: 100%;
         justify-content: flex-end;
+    }
+
+    .usr-dash-stat-content {
+        padding: 20px !important;
+    }
+
+    .usr-dash-stat-avatar {
+        width: 48px !important;
+        height: 48px !important;
+    }
+
+    .usr-dash-stat-value {
+        font-size: 1.75rem !important;
+    }
+}
+
+/* Accessibility - Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .usr-dash-container::before,
+    .usr-dash-progress-card::before,
+    .usr-dash-progress-bar-fill::after,
+    .usr-dash-task-card::before,
+    .usr-dash-priority-urgent,
+    .usr-dash-countdown-danger {
+        animation: none !important;
+    }
+
+    .usr-dash-stat-card:hover,
+    .usr-dash-task-card:hover,
+    .usr-dash-stat-card:hover .usr-dash-stat-avatar {
+        transform: none !important;
     }
 }

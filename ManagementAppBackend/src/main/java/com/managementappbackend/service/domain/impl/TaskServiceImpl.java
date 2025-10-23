@@ -9,7 +9,6 @@ import com.managementappbackend.repository.TaskRepository;
 import com.managementappbackend.service.domain.TaskService;
 import org.springframework.stereotype.Service;
 
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -76,20 +75,31 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Optional<Task> toggleFinished(Long id, String username) {
-        if(taskRepository.findById(id).isPresent()) {
+        if (taskRepository.findById(id).isPresent()) {
             Task task = taskRepository.findById(id).get();
 
-            if(!task.getAssignedToUserId().getUsername().equals(username)) {
+            if (!task.getAssignedToUserId().getUsername().equals(username)) {
                 throw new NotOwnedTaskException("You can only toggle your own assigned tasks");
             }
 
+            // Toggle the finished status
             task.setFinished(!task.isFinished());
             task.setUpdatedDate(LocalDateTime.now());
-            task.setCompletedDate(LocalDateTime.now());
-            task.setStatus(ServiceStatus.COMPLETED);
+
+            // FIXED: Only set COMPLETED status and completedDate when marking as finished
+            if (task.isFinished()) {
+                // Task is now FINISHED → set status to COMPLETED
+                task.setCompletedDate(LocalDateTime.now());
+                task.setStatus(ServiceStatus.COMPLETED);
+            } else {
+                // Task is UNMARKED → set status back to IN_PROGRESS and clear completedDate
+                task.setCompletedDate(null);
+                task.setStatus(ServiceStatus.IN_PROGRESS);
+            }
+
             return Optional.of(taskRepository.save(task));
-        }else{
-            throw new TaskNotFoundException("Task with ID:" + id + "has not been found");
+        } else {
+            throw new TaskNotFoundException("Task with ID:" + id + " has not been found");
         }
     }
 }

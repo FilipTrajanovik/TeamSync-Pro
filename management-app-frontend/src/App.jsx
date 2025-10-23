@@ -14,78 +14,69 @@ import UserDashboard from './ui/pages/UserDashboard/UserDashboard';
 import './App.css';
 import { ThemeProvider } from './context/ThemeContext';
 import EditMyOrganization from "./ui/pages/Manager/EditMyOrganization/EditMyOrganization.jsx";
+
 function App() {
     return (
         <Router>
             <AuthProvider>
-                <ThemeProvider>
                 <Routes>
-                    {/* Portal Selection Landing Page */}
+                    {/* LOGIN PAGES - NO THEME PROVIDER */}
                     <Route path="/" element={<PortalSelection />} />
-
-                    {/* Login Pages */}
-                    <Route path="/admin/login" element={<AdminLogin />} />
+                    <Route path="/admin-login" element={<AdminLogin />} />
                     <Route path="/manager/login" element={<ManagerLogin />} />
                     <Route path="/user/login" element={<UserLogin />} />
-
-                    {/* Legacy login route - redirect to portal selection */}
                     <Route path="/login" element={<Navigate to="/" replace />} />
                     <Route path="/register" element={<Register />} />
 
-                    {/* Generic Dashboard */}
-                    <Route
-                        path="/dashboard"
-                        element={
-                            <ProtectedRoute>
-                                <Dashboard />
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    {/* Admin Routes */}
-                    <Route
-                        path="/admin/dashboard"
-                        element={
-                            <ProtectedRoute allowedRoles={['ADMIN', 'OWNER']}>
-                                <AdminDashboard />
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    {/* Manager Routes */}
-                    <Route
-                        path="/manager/dashboard"
-                        element={
-                            <ProtectedRoute allowedRoles={['MANAGER']}>
-                                <ManagerDashboard />
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    {/*Manager Edit Organization Route */}
-                    <Route
-                        path="/manager/edit-organization"
-                        element={
-                            <ProtectedRoute allowedRoles={['MANAGER']}>
-                                <EditMyOrganization />
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    {/* User Routes */}
-                    <Route
-                        path="/user/dashboard"
-                        element={
-                            <ProtectedRoute allowedRoles={['USER']}>
-                                <UserDashboard />
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    {/* Fallback to portal selection */}
-                    <Route path="*" element={<Navigate to="/" replace />} />
+                    {/* DASHBOARD PAGES - WITH THEME PROVIDER */}
+                    <Route path="/*" element={
+                        <ThemeProvider>
+                            <Routes>
+                                <Route
+                                    path="/dashboard"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Dashboard />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/admin/dashboard"
+                                    element={
+                                        <ProtectedRoute allowedRoles={['ADMIN', 'OWNER']}>
+                                            <AdminDashboard />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/manager/dashboard"
+                                    element={
+                                        <ProtectedRoute allowedRoles={['MANAGER']}>
+                                            <ManagerDashboard />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/manager/edit-organization"
+                                    element={
+                                        <ProtectedRoute allowedRoles={['MANAGER']}>
+                                            <EditMyOrganization />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/user/dashboard"
+                                    element={
+                                        <ProtectedRoute allowedRoles={['USER']}>
+                                            <UserDashboard />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route path="*" element={<Navigate to="/" replace />} />
+                            </Routes>
+                        </ThemeProvider>
+                    } />
                 </Routes>
-                </ThemeProvider>
             </AuthProvider>
         </Router>
     );
