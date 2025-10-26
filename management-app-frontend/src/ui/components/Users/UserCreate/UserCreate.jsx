@@ -2,25 +2,29 @@ import React, { useState, useEffect } from 'react';
 import {
     Dialog,
     TextField,
-    Grid,
     Box,
     Typography,
     IconButton,
     Button,
     Avatar,
-    InputAdornment
+    InputAdornment,
+    DialogContent,
+    CircularProgress
 } from '@mui/material';
 import {
-    Close as CloseIcon,
-    Person as PersonIcon,
-    Lock as LockIcon,
-    AccountCircle as AccountCircleIcon,
+    Close,
+    Person,
+    Lock,
+    AccountCircle,
     Visibility,
-    VisibilityOff
+    VisibilityOff,
+    PersonAdd,
+    Info,
+    Error as ErrorIcon
 } from '@mui/icons-material';
 import './UserCreate.css';
 
-const UserCreate = ({ open, onClose, onSubmit, user = null ,isManagerView =false, defaultOrganizationId=null}) => {
+const UserCreate = ({ open, onClose, onSubmit, user = null, isManagerView = false, defaultOrganizationId = null }) => {
     const [formData, setFormData] = useState({
         username: '',
         name: '',
@@ -34,6 +38,7 @@ const UserCreate = ({ open, onClose, onSubmit, user = null ,isManagerView =false
     const [errors, setErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
     const [showRepeatPassword, setShowRepeatPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (user) {
@@ -56,7 +61,7 @@ const UserCreate = ({ open, onClose, onSubmit, user = null ,isManagerView =false
                     password: '',
                     repeatPassword: '',
                     role: 'USER',
-                    organizationId: defaultOrganizationId  // ✅ Auto-populate
+                    organizationId: defaultOrganizationId
                 });
             } else {
                 resetForm();
@@ -73,9 +78,10 @@ const UserCreate = ({ open, onClose, onSubmit, user = null ,isManagerView =false
             repeatPassword: '',
             role: 'USER',
             organizationId: isManagerView && defaultOrganizationId ? defaultOrganizationId : ''
-
         });
         setErrors({});
+        setShowPassword(false);
+        setShowRepeatPassword(false);
     };
 
     const handleChange = (e) => {
@@ -93,7 +99,7 @@ const UserCreate = ({ open, onClose, onSubmit, user = null ,isManagerView =false
         if (!formData.name.trim()) newErrors.name = 'First name is required';
         if (!formData.surname.trim()) newErrors.surname = 'Last name is required';
 
-        // Password validation only for new users or if password is being changed
+        // Password validation only for new users
         if (!user) {
             if (!formData.password) {
                 newErrors.password = 'Password is required';
@@ -101,29 +107,18 @@ const UserCreate = ({ open, onClose, onSubmit, user = null ,isManagerView =false
                 newErrors.password = 'Password must be at least 6 characters';
             }
 
-            if (formData.password !== formData.repeatPassword) {
+            if (!formData.repeatPassword) {
+                newErrors.repeatPassword = 'Please confirm your password';
+            } else if (formData.password !== formData.repeatPassword) {
                 newErrors.repeatPassword = 'Passwords do not match';
             }
-        } else if (formData.password) {
-            // If editing and password is provided, validate it
-            if (formData.password.length < 6) {
-                newErrors.password = 'Password must be at least 6 characters';
-            }
-            if (formData.password !== formData.repeatPassword) {
-                newErrors.repeatPassword = 'Passwords do not match';
-            }
-        }
-
-        if (isManagerView && (!formData.organizationId || formData.organizationId === '')) {
-            console.error('❌ Organization ID is missing for manager!');
-            newErrors.organizationId = 'Organization ID is required';
         }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         console.log('=== USER SUBMIT DEBUG ===');
@@ -132,18 +127,26 @@ const UserCreate = ({ open, onClose, onSubmit, user = null ,isManagerView =false
         console.log('Is Manager View:', isManagerView);
 
         if (validate()) {
-            const userData = {
-                username: formData.username,
-                name: formData.name,
-                surname: formData.surname,
-                password: formData.password,
-                repeatPassword: formData.repeatPassword,
-                role: formData.role,
-                organizationId: formData.organizationId,
-            };
+            setLoading(true);
+            try {
+                const userData = {
+                    username: formData.username,
+                    name: formData.name,
+                    surname: formData.surname,
+                    password: formData.password,
+                    repeatPassword: formData.repeatPassword,
+                    role: formData.role,
+                    organizationId: formData.organizationId,
+                };
 
-            onSubmit(userData);
-            handleClose();
+                await onSubmit(userData);
+                handleClose();
+            } catch (error) {
+                console.error('Error submitting user:', error);
+                setErrors({ submit: 'Failed to save user. Please try again.' });
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
@@ -152,132 +155,105 @@ const UserCreate = ({ open, onClose, onSubmit, user = null ,isManagerView =false
         onClose();
     };
 
-    const roles = [
-        { value: 'USER', label: 'User', icon: '👤', color: '#3b82f6' },
-        { value: 'MANAGER', label: 'Manager', icon: '👨‍💼', color: '#f59e0b' },
-        { value: 'ADMIN', label: 'Admin', icon: '👑', color: '#ef4444' }
-    ];
-
     return (
         <Dialog
             open={open}
             onClose={handleClose}
-            maxWidth="md"
+            maxWidth="sm"
             fullWidth
             PaperProps={{
-                className: 'apple-dialog'
+                className: 'user-create-dialog'
             }}
         >
             {/* Header */}
-            <Box className="apple-dialog-header">
-                <Box className="header-content">
-                    <Avatar className="header-avatar">
-                        <PersonIcon />
+            <Box className="user-create-header">
+                <Box className="user-create-header-content">
+                    <Avatar className="user-create-header-avatar">
+                        <PersonAdd />
                     </Avatar>
-                    <Box>
-                        <Typography className="header-title">
-                            {user ? 'Edit User' : 'New User'}
+                    <Box className="user-create-header-text">
+                        <Typography className="user-create-header-title">
+                            {user ? 'Edit Team Member' : 'Add Team Member'}
                         </Typography>
-                        <Typography className="header-subtitle">
-                            {user ? 'Update user information' : 'Add a new user to your system'}
+                        <Typography className="user-create-header-subtitle">
+                            {user ? 'Update member information' : 'Add a new member to your team'}
                         </Typography>
                     </Box>
                 </Box>
-                <IconButton onClick={handleClose} className="close-button">
-                    <CloseIcon />
+                <IconButton
+                    onClick={handleClose}
+                    className="user-create-close-button"
+                >
+                    <Close />
                 </IconButton>
             </Box>
 
             {/* Content */}
-            <Box className="apple-dialog-content">
+            <DialogContent className="user-create-content">
                 <form onSubmit={handleSubmit}>
-                    {/* Personal Information */}
-                    <Box className="form-section">
-                        <Typography className="section-title">Personal Information</Typography>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12} md={6}>
-                                <Box className="apple-input-group">
-                                    <PersonIcon className="input-icon" />
-                                    <TextField
-                                        name="name"
-                                        label="First Name"
-                                        fullWidth
-                                        required
-                                        value={formData.name}
-                                        onChange={handleChange}
-                                        error={!!errors.name}
-                                        helperText={errors.name}
-                                        className="apple-input"
-                                        variant="outlined"
-                                    />
-                                </Box>
-                            </Grid>
-                            <Grid item xs={12} md={6}>
-                                <Box className="apple-input-group">
-                                    <PersonIcon className="input-icon" />
-                                    <TextField
-                                        name="surname"
-                                        label="Last Name"
-                                        fullWidth
-                                        required
-                                        value={formData.surname}
-                                        onChange={handleChange}
-                                        error={!!errors.surname}
-                                        helperText={errors.surname}
-                                        className="apple-input"
-                                        variant="outlined"
-                                    />
-                                </Box>
-                            </Grid>
-                        </Grid>
-                    </Box>
+                    {/* Role Info Banner */}
+                    {isManagerView && (
+                        <Box className="user-create-role-banner">
+                            <Info className="user-create-role-banner-icon" />
+                            <Box className="user-create-role-banner-text">
+                                <Typography className="user-create-role-banner-title">
+                                    User Role
+                                </Typography>
+                                <Typography className="user-create-role-banner-subtitle">
+                                    New team members will be added with User role automatically
+                                </Typography>
+                            </Box>
+                        </Box>
+                    )}
 
-                    {/* Account Information */}
-                    <Box className="form-section">
-                        <Typography className="section-title">Account Information</Typography>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <Box className="apple-input-group">
-                                    <AccountCircleIcon className="input-icon" />
-                                    <TextField
-                                        name="username"
-                                        label="Username"
-                                        fullWidth
-                                        required
-                                        value={formData.username}
-                                        onChange={handleChange}
-                                        error={!!errors.username}
-                                        helperText={errors.username || (user ? 'Username cannot be changed' : '')}
-                                        className="apple-input"
-                                        variant="outlined"
-                                        disabled={!!user}
-                                    />
-                                </Box>
-                            </Grid>
-                        </Grid>
-                    </Box>
+                    {/* Error Message */}
+                    {errors.submit && (
+                        <Box className="user-create-error">
+                            <ErrorIcon className="user-create-error-icon" />
+                            <Typography className="user-create-error-text">
+                                {errors.submit}
+                            </Typography>
+                        </Box>
+                    )}
 
-                    {/* Security */}
-                    <Box className="form-section">
-                        <Typography className="section-title">
-                            {user ? 'Change Password (Optional)' : 'Security'}
+                    {/* Account Information Section */}
+                    <Box className="user-create-form-section">
+                        <Typography className="user-create-section-title">
+                            Account Information
                         </Typography>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12} md={6}>
-                                <Box className="apple-input-group">
-                                    <LockIcon className="input-icon" />
+
+                        {/* Username */}
+                        <Box className="user-create-input-group">
+                            <Person className="user-create-input-icon" />
+                            <TextField
+                                fullWidth
+                                name="username"
+                                label="Username"
+                                value={formData.username}
+                                onChange={handleChange}
+                                error={!!errors.username}
+                                helperText={errors.username}
+                                disabled={!!user}
+                                className="user-create-input"
+                                placeholder="john_doe"
+                            />
+                        </Box>
+
+                        {/* Password - Only for new users */}
+                        {!user && (
+                            <>
+                                <Box className="user-create-input-group">
+                                    <Lock className="user-create-input-icon" />
                                     <TextField
-                                        name="password"
-                                        label={user ? "New Password" : "Password"}
-                                        type={showPassword ? 'text' : 'password'}
                                         fullWidth
-                                        required={!user}
+                                        name="password"
+                                        label="Password"
+                                        type={showPassword ? 'text' : 'password'}
                                         value={formData.password}
                                         onChange={handleChange}
                                         error={!!errors.password}
-                                        helperText={errors.password || (user ? 'Leave blank to keep current password' : '')}
-                                        className="apple-input"
-                                        variant="outlined"
+                                        helperText={errors.password}
+                                        className="user-create-input"
                                         InputProps={{
                                             endAdornment: (
                                                 <InputAdornment position="end">
@@ -290,24 +266,22 @@ const UserCreate = ({ open, onClose, onSubmit, user = null ,isManagerView =false
                                                 </InputAdornment>
                                             )
                                         }}
+                                        placeholder="••••••••"
                                     />
                                 </Box>
-                            </Grid>
-                            <Grid item xs={12} md={6}>
-                                <Box className="apple-input-group">
-                                    <LockIcon className="input-icon" />
+
+                                <Box className="user-create-input-group">
+                                    <Lock className="user-create-input-icon" />
                                     <TextField
+                                        fullWidth
                                         name="repeatPassword"
                                         label="Confirm Password"
                                         type={showRepeatPassword ? 'text' : 'password'}
-                                        fullWidth
-                                        required={!user || !!formData.password}
                                         value={formData.repeatPassword}
                                         onChange={handleChange}
                                         error={!!errors.repeatPassword}
                                         helperText={errors.repeatPassword}
-                                        className="apple-input"
-                                        variant="outlined"
+                                        className="user-create-input"
                                         InputProps={{
                                             endAdornment: (
                                                 <InputAdornment position="end">
@@ -320,47 +294,73 @@ const UserCreate = ({ open, onClose, onSubmit, user = null ,isManagerView =false
                                                 </InputAdornment>
                                             )
                                         }}
+                                        placeholder="••••••••"
                                     />
                                 </Box>
-                            </Grid>
-                        </Grid>
+                            </>
+                        )}
                     </Box>
 
-                    {/* Role Selection */}
-                    <Box className="form-section">
-                        <Typography className="section-title">User Role</Typography>
-                        <Grid container spacing={2}>
-                            {roles.map((role) => (
-                                <Grid item xs={12} md={4} key={role.value}>
-                                    <Box
-                                        className={`role-card ${formData.role === role.value ? 'selected' : ''}`}
-                                        onClick={() => setFormData(prev => ({ ...prev, role: role.value }))}
-                                        sx={{
-                                            borderColor: formData.role === role.value ? role.color : 'rgba(0,0,0,0.08)',
-                                            '&:hover': {
-                                                borderColor: role.color
-                                            }
-                                        }}
-                                    >
-                                        <Typography className="role-icon">{role.icon}</Typography>
-                                        <Typography className="role-label">{role.label}</Typography>
-                                    </Box>
-                                </Grid>
-                            ))}
-                        </Grid>
+                    {/* Personal Information Section */}
+                    <Box className="user-create-form-section">
+                        <Typography className="user-create-section-title">
+                            Personal Information
+                        </Typography>
+
+                        {/* First Name */}
+                        <Box className="user-create-input-group">
+                            <AccountCircle className="user-create-input-icon" />
+                            <TextField
+                                fullWidth
+                                name="name"
+                                label="First Name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                error={!!errors.name}
+                                helperText={errors.name}
+                                className="user-create-input"
+                                placeholder="John"
+                            />
+                        </Box>
+
+                        {/* Last Name */}
+                        <Box className="user-create-input-group">
+                            <AccountCircle className="user-create-input-icon" />
+                            <TextField
+                                fullWidth
+                                name="surname"
+                                label="Last Name"
+                                value={formData.surname}
+                                onChange={handleChange}
+                                error={!!errors.surname}
+                                helperText={errors.surname}
+                                className="user-create-input"
+                                placeholder="Doe"
+                            />
+                        </Box>
+                    </Box>
+
+                    {/* Footer - INSIDE FORM */}
+                    <Box className="user-create-footer">
+                        <Button
+                            type="button"
+                            onClick={handleClose}
+                            className="user-create-button user-create-button-secondary"
+                            disabled={loading}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type="submit"
+                            className="user-create-button user-create-button-primary"
+                            disabled={loading}
+                            startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
+                        >
+                            {loading ? 'Saving...' : user ? 'Update Member' : 'Add Member'}
+                        </Button>
                     </Box>
                 </form>
-            </Box>
-
-            {/* Footer */}
-            <Box className="apple-dialog-footer">
-                <Button onClick={handleClose} className="apple-button secondary">
-                    Cancel
-                </Button>
-                <Button onClick={handleSubmit} className="apple-button primary">
-                    {user ? 'Update User' : 'Add User'}
-                </Button>
-            </Box>
+            </DialogContent>
         </Dialog>
     );
 };

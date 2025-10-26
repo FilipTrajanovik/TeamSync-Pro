@@ -29,10 +29,35 @@ import { useAuth } from '../../../hooks/useAuth';
 import useMyTasks from '../../../hooks/useMyTasks';
 import TaskView from "../../components/Task/UserTaskView/UserTaskView.jsx";
 import './UserDashboard.css';
+import useSearchFilter from "../../../hooks/useSearchFilter.js";
+import SearchFilter from "../../components/SearchFilter/SearchFilter.jsx";
+
 
 const UserDashboard = () => {
     const { user } = useAuth();
     const { tasks, loading, toggleFinish } = useMyTasks();
+
+
+    //TASKS FILTER
+    const {
+        filteredData: filteredTasks,
+        searchTerm,
+        filters,
+        sortBy,
+        handleSearchChange,
+        handleFilterChange,
+        handleSortChange,
+        clearFilters,
+        activeFiltersCount,
+        resultCount,
+        totalCount
+    } = useSearchFilter(tasks, {
+        searchFields: ['title', 'description'],
+        filterableFields: ['status', 'priority'],
+        defaultSortBy: 'DATE_DESC'
+    });
+
+
 
     const [stats, setStats] = useState({
         totalTasks: 0,
@@ -215,11 +240,50 @@ const UserDashboard = () => {
                         />
                     </Box>
 
+                    <SearchFilter
+                        searchTerm={searchTerm}
+                        searchPlaceholder="Search my tasks by title or description..."
+                        onSearchChange={handleSearchChange}
+                        filters={filters}
+                        filterOptions={{
+                            status: [
+                                { value: 'ALL', label: 'All Status' },
+                                { value: 'PENDING', label: 'Pending' },
+                                { value: 'IN_PROGRESS', label: 'In Progress' },
+                                { value: 'COMPLETED', label: 'Completed' },
+                                { value: 'CANCELLED', label: 'Cancelled' },
+                                { value: 'ON_HOLD', label: 'On Hold' }
+                            ],
+                            priority: [
+                                { value: 'ALL', label: 'All Priority' },
+                                { value: 'LOW', label: 'Low' },
+                                { value: 'MEDIUM', label: 'Medium' },
+                                { value: 'HIGH', label: 'High' },
+                                { value: 'URGENT', label: 'Urgent' }
+                            ]
+                        }}
+                        onFilterChange={handleFilterChange}
+                        sortBy={sortBy}
+                        sortOptions={[
+                            { value: 'DATE_DESC', label: 'Newest First' },
+                            { value: 'DATE_ASC', label: 'Oldest First' },
+                            { value: 'TITLE_ASC', label: 'Title A-Z' },
+                            { value: 'TITLE_DESC', label: 'Title Z-A' },
+                            { value: 'PRIORITY_DESC', label: 'Priority High→Low' },
+                            { value: 'PRIORITY_ASC', label: 'Priority Low→High' }
+                        ]}
+                        onSortChange={handleSortChange}
+                        onClearFilters={clearFilters}
+                        activeFiltersCount={activeFiltersCount}
+                        resultCount={resultCount}
+                        totalCount={totalCount}
+                    />
+
                     {loading ? (
                         <Box className="usr-dash-empty-state">
                             <Typography>Loading your tasks...</Typography>
                         </Box>
-                    ) : tasks.length === 0 ? (
+                    ) : filteredTasks.length === 0 ? (
                         <Box className="usr-dash-empty-state">
                             <Assignment className="usr-dash-empty-icon" />
                             <Typography variant="h6" className="usr-dash-empty-title">
@@ -230,7 +294,7 @@ const UserDashboard = () => {
                             </Typography>
                         </Box>
                     ) : (
-                        tasks.map((task) => {
+                        filteredTasks.map((task) => {
                             const timeRemaining = getTimeRemaining(task.dueDate);
                             return (
                                 <Card

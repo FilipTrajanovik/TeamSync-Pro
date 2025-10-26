@@ -59,7 +59,7 @@ const Navbar = () => {
         switch (role) {
             case 'ADMIN':
             case 'OWNER':
-                return '#f44336';
+                return '#ff4444';
             case 'MANAGER':
                 return '#ff9800';
             case 'USER':
@@ -73,19 +73,24 @@ const Navbar = () => {
         <AppBar
             position="sticky"
             sx={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)'
+                background: 'rgba(0, 0, 0, 0.85)',
+                backdropFilter: 'blur(40px) saturate(180%)',
+                WebkitBackdropFilter: 'blur(40px) saturate(180%)',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: '0 4px 30px rgba(0, 0, 0, 0.3)'
             }}
         >
-            <Toolbar>
-                <Business sx={{ mr: 2, fontSize: 32 }} />
+            <Toolbar sx={{ padding: '12px 24px' }}>
+                <Business sx={{ mr: 2, fontSize: 32, color: '#ffffff' }} />
                 <Typography
                     variant="h6"
                     component="div"
                     sx={{
                         flexGrow: 1,
                         fontWeight: 700,
-                        letterSpacing: '0.5px'
+                        letterSpacing: '0.5px',
+                        color: '#ffffff',
+                        fontSize: '18px'
                     }}
                 >
                     Management System
@@ -100,7 +105,13 @@ const Navbar = () => {
                             display: { xs: 'none', sm: 'flex' }
                         }}
                     >
-                        <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                        <Typography
+                            variant="body1"
+                            sx={{
+                                fontWeight: 600,
+                                color: '#ffffff'
+                            }}
+                        >
                             {user?.name} {user?.surname}
                         </Typography>
                         <Box
@@ -110,7 +121,9 @@ const Navbar = () => {
                                 padding: '2px 8px',
                                 borderRadius: '12px',
                                 fontSize: '11px',
-                                fontWeight: 600
+                                fontWeight: 700,
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px'
                             }}
                         >
                             {user?.role}
@@ -120,16 +133,18 @@ const Navbar = () => {
                     <IconButton onClick={handleClick} sx={{ p: 0 }}>
                         <Avatar
                             sx={{
-                                bgcolor: 'rgba(255, 255, 255, 0.3)',
+                                bgcolor: 'rgba(255, 255, 255, 0.15)',
                                 width: 45,
                                 height: 45,
                                 cursor: 'pointer',
                                 fontWeight: 700,
-                                border: '2px solid white',
+                                color: '#ffffff',
+                                border: '2px solid rgba(255, 255, 255, 0.2)',
                                 transition: 'all 0.3s',
                                 '&:hover': {
-                                    bgcolor: 'rgba(255, 255, 255, 0.4)',
-                                    transform: 'scale(1.05)'
+                                    bgcolor: 'rgba(255, 255, 255, 0.25)',
+                                    transform: 'scale(1.05)',
+                                    borderColor: 'rgba(255, 255, 255, 0.3)'
                                 }
                             }}
                         >
@@ -150,6 +165,9 @@ const Navbar = () => {
                             mt: 1.5,
                             borderRadius: '12px',
                             overflow: 'visible',
+                            background: 'rgba(18, 18, 18, 0.95)',
+                            backdropFilter: 'blur(20px)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
                             '&:before': {
                                 content: '""',
                                 display: 'block',
@@ -158,9 +176,12 @@ const Navbar = () => {
                                 right: 20,
                                 width: 10,
                                 height: 10,
-                                bgcolor: 'background.paper',
+                                bgcolor: 'rgba(18, 18, 18, 0.95)',
                                 transform: 'translateY(-50%) rotate(45deg)',
                                 zIndex: 0,
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                borderBottom: 'none',
+                                borderRight: 'none'
                             },
                         }
                     }}
@@ -171,53 +192,104 @@ const Navbar = () => {
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                             <Avatar
                                 sx={{
-                                    bgcolor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                    bgcolor: 'rgba(255, 255, 255, 0.15)',
                                     width: 50,
                                     height: 50,
-                                    fontWeight: 700
+                                    fontWeight: 700,
+                                    color: '#ffffff',
+                                    border: '2px solid rgba(255, 255, 255, 0.2)'
                                 }}
                             >
                                 {getInitials()}
                             </Avatar>
                             <Box>
-                                <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                                <Typography
+                                    variant="subtitle1"
+                                    sx={{
+                                        fontWeight: 600,
+                                        color: '#ffffff'
+                                    }}
+                                >
                                     {user?.name} {user?.surname}
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary">
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        color: 'rgba(255, 255, 255, 0.6)'
+                                    }}
+                                >
                                     {user?.username}
                                 </Typography>
                             </Box>
                         </Box>
                     </Box>
 
-                    <Divider />
+                    <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)' }} />
 
-                    <MenuItem onClick={handleDashboard} sx={{ py: 1.5, px: 2 }}>
+                    <MenuItem
+                        onClick={handleDashboard}
+                        sx={{
+                            py: 1.5,
+                            px: 2,
+                            color: 'rgba(255, 255, 255, 0.9)',
+                            '&:hover': {
+                                backgroundColor: 'rgba(255, 255, 255, 0.08)'
+                            }
+                        }}
+                    >
                         <ListItemIcon>
-                            <Dashboard fontSize="small" />
+                            <Dashboard fontSize="small" sx={{ color: 'rgba(255, 255, 255, 0.9)' }} />
                         </ListItemIcon>
                         <ListItemText>Dashboard</ListItemText>
                     </MenuItem>
 
-                    <MenuItem sx={{ py: 1.5, px: 2 }}>
+                    <MenuItem
+                        sx={{
+                            py: 1.5,
+                            px: 2,
+                            color: 'rgba(255, 255, 255, 0.9)',
+                            '&:hover': {
+                                backgroundColor: 'rgba(255, 255, 255, 0.08)'
+                            }
+                        }}
+                    >
                         <ListItemIcon>
-                            <Person fontSize="small" />
+                            <Person fontSize="small" sx={{ color: 'rgba(255, 255, 255, 0.9)' }} />
                         </ListItemIcon>
                         <ListItemText>Profile</ListItemText>
                     </MenuItem>
 
-                    <MenuItem sx={{ py: 1.5, px: 2 }}>
+                    <MenuItem
+                        sx={{
+                            py: 1.5,
+                            px: 2,
+                            color: 'rgba(255, 255, 255, 0.9)',
+                            '&:hover': {
+                                backgroundColor: 'rgba(255, 255, 255, 0.08)'
+                            }
+                        }}
+                    >
                         <ListItemIcon>
-                            <Settings fontSize="small" />
+                            <Settings fontSize="small" sx={{ color: 'rgba(255, 255, 255, 0.9)' }} />
                         </ListItemIcon>
                         <ListItemText>Settings</ListItemText>
                     </MenuItem>
 
-                    <Divider />
+                    <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)' }} />
 
-                    <MenuItem onClick={handleLogout} sx={{ py: 1.5, px: 2, color: '#f44336' }}>
+                    <MenuItem
+                        onClick={handleLogout}
+                        sx={{
+                            py: 1.5,
+                            px: 2,
+                            color: '#ff4444',
+                            '&:hover': {
+                                backgroundColor: 'rgba(255, 68, 68, 0.1)'
+                            }
+                        }}
+                    >
                         <ListItemIcon>
-                            <Logout fontSize="small" sx={{ color: '#f44336' }} />
+                            <Logout fontSize="small" sx={{ color: '#ff4444' }} />
                         </ListItemIcon>
                         <ListItemText>Logout</ListItemText>
                     </MenuItem>

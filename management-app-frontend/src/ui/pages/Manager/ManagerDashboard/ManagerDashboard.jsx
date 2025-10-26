@@ -50,6 +50,10 @@ import useMyOrganizations from '../../../../hooks/useMyOrganizations.js';
 import ThemeToggle from '../../../components/ThemeToggle/ThemeToggle.jsx';
 import useMyUsers from "../../../../hooks/useMyUsers.js";
 import {useNavigate} from "react-router-dom";
+import './ManagerDashboard.css'
+import useSearchFilter from '../../../../hooks/useSearchFilter.js'
+import SearchFilter from '../../../components/SearchFilter/SearchFilter.jsx'
+
 
 const ManagerDashboard = () => {
     const [activeTab, setActiveTab] = useState(0);
@@ -93,8 +97,68 @@ const ManagerDashboard = () => {
     const [editingClient, setEditingClient] = useState(null);
     const [editingUser, setEditingUser] = useState(null);
 
+    const [menuOpen, setMenuOpen] = useState(false);
+
     const [snackbar, setSnackbar] = useState({open: false, message: '', severity: 'success'});
     const loading = clientsLoading || tasksLoading || usersLoading || orgsLoading;
+
+
+    //TASKS FILTER
+    const {
+        filteredData: filteredTasks,
+        searchTerm,
+        filters,
+        sortBy,
+        handleSearchChange,
+        handleFilterChange,
+        handleSortChange,
+        clearFilters,
+        activeFiltersCount,
+        resultCount,
+        totalCount
+    } = useSearchFilter(tasks, {
+        searchFields: ['title', 'description'],
+        filterableFields: ['status', 'priority', 'assignedUser'],
+        defaultSortBy: 'DATE_DESC'
+    });
+
+    // USERS FILTER
+    const {
+        filteredData: filteredUsers,
+        searchTerm: userSearchTerm,
+        filters: userFilters,
+        sortBy: userSortBy,
+        handleSearchChange: handleUserSearchChange,
+        handleFilterChange: handleUserFilterChange,
+        handleSortChange: handleUserSortChange,
+        clearFilters: clearUserFilters,
+        activeFiltersCount: userActiveFiltersCount,
+        resultCount: userResultCount,
+        totalCount: userTotalCount
+    } = useSearchFilter(users, {
+        searchFields: ['name', 'username', 'email'],
+        filterableFields: ['role'],  // Filter by role
+        defaultSortBy: 'DATE_DESC'
+    });
+
+    // CLIENTS FILTER
+    const {
+        filteredData: filteredClients,
+        searchTerm: clientSearchTerm,
+        filters: clientFilters,
+        sortBy: clientSortBy,
+        handleSearchChange: handleClientSearchChange,
+        handleFilterChange: handleClientFilterChange,
+        handleSortChange: handleClientSortChange,
+        clearFilters: clearClientFilters,
+        activeFiltersCount: clientActiveFiltersCount,
+        resultCount: clientResultCount,
+        totalCount: clientTotalCount
+    } = useSearchFilter(clients, {
+        searchFields: ['firstName', 'lastName', 'email', 'phoneNumber'],
+        filterableFields: [],  // No filters, just search
+        defaultSortBy: 'DATE_DESC'
+    });
 
     useEffect(() => {
         if (!tasksLoading && !clientsLoading && !usersLoading) {
@@ -378,572 +442,731 @@ const ManagerDashboard = () => {
     }
 
     return (
-        <Box sx={{bgcolor: 'background.default', minHeight: '100vh', py: 4}}>
-            <Container maxWidth="xl">
-                {/* UPDATED HEADER WITH EDIT ORGANIZATION BUTTON */}
-                <Box mb={4} display="flex" justifyContent="space-between" alignItems="center">
+        <Box className="manager-dashboard-apple">
+            {/* Hover Trigger Zone - Left edge */}
+            <Box
+                className="menu-trigger-zone"
+                onMouseEnter={() => setMenuOpen(true)}
+            />
+
+            {/* Slide-out Menu */}
+            <Box
+                className={`slide-menu ${menuOpen ? 'open' : ''}`}
+                onMouseLeave={() => setMenuOpen(false)}
+            >
+                {/* Menu Header */}
+                <Box className="menu-header">
+                    <Avatar className="menu-user-avatar">
+                        {user?.name?.[0]}{user?.surname?.[0]}
+                    </Avatar>
                     <Box>
-                        <Typography
-                            variant="h4"
-                            fontWeight={700}
-                            sx={{ mb: 1 }}
-                        >
-                            Manager Dashboard
+                        <Typography className="menu-user-name">
+                            {user?.name} {user?.surname}
                         </Typography>
-                        <Typography variant="body1" color="text.secondary">
-                            Welcome back, {user?.name}! Manage your organization
+                        <Typography className="menu-user-role">
+                            Manager
                         </Typography>
-                    </Box>
-                    <Box display="flex" alignItems="center" gap={2}>
-                        {/* NEW: Edit Organization Button */}
-                        <Button
-                            variant="contained"
-                            startIcon={<Settings />}
-                            onClick={() => navigate('/manager/edit-organization')}
-                            sx={{
-                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                borderRadius: '12px',
-                                textTransform: 'none',
-                                fontWeight: 600,
-                                px: 3,
-                                py: 1.5,
-                                boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
-                                '&:hover': {
-                                    boxShadow: '0 6px 16px rgba(102, 126, 234, 0.5)',
-                                    transform: 'translateY(-2px)',
-                                    transition: 'all 0.2s'
-                                }
-                            }}
-                        >
-                            Edit Organization
-                        </Button>
-                        <ThemeToggle />
                     </Box>
                 </Box>
 
-                <Grid container spacing={3} mb={4}>
-                    <Grid item xs={12} sm={6} lg={3}>
-                        <StatCard
-                            title="Total Clients"
-                            value={stats.totalClients}
-                            subtitle="Active partnerships"
-                            icon={<People/>}
-                            color="#6366f1"
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6} lg={3}>
-                        <StatCard
-                            title="Total Tasks"
-                            value={stats.totalTasks}
-                            subtitle="All tasks"
-                            icon={<Assignment/>}
-                            color="#8b5cf6"
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6} lg={3}>
-                        <StatCard
-                            title="Pending"
-                            value={stats.pendingTasks}
-                            subtitle="Needs attention"
-                            icon={<Schedule/>}
-                            color="#f59e0b"
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6} lg={3}>
-                        <StatCard
-                            title="Completed"
-                            value={stats.completedTasks}
-                            subtitle="This month"
-                            icon={<CheckCircle/>}
-                            color="#10b981"
-                        />
-                    </Grid>
-                </Grid>
+                <Divider className="menu-divider" />
 
-                <Paper
-                    elevation={0}
-                    sx={{
-                        borderRadius: 3,
-                        border: '1px solid',
-                        borderColor: 'divider',
-                        overflow: 'hidden'
-                    }}
-                >
-                    <Box sx={{borderBottom: 1, borderColor: 'divider', bgcolor: 'white'}}>
-                        <Tabs
-                            value={activeTab}
-                            onChange={(e, newValue) => setActiveTab(newValue)}
-                            sx={{
-                                px: 3,
-                                '& .MuiTab-root': {
-                                    textTransform: 'none',
-                                    fontSize: '0.95rem',
-                                    fontWeight: 600,
-                                    minHeight: 64
-                                }
-                            }}
-                        >
-                            <Tab label="Tasks" icon={<Assignment/>} iconPosition="start"/>
-                            <Tab label="Clients" icon={<People/>} iconPosition="start"/>
-                            <Tab label="Team Members" icon={<PersonOutline/>} iconPosition="start"/>
-                        </Tabs>
+                {/* Quick Stats */}
+                <Box className="menu-stats">
+                    <Box className="menu-stat-item">
+                        <Assignment className="menu-stat-icon tasks-icon" />
+                        <Box>
+                            <Typography className="menu-stat-value">{stats.totalTasks}</Typography>
+                            <Typography className="menu-stat-label">Tasks</Typography>
+                        </Box>
                     </Box>
+                    <Box className="menu-stat-item">
+                        <People className="menu-stat-icon users-icon" />
+                        <Box>
+                            <Typography className="menu-stat-value">{stats.totalUsers}</Typography>
+                            <Typography className="menu-stat-label">Users</Typography>
+                        </Box>
+                    </Box>
+                    <Box className="menu-stat-item">
+                        <PersonOutline className="menu-stat-icon clients-icon" />
+                        <Box>
+                            <Typography className="menu-stat-value">{stats.totalClients}</Typography>
+                            <Typography className="menu-stat-label">Clients</Typography>
+                        </Box>
+                    </Box>
+                    <Box className="menu-stat-item">
+                        <CheckCircle className="menu-stat-icon progress-icon" />
+                        <Box>
+                            <Typography className="menu-stat-value">
+                                {stats.totalTasks > 0
+                                    ? Math.round((stats.completedTasks / stats.totalTasks) * 100)
+                                    : 0}%
+                            </Typography>
+                            <Typography className="menu-stat-label">Done</Typography>
+                        </Box>
+                    </Box>
+                </Box>
 
-                    <Box p={4}>
-                        {activeTab === 0 && (
-                            <>
-                                <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-                                    <Box>
-                                        <Typography variant="h6" fontWeight={700}>
-                                            All Tasks
-                                        </Typography>
-                                        <Typography variant="body2" color="text.secondary">
-                                            Manage and delegate tasks to your team
-                                        </Typography>
-                                    </Box>
+                <Divider className="menu-divider" />
+
+                {/* Navigation */}
+                <Box className="menu-navigation">
+                    <Button
+                        fullWidth
+                        className={`menu-nav-button ${activeTab === 0 ? 'active' : ''}`}
+                        startIcon={<Assignment />}
+                        onClick={() => {
+                            setActiveTab(0);
+                            setMenuOpen(false);
+                        }}
+                    >
+                        Tasks
+                    </Button>
+                    <Button
+                        fullWidth
+                        className={`menu-nav-button ${activeTab === 1 ? 'active' : ''}`}
+                        startIcon={<PersonOutline />}
+                        onClick={() => {
+                            setActiveTab(1);
+                            setMenuOpen(false);
+                        }}
+                    >
+                        Clients
+                    </Button>
+                    <Button
+                        fullWidth
+                        className={`menu-nav-button ${activeTab === 2 ? 'active' : ''}`}
+                        startIcon={<People />}
+                        onClick={() => {
+                            setActiveTab(2);
+                            setMenuOpen(false);
+                        }}
+                    >
+                        Team
+                    </Button>
+                    <Button
+                        fullWidth
+                        className={`menu-nav-button ${activeTab === 3 ? 'active' : ''}`}
+                        startIcon={<Settings />}
+                        onClick={() => {
+                            setActiveTab(3);
+                            setMenuOpen(false);
+                        }}
+                    >
+                        Organization
+                    </Button>
+                </Box>
+            </Box>
+
+            {/* Main Content Area */}
+            <Box className="main-content-apple">
+                <Container maxWidth="xl" sx={{ py: 4 }}>
+                    {/* Tasks Tab */}
+                    {activeTab === 0 && (
+                        <Box>
+                            <Box className="content-header-apple">
+                                <Box>
+                                    <Typography className="content-title-apple">
+                                        Task Management
+                                    </Typography>
+                                    <Typography className="content-subtitle-apple">
+                                        {stats.totalTasks} tasks · {stats.completedTasks} completed · {stats.pendingTasks} pending
+                                    </Typography>
+                                </Box>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<Add />}
+                                    onClick={() => handleOpenTaskDialog()}
+                                    className="action-button-apple"
+                                >
+                                    New Task
+                                </Button>
+                            </Box>
+
+                            <Box>
+                                {/* Tasks Section */}
+                                <SearchFilter
+                                    searchTerm={searchTerm}
+                                    searchPlaceholder="Search tasks..."
+                                    onSearchChange={handleSearchChange}
+                                    filters={filters}
+                                    filterOptions={{
+                                        status: [
+                                            { value: 'ALL', label: 'All Status' },
+                                            { value: 'PENDING', label: 'Pending' },
+                                            { value: 'IN_PROGRESS', label: 'In Progress' },
+                                            { value: 'COMPLETED', label: 'Completed' }
+                                        ],
+                                        priority: [
+                                            { value: 'ALL', label: 'All Priority' },
+                                            { value: 'LOW', label: 'Low' },
+                                            { value: 'MEDIUM', label: 'Medium' },
+                                            { value: 'HIGH', label: 'High' }
+                                        ],
+                                        assignedUser: [
+                                            { value: 'ALL', label: 'All Users' },
+                                            ...users.map(user => ({
+                                                value: user.id.toString(),
+                                                label: user.name
+                                            }))
+                                        ]
+                                    }}
+                                    onFilterChange={handleFilterChange}
+                                    sortBy={sortBy}
+                                    sortOptions={[
+                                        { value: 'DATE_DESC', label: 'Newest First' },
+                                        { value: 'PRIORITY_DESC', label: 'High Priority First' }
+                                    ]}
+                                    onSortChange={handleSortChange}
+                                    onClearFilters={clearFilters}
+                                    activeFiltersCount={activeFiltersCount}
+                                    resultCount={resultCount}
+                                    totalCount={totalCount}
+                                />
+
+                                {/* Display filteredTasks instead of tasks */}
+
+                            </Box>
+
+
+                            {tasksLoading ? (
+                                <Box className="loading-container-apple">
+                                    <Typography className="loading-text-apple">Loading tasks...</Typography>
+                                </Box>
+                            ) : filteredTasks.length === 0 ? (
+                                <Box className="empty-state-apple">
+                                    <Assignment className="empty-icon-apple" />
+                                    <Typography className="empty-title-apple">No tasks yet</Typography>
+                                    <Typography className="empty-text-apple">
+                                        Create your first task to get started
+                                    </Typography>
                                     <Button
                                         variant="contained"
-                                        startIcon={<Add/>}
+                                        startIcon={<Add />}
                                         onClick={() => handleOpenTaskDialog()}
-                                        sx={{
-                                            bgcolor: '#6366f1',
-                                            textTransform: 'none',
-                                            fontWeight: 600,
-                                            px: 3,
-                                            py: 1.5,
-                                            borderRadius: 2,
-                                            '&:hover': {bgcolor: '#4f46e5'}
-                                        }}
+                                        className="action-button-apple"
+                                        sx={{ mt: 3 }}
                                     >
                                         Create Task
                                     </Button>
                                 </Box>
-
-                                <TableContainer>
+                            ) : (
+                                <TableContainer component={Paper} className="content-table-apple">
                                     <Table>
                                         <TableHead>
-                                            <TableRow sx={{bgcolor: '#f9fafb'}}>
-                                                <TableCell sx={{fontWeight: 700}}>Task</TableCell>
-                                                <TableCell sx={{fontWeight: 700}}>Client</TableCell>
-                                                <TableCell sx={{fontWeight: 700}}>Assigned To</TableCell>
-                                                <TableCell sx={{fontWeight: 700}}>Status</TableCell>
-                                                <TableCell sx={{fontWeight: 700}}>Priority</TableCell>
-                                                <TableCell sx={{fontWeight: 700}}>Due Date</TableCell>
-                                                <TableCell align="right" sx={{fontWeight: 700}}>Actions</TableCell>
+                                            <TableRow>
+                                                <TableCell>Task</TableCell>
+                                                <TableCell>Assigned To</TableCell>
+                                                <TableCell>Client</TableCell>
+                                                <TableCell>Status</TableCell>
+                                                <TableCell>Priority</TableCell>
+                                                <TableCell>Due Date</TableCell>
+                                                <TableCell align="right">Actions</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {tasks.length === 0 ? (
-                                                <TableRow>
-                                                    <TableCell colSpan={7} align="center" sx={{py: 4}}>
-                                                        <Typography color="text.secondary">
-                                                            No tasks yet. Create your first task to get started!
-                                                        </Typography>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ) : (
-                                                tasks.map((task) => (
-                                                    <TableRow key={task.id} hover>
+                                            {filteredTasks.map((task) => {
+                                                const assignedUser = users.find(u => u.username === task.assignedToUserId);
+                                                const client = clients.find(c => c.id === task.clientId);
+                                                return (
+                                                    <TableRow key={task.id}>
                                                         <TableCell>
-                                                            <Typography variant="body2" fontWeight={600}>
+                                                            <Typography className="table-cell-title-apple">
                                                                 {task.title}
                                                             </Typography>
-                                                            <Typography variant="caption" color="text.secondary">
-                                                                {task.description}
+                                                            <Typography className="table-cell-subtitle-apple">
+                                                                {task.description?.substring(0, 50)}...
                                                             </Typography>
                                                         </TableCell>
                                                         <TableCell>
-                                                            {task.clientId ? (
+                                                            {assignedUser ? (
                                                                 <Box display="flex" alignItems="center" gap={1}>
-                                                                    <Avatar sx={{
-                                                                        width: 32,
-                                                                        height: 32,
-                                                                        fontSize: '0.875rem',
-                                                                        bgcolor: '#6366f1'
-                                                                    }}>
-                                                                        {task.clientName
-                                                                            ? task.clientName.split(' ').map(n => n[0]).join('')
-                                                                            : 'CL'
-                                                                        }
+                                                                    <Avatar className="table-avatar-apple">
+                                                                        {assignedUser.name[0]}{assignedUser.surname[0]}
                                                                     </Avatar>
-                                                                    <Typography variant="body2">
-                                                                        {task.clientName || `Client #${task.clientId}`}
+                                                                    <Typography className="table-user-name-apple">
+                                                                        {assignedUser.name} {assignedUser.surname}
                                                                     </Typography>
                                                                 </Box>
                                                             ) : (
-                                                                <Typography variant="body2" color="text.secondary">
-                                                                    No Client
-                                                                </Typography>
+                                                                <Typography className="table-unassigned-apple">Unassigned</Typography>
                                                             )}
                                                         </TableCell>
                                                         <TableCell>
-                                                            {task.assignedToUserId ? (
-                                                                <Box display="flex" alignItems="center" gap={1}>
-                                                                    <Avatar sx={{
-                                                                        width: 32,
-                                                                        height: 32,
-                                                                        fontSize: '0.875rem',
-                                                                        bgcolor: '#8b5cf6'
-                                                                    }}>
-                                                                        {task.assignedToUserName
-                                                                            ? task.assignedToUserName.split(' ').map(n => n[0]).join('')
-                                                                            : task.assignedToUserId.substring(0, 2).toUpperCase()
-                                                                        }
-                                                                    </Avatar>
-                                                                    <Typography variant="body2">
-                                                                        {task.assignedToUserName || `@${task.assignedToUserId}`}
-                                                                    </Typography>
-                                                                </Box>
-                                                            ) : (
-                                                                <Typography variant="body2" color="text.secondary">
-                                                                    Unassigned
-                                                                </Typography>
-                                                            )}
+                                                            <Typography className="table-text-apple">
+                                                                {client ? client.firstName : '—'}
+                                                            </Typography>
                                                         </TableCell>
                                                         <TableCell>
                                                             <Chip
-                                                                label={task.status.replace('_', ' ')}
+                                                                label={task.status}
                                                                 size="small"
-                                                                color={getStatusColor(task.status)}
-                                                                sx={{fontWeight: 600}}
+                                                                className={`status-chip-apple ${task.status.toLowerCase()}`}
                                                             />
                                                         </TableCell>
                                                         <TableCell>
                                                             <Chip
                                                                 label={task.priority}
                                                                 size="small"
-                                                                color={getPriorityColor(task.priority)}
-                                                                variant="outlined"
-                                                                sx={{fontWeight: 600}}
+                                                                className={`priority-chip-apple ${task.priority.toLowerCase()}`}
                                                             />
                                                         </TableCell>
                                                         <TableCell>
-                                                            <Typography variant="body2">
-                                                                {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : '-'}
+                                                            <Typography className="table-date-apple">
+                                                                {task.dueDate
+                                                                    ? new Date(task.dueDate).toLocaleDateString()
+                                                                    : '—'}
                                                             </Typography>
                                                         </TableCell>
                                                         <TableCell align="right">
                                                             <IconButton
                                                                 size="small"
                                                                 onClick={() => handleOpenTaskDialog(task)}
-                                                                sx={{color: '#6366f1'}}
+                                                                className="table-action-button-apple edit"
                                                             >
-                                                                <Edit fontSize="small"/>
+                                                                <Edit fontSize="small" />
                                                             </IconButton>
                                                             <IconButton
                                                                 size="small"
-                                                                color="error"
                                                                 onClick={() => handleDeleteTask(task.id)}
+                                                                className="table-action-button-apple delete"
                                                             >
-                                                                <Delete fontSize="small"/>
+                                                                <Delete fontSize="small" />
                                                             </IconButton>
                                                         </TableCell>
                                                     </TableRow>
-                                                ))
-                                            )}
+                                                );
+                                            })}
                                         </TableBody>
                                     </Table>
                                 </TableContainer>
-                            </>
-                        )}
+                            )}
+                        </Box>
+                    )}
 
-                        {activeTab === 1 && (
-                            <>
-                                <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-                                    <Box>
-                                        <Typography variant="h6" fontWeight={700}>
-                                            Client Directory
-                                        </Typography>
-                                        <Typography variant="body2" color="text.secondary">
-                                            Manage your client relationships
-                                        </Typography>
-                                    </Box>
+                    {/* Clients Tab */}
+                    {activeTab === 1 && (
+                        <Box>
+                            <Box className="content-header-apple">
+                                <Box>
+                                    <Typography className="content-title-apple">
+                                        Clients
+                                    </Typography>
+                                    <Typography className="content-subtitle-apple">
+                                        {stats.totalClients} total clients
+                                    </Typography>
+                                </Box>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<Add />}
+                                    onClick={() => handleOpenClientDialog()}
+                                    className="action-button-apple"
+                                >
+                                    New Client
+                                </Button>
+                            </Box>
+
+                            <SearchFilter
+                                searchTerm={clientSearchTerm}
+                                searchPlaceholder="Search clients by name, email, phone..."
+                                onSearchChange={handleClientSearchChange}
+                                filters={clientFilters}
+                                filterOptions={{}}  // No filters, just search
+                                onFilterChange={handleClientFilterChange}
+                                sortBy={clientSortBy}
+                                sortOptions={[
+                                    { value: 'DATE_DESC', label: 'Newest First' },
+                                    { value: 'DATE_ASC', label: 'Oldest First' },
+                                    { value: 'TITLE_ASC', label: 'Name A-Z' },
+                                    { value: 'TITLE_DESC', label: 'Name Z-A' }
+                                ]}
+                                onSortChange={handleClientSortChange}
+                                onClearFilters={clearClientFilters}
+                                activeFiltersCount={clientActiveFiltersCount}
+                                resultCount={clientResultCount}
+                                totalCount={clientTotalCount}
+                                showFilters={false}  // Hide filter dropdowns
+                            />
+
+                            {clientsLoading ? (
+                                <Box className="loading-container-apple">
+                                    <Typography className="loading-text-apple">Loading clients...</Typography>
+                                </Box>
+                            ) : filteredClients.length === 0 ? (
+                                <Box className="empty-state-apple">
+                                    <PersonOutline className="empty-icon-apple" />
+                                    <Typography className="empty-title-apple">No clients yet</Typography>
+                                    <Typography className="empty-text-apple">
+                                        Add your first client to get started
+                                    </Typography>
                                     <Button
                                         variant="contained"
-                                        startIcon={<PersonAdd/>}
+                                        startIcon={<Add />}
                                         onClick={() => handleOpenClientDialog()}
-                                        sx={{
-                                            bgcolor: '#6366f1',
-                                            textTransform: 'none',
-                                            fontWeight: 600,
-                                            px: 3,
-                                            py: 1.5,
-                                            borderRadius: 2,
-                                            '&:hover': {bgcolor: '#4f46e5'}
-                                        }}
+                                        className="action-button-apple"
+                                        sx={{ mt: 3 }}
                                     >
                                         Add Client
                                     </Button>
                                 </Box>
-
+                            ) : (
                                 <Grid container spacing={3}>
-                                    {clients.length === 0 ? (
-                                        <Grid item xs={12}>
-                                            <Box textAlign="center" py={6}>
-                                                <Typography color="text.secondary">
-                                                    No clients yet. Add your first client to get started!
-                                                </Typography>
-                                            </Box>
-                                        </Grid>
-                                    ) : (
-                                        clients.map((client) => (
+                                    {filteredClients.map((client) => {
+                                        const clientTasks = tasks.filter(t => t.clientId === client.id);
+                                        const completedTasks = clientTasks.filter(t => t.status === 'COMPLETED').length;
+                                        const progressPercentage = clientTasks.length > 0
+                                            ? Math.round((completedTasks / clientTasks.length) * 100)
+                                            : 0;
+
+                                        return (
                                             <Grid item xs={12} md={6} lg={4} key={client.id}>
-                                                <Card
-                                                    elevation={0}
-                                                    sx={{
-                                                        border: '1px solid',
-                                                        borderColor: 'divider',
-                                                        borderRadius: 2,
-                                                        transition: 'all 0.2s',
-                                                        '&:hover': {
-                                                            borderColor: '#6366f1',
-                                                            boxShadow: '0 4px 12px rgba(99, 102, 241, 0.15)'
-                                                        }
-                                                    }}
-                                                >
-                                                    <CardContent sx={{p: 3}}>
-                                                        <Box display="flex" justifyContent="space-between" mb={2}>
-                                                            <Avatar
-                                                                sx={{bgcolor: '#6366f1', width: 48, height: 48}}>
-                                                                {client.firstName[0]}{client.lastName[0]}
+                                                <Card className="item-card-apple">
+                                                    <CardContent sx={{ p: 3 }}>
+                                                        <Box className="item-card-header-apple">
+                                                            <Avatar className="item-avatar-apple client">
+                                                                {client.firstName}
                                                             </Avatar>
-                                                            <Box>
+                                                            <Box className="item-card-actions-apple">
                                                                 <IconButton
                                                                     size="small"
                                                                     onClick={() => handleOpenClientDialog(client)}
-                                                                    sx={{color: '#6366f1'}}
+                                                                    className="card-action-button-apple"
                                                                 >
-                                                                    <Edit fontSize="small"/>
+                                                                    <Edit fontSize="small" />
                                                                 </IconButton>
                                                                 <IconButton
                                                                     size="small"
-                                                                    color="error"
                                                                     onClick={() => handleDeleteClient(client.id)}
+                                                                    className="card-action-button-apple delete"
                                                                 >
-                                                                    <Delete fontSize="small"/>
+                                                                    <Delete fontSize="small" />
                                                                 </IconButton>
                                                             </Box>
                                                         </Box>
-                                                        <Typography variant="h6" fontWeight={700} mb={0.5}>
-                                                            {client.firstName} {client.lastName}
+                                                        <Typography className="item-card-title-apple">
+                                                            {client.firstName}
                                                         </Typography>
-                                                        <Divider sx={{my: 2}}/>
-                                                        <Stack spacing={1}>
-                                                            <Typography variant="caption" color="text.secondary">
-                                                                {client.email}
-                                                            </Typography>
-                                                            {client.phoneNumber && (
-                                                                <Typography variant="caption"
-                                                                            color="text.secondary">
-                                                                    {client.phoneNumber}
+                                                        <Typography className="item-card-subtitle-apple">
+                                                            {client.email}
+                                                        </Typography>
+                                                        <Divider sx={{ my: 2 }} className="divider-apple" />
+                                                        <Box>
+                                                            <Box className="progress-label-apple">
+                                                                <Typography className="progress-label-text-apple">
+                                                                    Progress
                                                                 </Typography>
-                                                            )}
-                                                        </Stack>
+                                                                <Typography className="progress-label-value-apple">
+                                                                    {progressPercentage}%
+                                                                </Typography>
+                                                            </Box>
+                                                            <LinearProgress
+                                                                variant="determinate"
+                                                                value={progressPercentage}
+                                                                className="progress-bar-apple"
+                                                            />
+                                                            <Typography className="progress-detail-apple">
+                                                                {completedTasks} of {clientTasks.length} tasks
+                                                            </Typography>
+                                                        </Box>
                                                     </CardContent>
                                                 </Card>
                                             </Grid>
-                                        ))
-                                    )}
+                                        );
+                                    })}
                                 </Grid>
-                            </>
-                        )}
+                            )}
+                        </Box>
+                    )}
 
-                        {activeTab === 2 && (
-                            <>
-                                <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-                                    <Box>
-                                        <Typography variant="h6" fontWeight={700}>
-                                            Team Members
-                                        </Typography>
-                                        <Typography variant="body2" color="text.secondary">
-                                            Manage your organization's team
-                                        </Typography>
-                                    </Box>
+                    {/* Users Tab */}
+                    {activeTab === 2 && (
+                        <Box>
+                            <Box className="content-header-apple">
+                                <Box>
+                                    <Typography className="content-title-apple">
+                                        Team
+                                    </Typography>
+                                    <Typography className="content-subtitle-apple">
+                                        {stats.totalUsers} team members
+                                    </Typography>
+                                </Box>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<PersonAdd />}
+                                    onClick={() => handleOpenUserDialog()}
+                                    className="action-button-apple"
+                                >
+                                    Add Member
+                                </Button>
+                            </Box>
+
+
+                            <SearchFilter
+                                searchTerm={userSearchTerm}
+                                searchPlaceholder="Search team members by name, username, email..."
+                                onSearchChange={handleUserSearchChange}
+                                filters={userFilters}
+                                filterOptions={{
+                                    role: [
+                                        { value: 'ALL', label: 'All Roles' },
+                                        { value: 'MANAGER', label: 'Manager' },
+                                        { value: 'USER', label: 'User' }
+                                    ]
+                                }}
+                                onFilterChange={handleUserFilterChange}
+                                sortBy={userSortBy}
+                                sortOptions={[
+                                    { value: 'DATE_DESC', label: 'Newest First' },
+                                    { value: 'DATE_ASC', label: 'Oldest First' },
+                                    { value: 'TITLE_ASC', label: 'Name A-Z' },
+                                    { value: 'TITLE_DESC', label: 'Name Z-A' }
+                                ]}
+                                onSortChange={handleUserSortChange}
+                                onClearFilters={clearUserFilters}
+                                activeFiltersCount={userActiveFiltersCount}
+                                resultCount={userResultCount}
+                                totalCount={userTotalCount}
+                            />
+
+                            {usersLoading ? (
+                                <Box className="loading-container-apple">
+                                    <Typography className="loading-text-apple">Loading team...</Typography>
+                                </Box>
+                            ) : filteredUsers.length === 0 ? (
+                                <Box className="empty-state-apple">
+                                    <People className="empty-icon-apple" />
+                                    <Typography className="empty-title-apple">No team members yet</Typography>
+                                    <Typography className="empty-text-apple">
+                                        Build your team by adding members
+                                    </Typography>
                                     <Button
                                         variant="contained"
-                                        startIcon={<PersonAdd/>}
+                                        startIcon={<PersonAdd />}
                                         onClick={() => handleOpenUserDialog()}
-                                        sx={{
-                                            bgcolor: '#6366f1',
-                                            textTransform: 'none',
-                                            fontWeight: 600,
-                                            px: 3,
-                                            py: 1.5,
-                                            borderRadius: 2,
-                                            '&:hover': {bgcolor: '#4f46e5'}
-                                        }}
+                                        className="action-button-apple"
+                                        sx={{ mt: 3 }}
                                     >
                                         Add Team Member
                                     </Button>
                                 </Box>
-
+                            ) : (
                                 <Grid container spacing={3}>
-                                    {users.length === 0 ? (
-                                        <Grid item xs={12}>
-                                            <Box textAlign="center" py={6}>
-                                                <Typography color="text.secondary">
-                                                    No team members yet. Add your first team member!
-                                                </Typography>
-                                            </Box>
-                                        </Grid>
-                                    ) : (
-                                        users.map((user) => {
-                                            const taskStats = getUserTaskStats(user.username);
-                                            return (
-                                                <Grid item xs={12} md={6} lg={4} key={user.id}>
-                                                    <Card
-                                                        elevation={0}
-                                                        sx={{
-                                                            border: '1px solid',
-                                                            borderColor: 'divider',
-                                                            borderRadius: 2,
-                                                            transition: 'all 0.2s',
-                                                            '&:hover': {
-                                                                borderColor: '#6366f1',
-                                                                boxShadow: '0 4px 12px rgba(99, 102, 241, 0.15)'
-                                                            }
-                                                        }}
-                                                    >
-                                                        <CardContent sx={{p: 3}}>
-                                                            <Box display="flex" justifyContent="space-between"
-                                                                 mb={2}>
-                                                                <Avatar sx={{
-                                                                    bgcolor: '#8b5cf6',
-                                                                    width: 48,
-                                                                    height: 48
-                                                                }}>
-                                                                    {user.name[0]}{user.surname[0]}
-                                                                </Avatar>
-                                                                <Box>
-                                                                    <IconButton
-                                                                        size="small"
-                                                                        onClick={() => handleOpenUserDialog(user)}
-                                                                        sx={{color: '#6366f1'}}
-                                                                    >
-                                                                        <Edit fontSize="small"/>
-                                                                    </IconButton>
-                                                                    <IconButton
-                                                                        size="small"
-                                                                        color="error"
-                                                                        onClick={() => handleDeleteUser(user.id)}
-                                                                    >
-                                                                        <Delete fontSize="small"/>
-                                                                    </IconButton>
-                                                                </Box>
+                                    {filteredUsers.map((user) => {
+                                        const userTasks = tasks.filter(t => t.assignedToUserId === user.id);
+                                        const taskStats = {
+                                            total: userTasks.length,
+                                            completed: userTasks.filter(t => t.status === 'COMPLETED').length
+                                        };
+
+                                        return (
+                                            <Grid item xs={12} md={6} lg={4} key={user.id}>
+                                                <Card className="item-card-apple">
+                                                    <CardContent sx={{ p: 3 }}>
+                                                        <Box className="item-card-header-apple">
+                                                            <Avatar className="item-avatar-apple user">
+                                                                {user.name[0]}{user.surname[0]}
+                                                            </Avatar>
+                                                            <Box className="item-card-actions-apple">
+                                                                <IconButton
+                                                                    size="small"
+                                                                    onClick={() => handleOpenUserDialog(user)}
+                                                                    className="card-action-button-apple"
+                                                                >
+                                                                    <Edit fontSize="small" />
+                                                                </IconButton>
+                                                                <IconButton
+                                                                    size="small"
+                                                                    onClick={() => handleDeleteUser(user.id)}
+                                                                    className="card-action-button-apple delete"
+                                                                >
+                                                                    <Delete fontSize="small" />
+                                                                </IconButton>
                                                             </Box>
-                                                            <Typography variant="h6" fontWeight={700} mb={0.5}>
-                                                                {user.name} {user.surname}
-                                                            </Typography>
-                                                            <Typography variant="body2" color="text.secondary"
-                                                                        mb={2}>
-                                                                @{user.username}
-                                                            </Typography>
-                                                            <Chip
-                                                                label={user.role}
-                                                                size="small"
-                                                                sx={{
-                                                                    mb: 2,
-                                                                    bgcolor: '#f0f4ff',
-                                                                    color: '#6366f1',
-                                                                    fontWeight: 600
-                                                                }}
-                                                            />
-                                                            <Divider sx={{my: 2}}/>
-                                                            <Box>
-                                                                <Box display="flex" justifyContent="space-between"
-                                                                     mb={1}>
-                                                                    <Typography variant="caption"
-                                                                                color="text.secondary">
-                                                                        Task Progress
-                                                                    </Typography>
-                                                                    <Typography variant="caption" fontWeight={600}>
-                                                                        {taskStats.total > 0 ? Math.round((taskStats.completed / taskStats.total) * 100) : 0}%
-                                                                    </Typography>
-                                                                </Box>
-                                                                <LinearProgress
-                                                                    variant="determinate"
-                                                                    value={taskStats.total > 0 ? (taskStats.completed / taskStats.total) * 100 : 0}
-                                                                    sx={{
-                                                                        height: 8,
-                                                                        borderRadius: 4,
-                                                                        bgcolor: '#f0f4ff',
-                                                                        '& .MuiLinearProgress-bar': {bgcolor: '#6366f1'}
-                                                                    }}
-                                                                />
-                                                                <Typography variant="caption" color="text.secondary"
-                                                                            sx={{mt: 1, display: 'block'}}>
-                                                                    {taskStats.completed} of {taskStats.total} tasks
-                                                                    completed
+                                                        </Box>
+                                                        <Typography className="item-card-title-apple">
+                                                            {user.name} {user.surname}
+                                                        </Typography>
+                                                        <Typography className="item-card-subtitle-apple">
+                                                            @{user.username}
+                                                        </Typography>
+                                                        <Chip
+                                                            label={user.role}
+                                                            size="small"
+                                                            className="role-chip-apple"
+                                                            sx={{ mt: 1 }}
+                                                        />
+                                                        <Divider sx={{ my: 2 }} className="divider-apple" />
+                                                        <Box>
+                                                            <Box className="progress-label-apple">
+                                                                <Typography className="progress-label-text-apple">
+                                                                    Progress
+                                                                </Typography>
+                                                                <Typography className="progress-label-value-apple">
+                                                                    {taskStats.total > 0
+                                                                        ? Math.round((taskStats.completed / taskStats.total) * 100)
+                                                                        : 0}%
                                                                 </Typography>
                                                             </Box>
-                                                        </CardContent>
-                                                    </Card>
-                                                </Grid>
-                                            );
-                                        })
-                                    )}
+                                                            <LinearProgress
+                                                                variant="determinate"
+                                                                value={taskStats.total > 0 ? (taskStats.completed / taskStats.total) * 100 : 0}
+                                                                className="progress-bar-apple"
+                                                            />
+                                                            <Typography className="progress-detail-apple">
+                                                                {taskStats.completed} of {taskStats.total} tasks
+                                                            </Typography>
+                                                        </Box>
+                                                    </CardContent>
+                                                </Card>
+                                            </Grid>
+                                        );
+                                    })}
                                 </Grid>
-                            </>
-                        )}
-                    </Box>
-                </Paper>
+                            )}
+                        </Box>
+                    )}
 
+                    {/* Organization Tab */}
+                    {activeTab === 3 && (
+                        <Box>
+                            <Box className="content-header-apple">
+                                <Box>
+                                    <Typography className="content-title-apple">
+                                        Organization
+                                    </Typography>
+                                    <Typography className="content-subtitle-apple">
+                                        Manage your organization settings
+                                    </Typography>
+                                </Box>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<Settings />}
+                                    onClick={() => navigate(`/manager/edit-organization`)}
+                                    className="action-button-apple"
+                                >
+                                    Edit
+                                </Button>
+                            </Box>
 
-                <TaskCreate
-                    open={openTaskDialog}
-                    onClose={() => {
-                        setOpenTaskDialog(false);
-                        setEditingTask(null);
-                    }}
-                    onSubmit={handleTaskSubmit}
-                    task={editingTask}
-                    users={users}
-                    organizations={organizations}
-                    clients={clients}
-                    isManagerView={true}
-                />
+                            {orgsLoading ? (
+                                <Box className="loading-container-apple">
+                                    <Typography className="loading-text-apple">Loading...</Typography>
+                                </Box>
+                            ) : organizations.length === 0 ? (
+                                <Box className="empty-state-apple">
+                                    <Settings className="empty-icon-apple" />
+                                    <Typography className="empty-title-apple">No organization found</Typography>
+                                </Box>
+                            ) : (
+                                <Card className="org-info-card-apple">
+                                    <CardContent sx={{ p: 4 }}>
+                                        <Box display="flex" alignItems="center" gap={3} mb={3}>
+                                            <Avatar className="org-avatar-apple">
+                                                {organizations[0].name[0]}
+                                            </Avatar>
+                                            <Box>
+                                                <Typography className="org-name-apple">
+                                                    {organizations[0].name}
+                                                </Typography>
+                                                <Chip
+                                                    label={organizations[0].type}
+                                                    className="org-type-chip-apple"
+                                                    size="small"
+                                                />
+                                            </Box>
+                                        </Box>
 
-                <ClientCreate
-                    open={openClientDialog}
-                    onClose={() => {
-                        setOpenClientDialog(false);
-                        setEditingClient(null);
-                    }}
-                    onSubmit={handleClientSubmit}
-                    client={editingClient}
-                    organizations={organizations}
-                    isManagerView={true}
-                    defaultOrganizationId={managerOrganizationId}
-                />
+                                        <Divider className="divider-apple" sx={{ mb: 3 }} />
 
-                <UserCreate
-                    open={openUserDialog}
-                    onClose={() => {
-                        setOpenUserDialog(false);
-                        setEditingUser(null);
-                    }}
-                    onSubmit={handleUserSubmit}
-                    user={editingUser}
-                    isManagerView={true}
-                    defaultOrganizationId={managerOrganizationId}
-                />
+                                        <Grid container spacing={3}>
+                                            <Grid item xs={12}>
+                                                <Typography className="org-label-apple">Description</Typography>
+                                                <Typography className="org-value-apple">
+                                                    {organizations[0].description || '—'}
+                                                </Typography>
+                                            </Grid>
+                                            <Grid item xs={12} md={6}>
+                                                <Typography className="org-label-apple">Email</Typography>
+                                                <Typography className="org-value-apple">
+                                                    {organizations[0].contactEmail}
+                                                </Typography>
+                                            </Grid>
+                                            <Grid item xs={12} md={6}>
+                                                <Typography className="org-label-apple">Phone</Typography>
+                                                <Typography className="org-value-apple">
+                                                    {organizations[0].contactPhone || '—'}
+                                                </Typography>
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <Typography className="org-label-apple">Address</Typography>
+                                                <Typography className="org-value-apple">
+                                                    {organizations[0].address || '—'}
+                                                </Typography>
+                                            </Grid>
+                                        </Grid>
+                                    </CardContent>
+                                </Card>
+                            )}
+                        </Box>
+                    )}
+                </Container>
+            </Box>
 
-                <Snackbar
-                    open={snackbar.open}
-                    autoHideDuration={4000}
+            {/* Dialogs - NO CHANGES */}
+            <TaskCreate
+                open={openTaskDialog}
+                onClose={() => {
+                    setOpenTaskDialog(false);
+                    setEditingTask(null);
+                }}
+                onSubmit={handleTaskSubmit}
+                task={editingTask}
+                users={users}
+                organizations={organizations}
+                clients={clients}
+                isManagerView={true}
+            />
+
+            <ClientCreate
+                open={openClientDialog}
+                onClose={() => {
+                    setOpenClientDialog(false);
+                    setEditingClient(null);
+                }}
+                onSubmit={handleClientSubmit}
+                client={editingClient}
+                organizations={organizations}
+                isManagerView={true}
+                defaultOrganizationId={managerOrganizationId}
+            />
+
+            <UserCreate
+                open={openUserDialog}
+                onClose={() => {
+                    setOpenUserDialog(false);
+                    setEditingUser(null);
+                }}
+                onSubmit={handleUserSubmit}
+                user={editingUser}
+                isManagerView={true}
+                defaultOrganizationId={managerOrganizationId}
+            />
+
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={4000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            >
+                <Alert
                     onClose={handleCloseSnackbar}
-                    anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
+                    severity={snackbar.severity}
+                    sx={{ width: '100%' }}
+                    variant="filled"
                 >
-                    <Alert
-                        onClose={handleCloseSnackbar}
-                        severity={snackbar.severity}
-                        sx={{width: '100%'}}
-                        variant="filled"
-                    >
-                        {snackbar.message}
-                    </Alert>
-                </Snackbar>
-            </Container>
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };

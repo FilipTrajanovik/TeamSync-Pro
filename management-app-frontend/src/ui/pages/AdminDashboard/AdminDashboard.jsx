@@ -6,10 +6,8 @@ import {
     Business,
     Delete,
     Edit,
-    Insights,
     People,
     PersonAdd,
-    Speed,
     TrendingUp,
     Visibility
 } from '@mui/icons-material';
@@ -22,8 +20,6 @@ import './AdminDashboard.css';
 import TaskCreate from '../../components/Task/TaskCreate/TaskCreate.jsx';
 import TaskDelete from '../../components/Task/TaskDelete/TaskDelete.jsx';
 import TaskView from '../../components/Task/TaskView/TaskView.jsx';
-
-
 import useOrganizations from '../../../hooks/useOrganizations.js';
 import useUsers from '../../../hooks/useUsers.js';
 import useTasks from '../../../hooks/useTasks.js';
@@ -38,10 +34,11 @@ import UserView from '../../components/Users/UserView/UserView.jsx';
 import RecordCreate from '../../components/Records/RecordCreate/RecordCreate.jsx'
 import RecordDelete from "../../components/Records/RecordDelete/RecordDelete.jsx";
 import RecordView from "../../components/Records/RecordView/RecordView.jsx";
+import useSearchFilter  from "../../../hooks/useSearchFilter.js";
+import SearchFilter from '../../components/SearchFilter/SearchFilter';
 
 const AdminDashboard = () => {
     const {user} = useAuth();
-
 
     const {
         organizations,
@@ -61,13 +58,14 @@ const AdminDashboard = () => {
     } = useClients();
     const {records, loading: recordsLoading, onAdd: addRecord, onDelete: deleteRecord, onEdit:editRecord} = useRecords();
 
-
     const managers = users.filter(u => u.role === 'MANAGER');
     const stats = {
         totalOrganizations: organizations.length,
         totalManagers: managers.length,
         totalUsers: users.filter(u => u.role === 'USER').length,
-        totalRecords: records.length
+        totalRecords: records.length,
+        totalTasks: tasks.length,
+        totalClients: clients.length
     };
 
 
@@ -105,10 +103,72 @@ const AdminDashboard = () => {
     const [viewingRecord, setViewingRecord] = useState(null);
     const [deletingRecord, setDeletingRecord] = useState(null);
 
+    //TASKS FILTER
+    const {
+        filteredData: filteredTasks,
+        searchTerm,
+        filters,
+        sortBy,
+        handleSearchChange,
+        handleFilterChange,
+        handleSortChange,
+        clearFilters,
+        activeFiltersCount,
+        resultCount,
+        totalCount
+    } = useSearchFilter(
+       tasks, {
+           searchFields: ['title', 'description'],
+           filterableFields: ['status', 'priority'],
+           defaultSortBy: 'DATE_DESC'
+        });
 
-    const loading = orgsLoading || usersLoading || tasksLoading || clientsLoading || recordsLoading;
 
-    // Organization handlers
+    //ORGANIZATION FILTER
+
+
+    const {
+        filteredData: filteredOrganizations,
+        searchTerm: orgSearchTerm,
+        filters: orgFilters,
+        sortBy: orgSortBy,
+        handleSearchChange: handleOrgSearchChange,
+        handleFilterChange: handleOrgFilterChange,
+        handleSortChange: handleOrgSortChange,
+        clearFilters: clearOrgFilters,
+        activeFiltersCount: orgActiveFiltersCount,
+        resultCount: orgResultCount,
+        totalCount: orgTotalCount
+    } = useSearchFilter(
+        organizations, {
+            searchFields: ['name', 'address', 'contactInfo'],
+            filterableFields: [],
+            defaultSortBy: 'DATE_DESC'
+        }
+    )
+
+
+    //CLIENT FILTER
+
+    const {
+        filteredData: filteredClients,
+        searchTerm: clientSearchTerm,
+        filters: clientFilters,
+        sortBy: clientSortBy,
+        handleSearchChange: handleClientSearchChange,
+        handleFilterChange: handleClientFilterChange,
+        handleSortChange: handleClientSortChange,
+        clearFilters: clearClientFilters,
+        activeFiltersCount: clientActiveFiltersCount,
+        resultCount: clientResultCount,
+        totalCount: clientTotalCount
+    } = useSearchFilter(clients, {
+        searchFields: ['firstName', 'lastName', 'email', 'phoneNumber'],
+        filterableFields: ['organization'],  // Filter by organization
+        defaultSortBy: 'DATE_DESC'
+    });
+
+    // ORG HANDLERS
     const handleOpenDialog = (org = null) => {
         setEditingOrg(org);
         setOpenDialog(true);
@@ -119,7 +179,34 @@ const AdminDashboard = () => {
         setEditingOrg(null);
     };
 
-    const handleViewOrganization = (org) => {
+    const handleSubmit = async (formData) => {
+        try {
+            if (editingOrg) {
+                editOrganization(editingOrg.id, formData);
+                alert('Organization updated successfully!');
+            } else {
+                addOrganization(formData);
+                alert('Organization created successfully!');
+            }
+        } catch (error) {
+            console.error('Error saving organization:', error);
+            alert(`Failed to save organization: ${error.message}`);
+        }
+    };
+
+    const handleDeleteOrg = async (id) => {
+        if (window.confirm('Are you sure you want to delete this organization?')) {
+            try {
+                deleteOrganization(id);
+                alert('Organization deleted successfully!');
+            } catch (error) {
+                console.error('Error deleting organization:', error);
+                alert(`Failed to delete organization: ${error.message}`);
+            }
+        }
+    };
+
+    const handleViewOrg = (org) => {
         setViewingOrg(org);
         setOpenDetailsModal(true);
     };
@@ -129,31 +216,6 @@ const AdminDashboard = () => {
         setViewingOrg(null);
     };
 
-    const handleSubmit = async (formData) => {
-        try {
-            if (editingOrg) {
-                editOrganization(editingOrg.id, formData);
-            } else {
-                addOrganization(formData);
-            }
-        } catch (error) {
-            console.error('Error saving organization:', error);
-            alert('Failed to save organization. Please try again.');
-        }
-    };
-
-    const handleDelete = async (id) => {
-        if (window.confirm('Are you sure you want to delete this organization?')) {
-            try {
-                deleteOrganization(id);
-            } catch (error) {
-                console.error('Error deleting organization:', error);
-                alert('Failed to delete organization. Please try again.');
-            }
-        }
-    };
-
-    // Manager handlers
     const handleOpenManagerDialog = () => {
         setOpenManagerDialog(true);
     };
@@ -162,17 +224,17 @@ const AdminDashboard = () => {
         setOpenManagerDialog(false);
     };
 
-    const handleCreateManager = async (managerData) => {
+    const handleSubmitManager = async (managerData) => {
         try {
             addUser(managerData);
             alert('Manager created successfully!');
         } catch (error) {
             console.error('Error creating manager:', error);
-            throw error;
+            alert(`Failed to create manager: ${error.message}`);
         }
     };
 
-    // Task handlers
+    // TASK HANDLERS
     const handleOpenTaskDialog = (task = null) => {
         setEditingTask(task);
         setOpenTaskDialog(true);
@@ -185,18 +247,10 @@ const AdminDashboard = () => {
 
     const handleSubmitTask = async (taskData) => {
         try {
-            const taskPayload = {
-                ...taskData,
-                dueDate: taskData.dueDate ? `${taskData.dueDate}T00:00:00` : null,
-                assignedToUserId: taskData.assignedToUserId || null,
-                clientId: taskData.clientId || null,
-                finished: false
-            };
-
             if (editingTask) {
-                editTask(editingTask.id, taskPayload);
+                editTask(editingTask.id, taskData);
             } else {
-                addTask(taskPayload);
+                addTask(taskData);
             }
             alert(editingTask ? 'Task updated successfully!' : 'Task created successfully!');
         } catch (error) {
@@ -232,21 +286,6 @@ const AdminDashboard = () => {
         } catch (error) {
             console.error('Error deleting task:', error);
             alert(`Failed to delete task: ${error.message}`);
-        }
-    };
-
-    const getTypeIcon = (type) => {
-        switch (type) {
-            case 'HOSPITAL':
-                return '🏥';
-            case 'AUTO_REPAIR':
-                return '🔧';
-            case 'RESTAURANT':
-                return '🍽️';
-            case 'RETAIL':
-                return '🛒';
-            default:
-                return '🏢';
         }
     };
 
@@ -305,6 +344,8 @@ const AdminDashboard = () => {
             alert(`Failed to delete client: ${error.message}`);
         }
     };
+
+    // USER HANDLERS
     const handleOpenUserDialog = (user = null) => {
         setEditingUser(user);
         setOpenUserDialog(true);
@@ -360,8 +401,7 @@ const AdminDashboard = () => {
         }
     };
 
-    // Record handlers
-
+    // RECORD HANDLERS
     const handleOpenRecordDialog = (record = null) => {
         setEditingRecord(record);
         setOpenRecordDialog(true);
@@ -374,12 +414,7 @@ const AdminDashboard = () => {
 
     const handleSubmitRecord = async (recordData) => {
         try {
-            console.log('🎯 handleSubmitRecord called');
-            console.log('📦 recordData parameter:', recordData);
-            console.log('📝 editingRecord state:', editingRecord);
-
             if (recordData.id) {
-                console.log('✏️ About to call editRecord with:', recordData.id, recordData);
                 await editRecord(recordData.id, recordData);
                 handleCloseRecordDialog();
                 alert(`Record updated successfully`)
@@ -416,8 +451,6 @@ const AdminDashboard = () => {
 
     const handleConfirmDeleteRecord = async (recordId) => {
         try {
-            // Assuming you have deleteRecord function from useRecords
-            // You'll need to add onDelete to useRecords hook
             await deleteRecord(recordId)
             alert('Record deleted successfully!');
         } catch (error) {
@@ -426,27 +459,20 @@ const AdminDashboard = () => {
         }
     };
 
-    const StatCard = ({title, value, icon, gradient, delay}) => (
+    const StatCard = ({title, value, icon, delay}) => (
         <Zoom in={true} style={{transitionDelay: `${delay}ms`}}>
-            <Box className="cyber-stat-card">
-                <div className="stat-card-glow"></div>
-                <Box className="stat-card-content">
-                    <Box className="stat-header">
-                        <Box className="stat-icon-wrapper" sx={{background: gradient}}>
-                            {icon}
-                            <div className="icon-ripple"></div>
-                        </Box>
-                        <Box className="stat-trend">
-                            <TrendingUp className="trend-icon"/>
-                            <Typography className="trend-text">+12%</Typography>
-                        </Box>
+            <Box className="stat-card">
+                <Box className="stat-card-header">
+                    <Box className="stat-card-icon">
+                        {icon}
                     </Box>
-                    <Typography className="stat-label">{title}</Typography>
-                    <Typography className="stat-value">{value}</Typography>
-                    <Box className="stat-progress">
-                        <div className="progress-bar" style={{width: '75%', background: gradient}}></div>
+                    <Box className="stat-card-change">
+                        <TrendingUp style={{fontSize: 18}}/>
+                        <span>+12%</span>
                     </Box>
                 </Box>
+                <Typography className="stat-card-title">{title}</Typography>
+                <Typography className="stat-card-value">{value}</Typography>
             </Box>
         </Zoom>
     );
@@ -455,55 +481,48 @@ const AdminDashboard = () => {
         <>
             <Navbar/>
             <Box className="futuristic-dashboard">
-
                 <div className="cyber-bg">
                     <div className="cyber-grid"></div>
                     <div className="floating-particles">
-                        {[...Array(20)].map((_, i) => (
+                        {[...Array(15)].map((_, i) => (
                             <div key={i} className="particle" style={{
                                 left: `${Math.random() * 100}%`,
                                 animationDelay: `${Math.random() * 5}s`,
-                                animationDuration: `${5 + Math.random() * 10}s`
+                                animationDuration: `${8 + Math.random() * 12}s`
                             }}></div>
                         ))}
                     </div>
                 </div>
 
                 <Container maxWidth="xl" className="dashboard-container">
-
+                    {/* HERO SECTION */}
                     <Fade in={true} timeout={1000}>
                         <Box className="dashboard-hero">
                             <Box className="hero-content">
-                                <Box className="hero-badge">
-                                    <Speed className="badge-icon"/>
-                                    <span>SYSTEM CONTROL CENTER</span>
-                                </Box>
-                                <Typography className="hero-title">
-                                    Welcome back, <span className="gradient-text">{user?.name}</span>
+                                <Typography variant="h1">
+                                    Welcome back, {/*{user?.name}*/}Filip
                                 </Typography>
                                 <Typography className="hero-subtitle">
                                     Your command center for total system oversight and control
                                 </Typography>
                             </Box>
                             <Button
-                                className="cyber-button primary"
+                                className="action-button"
                                 startIcon={<PersonAdd/>}
                                 onClick={handleOpenManagerDialog}
                             >
-                                <span className="btn-text">Create Manager</span>
-                                <div className="btn-shimmer"></div>
+                                Create Manager
                             </Button>
                         </Box>
                     </Fade>
 
-
+                    {/* STATS GRID */}
                     <Grid container spacing={3} className="stats-grid">
                         <Grid item xs={12} sm={6} lg={3}>
                             <StatCard
                                 title="Organizations"
                                 value={stats.totalOrganizations}
-                                icon={<Business/>}
-                                gradient="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                                icon={<Business sx={{fontSize: 28}}/>}
                                 delay={100}
                             />
                         </Grid>
@@ -511,8 +530,7 @@ const AdminDashboard = () => {
                             <StatCard
                                 title="Managers"
                                 value={stats.totalManagers}
-                                icon={<People/>}
-                                gradient="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
+                                icon={<People sx={{fontSize: 28}}/>}
                                 delay={200}
                             />
                         </Grid>
@@ -520,8 +538,7 @@ const AdminDashboard = () => {
                             <StatCard
                                 title="Users"
                                 value={stats.totalUsers}
-                                icon={<People/>}
-                                gradient="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
+                                icon={<People sx={{fontSize: 28}}/>}
                                 delay={300}
                             />
                         </Grid>
@@ -529,409 +546,598 @@ const AdminDashboard = () => {
                             <StatCard
                                 title="Records"
                                 value={stats.totalRecords}
-                                icon={<Assignment/>}
-                                gradient="linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)"
+                                icon={<Assignment sx={{fontSize: 28}}/>}
                                 delay={400}
                             />
                         </Grid>
                     </Grid>
 
-
+                    {/* ORGANIZATIONS SECTION */}
                     <Fade in={true} timeout={1500}>
-                        <Box className="cyber-section">
+                        <Box className="section-container">
                             <Box className="section-header">
-                                <Box className="section-title-wrapper">
-                                    <Insights className="section-icon"/>
+                                <Box>
                                     <Typography className="section-title">Organizations Hub</Typography>
-                                    <Chip label={organizations.length} className="section-badge"/>
+                                    <Typography className="section-subtitle">
+                                        {organizations.length} total organizations
+                                    </Typography>
                                 </Box>
                                 <Button
-                                    className="cyber-button secondary"
+                                    className="action-button"
                                     startIcon={<Add/>}
                                     onClick={() => handleOpenDialog()}
                                 >
-                                    <span className="btn-text">Add Organization</span>
+                                    Add Organization
                                 </Button>
                             </Box>
 
-                            <Box className="data-grid">
-                                {loading ? (
-                                    <Box className="loading-state">
-                                        <div className="loading-spinner"></div>
-                                        <Typography>Loading data...</Typography>
-                                    </Box>
-                                ) : organizations.length === 0 ? (
-                                    <Box className="empty-state">
-                                        <Business className="empty-icon"/>
-                                        <Typography className="empty-text">No organizations found</Typography>
-                                        <Typography className="empty-subtext">Create your first organization to get
-                                            started</Typography>
-                                    </Box>
-                                ) : (
-                                    organizations.map((org, index) => (
-                                        <Zoom key={org.id} in={true} style={{transitionDelay: `${index * 50}ms`}}>
-                                            <Box className="data-card">
-                                                <div className="card-glow"></div>
-                                                <Box className="card-header">
-                                                    <Box className="card-icon">{getTypeIcon(org.type)}</Box>
-                                                    <Chip label={org.type} className="type-chip"/>
+                            <SearchFilter
+                                searchTerm={orgSearchTerm}
+                                searchPlaceholder="Search organizations by name, address..."
+                                onSearchChange={handleOrgSearchChange}
+                                filters={orgFilters}
+                                filterOptions={{}}  // No filters, just search
+                                onFilterChange={handleOrgFilterChange}
+                                sortBy={orgSortBy}
+                                sortOptions={[
+                                    { value: 'DATE_DESC', label: 'Newest First' },
+                                    { value: 'DATE_ASC', label: 'Oldest First' },
+                                    { value: 'TITLE_ASC', label: 'Name A-Z' },
+                                    { value: 'TITLE_DESC', label: 'Name Z-A' }
+                                ]}
+                                onSortChange={handleOrgSortChange}
+                                onClearFilters={clearOrgFilters}
+                                activeFiltersCount={orgActiveFiltersCount}
+                                resultCount={orgResultCount}
+                                totalCount={orgTotalCount}
+                                showFilters={false}  // Hide filter dropdowns (only search)
+                            />
+
+
+                            {orgsLoading ? (
+                                <Box className="loading-container">
+                                    <Typography>Loading...</Typography>
+                                </Box>
+                            ) : filteredOrganizations.length === 0 ? (
+                                <Box className="empty-state">
+                                    <Business className="empty-state-icon"/>
+                                    <Typography className="empty-state-title">No organizations yet</Typography>
+                                    <Typography className="empty-state-description">
+                                        Get started by creating your first organization
+                                    </Typography>
+                                </Box>
+                            ) : (
+                                <Box className="cards-grid">
+                                    {filteredOrganizations.map((org, index) => (
+                                        <Fade key={org.id} in={true} timeout={800} style={{transitionDelay: `${index * 100}ms`}}>
+                                            <Box className="org-card">
+                                                <Box className="org-card-header">
+                                                    <Avatar className="org-avatar">
+                                                        {org.name[0]}
+                                                    </Avatar>
+                                                    <Box className="org-info">
+                                                        <Typography className="org-name">{org.name}</Typography>
+                                                        <Chip
+                                                            label={org.organizationType || org.type}
+                                                            size="small"
+                                                            className="org-type"
+                                                        />
+                                                    </Box>
                                                 </Box>
-                                                <Typography className="card-title">{org.name}</Typography>
-                                                <Typography className="card-description">{org.description}</Typography>
-                                                <Box className="card-meta">
+
+                                                {org.description && (
+                                                    <Typography className="org-description">
+                                                        {org.description}
+                                                    </Typography>
+                                                )}
+
+                                                <Box className="org-details">
                                                     {org.contactEmail && (
-                                                        <Typography className="meta-item">
-                                                            📧 {org.contactEmail}
-                                                        </Typography>
+                                                        <Box className="org-detail-item">
+                                                            <span>📧</span>
+                                                            <span>{org.contactEmail}</span>
+                                                        </Box>
                                                     )}
                                                     {org.contactPhone && (
-                                                        <Typography className="meta-item">
-                                                            📞 {org.contactPhone}
-                                                        </Typography>
+                                                        <Box className="org-detail-item">
+                                                            <span>📞</span>
+                                                            <span>{org.contactPhone}</span>
+                                                        </Box>
+                                                    )}
+                                                    {org.address && (
+                                                        <Box className="org-detail-item">
+                                                            <span>📍</span>
+                                                            <span>{org.address}</span>
+                                                        </Box>
                                                     )}
                                                 </Box>
-                                                <Box className="card-actions">
-                                                    <IconButton className="action-btn view"
-                                                                onClick={() => handleViewOrganization(org)}>
-                                                        <Visibility/>
+
+                                                <Box className="org-actions">
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleViewOrg(org)}
+                                                        className="icon-button"
+                                                    >
+                                                        <Visibility fontSize="small"/>
                                                     </IconButton>
-                                                    <IconButton className="action-btn edit"
-                                                                onClick={() => handleOpenDialog(org)}>
-                                                        <Edit/>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleOpenDialog(org)}
+                                                        className="icon-button"
+                                                    >
+                                                        <Edit fontSize="small"/>
                                                     </IconButton>
-                                                    <IconButton className="action-btn delete"
-                                                                onClick={() => handleDelete(org.id)}>
-                                                        <Delete/>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleDeleteOrg(org.id)}
+                                                        className="icon-button"
+                                                    >
+                                                        <Delete fontSize="small"/>
                                                     </IconButton>
                                                 </Box>
                                             </Box>
-                                        </Zoom>
-                                    ))
-                                )}
-                            </Box>
+                                        </Fade>
+                                    ))}
+                                </Box>
+                            )}
                         </Box>
                     </Fade>
 
-                    {/* Tasks Section */}
+                    {/* TASKS SECTION */}
                     <Fade in={true} timeout={2000}>
-                        <Box className="cyber-section">
+                        <Box className="section-container">
                             <Box className="section-header">
-                                <Box className="section-title-wrapper">
-                                    <Assignment className="section-icon"/>
+                                <Box>
                                     <Typography className="section-title">Active Tasks</Typography>
-                                    <Chip label={tasks.length} className="section-badge"/>
+                                    <Typography className="section-subtitle">
+                                        {tasks.length} total tasks
+                                    </Typography>
                                 </Box>
                                 <Button
-                                    className="cyber-button accent"
+                                    className="action-button"
                                     startIcon={<Add/>}
                                     onClick={() => handleOpenTaskDialog()}
                                 >
-                                    <span className="btn-text">Create Task</span>
+                                    Create Task
                                 </Button>
                             </Box>
 
-                            <Box className="data-grid">
-                                {tasks.length === 0 ? (
-                                    <Box className="empty-state">
-                                        <Assignment className="empty-icon"/>
-                                        <Typography className="empty-text">No tasks found</Typography>
-                                        <Typography className="empty-subtext">Create your first task to get
-                                            started</Typography>
-                                    </Box>
-                                ) : (
-                                    tasks.map((task, index) => (
-                                        <Zoom key={task.id} in={true} style={{transitionDelay: `${index * 50}ms`}}>
-                                            <Box className="task-card">
-                                                <div className="card-glow"></div>
-                                                <Box className="task-header">
-                                                    <Chip
-                                                        label={task.priority}
-                                                        className={`priority-chip ${task.priority.toLowerCase()}`}
-                                                    />
-                                                    <Chip
-                                                        label={task.status?.replace('_', ' ')}
-                                                        className={`status-chip ${task.status?.toLowerCase()}`}
-                                                    />
+                            <SearchFilter
+                                searchTerm={searchTerm}
+                                searchPlaceholder="Search tasks by title or description..."
+                                onSearchChange={handleSearchChange}
+                                filters={filters}
+                                filterOptions={{
+                                    status: [
+                                        { value: 'ALL', label: 'All Status' },
+                                        { value: 'PENDING', label: 'Pending' },
+                                        { value: 'IN_PROGRESS', label: 'In Progress' },
+                                        { value: 'COMPLETED', label: 'Completed' },
+                                        { value: 'CANCELLED', label: 'Cancelled' },
+                                        { value: 'ON_HOLD', label: 'On Hold' }
+                                    ],
+                                    priority: [
+                                        { value: 'ALL', label: 'All Priority' },
+                                        { value: 'LOW', label: 'Low' },
+                                        { value: 'MEDIUM', label: 'Medium' },
+                                        { value: 'HIGH', label: 'High' },
+                                        { value: 'URGENT', label: 'Urgent' }
+                                    ]
+                                }}
+                                onFilterChange={handleFilterChange}
+                                sortBy={sortBy}
+                                sortOptions={[
+                                    { value: 'DATE_DESC', label: 'Newest First' },
+                                    { value: 'DATE_ASC', label: 'Oldest First' },
+                                    { value: 'TITLE_ASC', label: 'Title A-Z' },
+                                    { value: 'TITLE_DESC', label: 'Title Z-A' },
+                                    { value: 'PRIORITY_DESC', label: 'Priority High→Low' }
+                                ]}
+                                onSortChange={handleSortChange}
+                                onClearFilters={clearFilters}
+                                activeFiltersCount={activeFiltersCount}
+                                resultCount={resultCount}
+                                totalCount={totalCount}
+                            />
+
+                            {tasksLoading ? (
+                                <Box className="loading-container">
+                                    <Typography>Loading...</Typography>
+                                </Box>
+                            ) : tasks.length === 0 ? (
+                                <Box className="empty-state">
+                                    <Assignment className="empty-state-icon"/>
+                                    <Typography className="empty-state-title">No tasks yet</Typography>
+                                    <Typography className="empty-state-description">
+                                        Create your first task to get started
+                                    </Typography>
+                                </Box>
+                            ) : (
+                                <Box className="cards-grid">
+                                    {filteredTasks.map((task, index) => (
+                                        <Fade key={task.id} in={true} timeout={800} style={{transitionDelay: `${index * 50}ms`}}>
+                                            <Box className="org-card">
+                                                <Box className="org-card-header">
+                                                    <Avatar className="org-avatar">
+                                                        📋
+                                                    </Avatar>
+                                                    <Box className="org-info">
+                                                        <Typography className="org-name">{task.title}</Typography>
+                                                        <Chip
+                                                            label={task.status}
+                                                            size="small"
+                                                            className="org-type"
+                                                        />
+                                                    </Box>
                                                 </Box>
-                                                <Typography className="task-title">{task.title}</Typography>
-                                                <Typography className="task-description">
-                                                    {task.description?.substring(0, 80)}...
-                                                </Typography>
-                                                <Box className="task-meta">
-                                                    {task.organization && (
-                                                        <Typography className="meta-item">
-                                                            🏢 {task.organization.name}
-                                                        </Typography>
-                                                    )}
-                                                    {task.assignedToUserId && (
-                                                        <Typography className="meta-item">
-                                                            👤 {task.assignedToUserId.name} {task.assignedToUserId.surname}
-                                                        </Typography>
+
+                                                {task.description && (
+                                                    <Typography className="org-description">
+                                                        {task.description.substring(0, 100)}...
+                                                    </Typography>
+                                                )}
+
+                                                <Box className="org-details">
+                                                    {task.priority && (
+                                                        <Box className="org-detail-item">
+                                                            <span>⚡</span>
+                                                            <span>{task.priority}</span>
+                                                        </Box>
                                                     )}
                                                     {task.dueDate && (
-                                                        <Typography className="meta-item">
-                                                            📅 {new Date(task.dueDate).toLocaleDateString()}
-                                                        </Typography>
+                                                        <Box className="org-detail-item">
+                                                            <span>📅</span>
+                                                            <span>{new Date(task.dueDate).toLocaleDateString()}</span>
+                                                        </Box>
                                                     )}
                                                 </Box>
-                                                <Box className="card-actions">
-                                                    <IconButton className="action-btn view"
-                                                                onClick={() => handleOpenTaskViewDialog(task)}>
-                                                        <Visibility/>
+
+                                                <Box className="org-actions">
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleOpenTaskViewDialog(task)}
+                                                        className="icon-button"
+                                                    >
+                                                        <Visibility fontSize="small"/>
                                                     </IconButton>
-                                                    <IconButton className="action-btn edit"
-                                                                onClick={() => handleOpenTaskDialog(task)}>
-                                                        <Edit/>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleOpenTaskDialog(task)}
+                                                        className="icon-button"
+                                                    >
+                                                        <Edit fontSize="small"/>
                                                     </IconButton>
-                                                    <IconButton className="action-btn delete"
-                                                                onClick={() => handleOpenTaskDeleteDialog(task)}>
-                                                        <Delete/>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleOpenTaskDeleteDialog(task)}
+                                                        className="icon-button"
+                                                    >
+                                                        <Delete fontSize="small"/>
                                                     </IconButton>
                                                 </Box>
                                             </Box>
-                                        </Zoom>
-                                    ))
-                                )}
-                            </Box>
+                                        </Fade>
+                                    ))}
+                                </Box>
+                            )}
                         </Box>
                     </Fade>
 
+                    {/* CLIENTS SECTION */}
                     <Fade in={true} timeout={2500}>
-                        <Box className="cyber-section">
+                        <Box className="section-container">
                             <Box className="section-header">
-                                <Box className="section-title-wrapper">
-                                    <People className="section-icon"/>
+                                <Box>
                                     <Typography className="section-title">Clients</Typography>
-                                    <Chip label={clients.length} className="section-badge"/>
+                                    <Typography className="section-subtitle">
+                                        {clients.length} total clients
+                                    </Typography>
                                 </Box>
                                 <Button
-                                    className="cyber-button secondary"
+                                    className="action-button"
                                     startIcon={<Add/>}
                                     onClick={() => handleOpenClientDialog()}
                                 >
-                                    <span className="btn-text">Add Client</span>
+                                    Add Client
                                 </Button>
                             </Box>
 
-                            <Box className="data-grid">
-                                {clients.length === 0 ? (
-                                    <Box className="empty-state">
-                                        <People className="empty-icon"/>
-                                        <Typography className="empty-text">No clients found</Typography>
-                                        <Typography className="empty-subtext">Add your first client to get
-                                            started</Typography>
-                                    </Box>
-                                ) : (
-                                    clients.map((client, index) => (
-                                        <Zoom key={client.id} in={true} style={{transitionDelay: `${index * 50}ms`}}>
-                                            <Box className="data-card">
-                                                <div className="card-glow"></div>
-                                                <Box className="card-header">
-                                                    <Avatar className="client-avatar-small">
-                                                        {client.firstName?.charAt(0)}{client.lastName?.charAt(0)}
+
+                            <SearchFilter
+                                searchTerm={clientSearchTerm}
+                                searchPlaceholder="Search clients by name, email, phone..."
+                                onSearchChange={handleClientSearchChange}
+                                filters={clientFilters}
+                                filterOptions={{
+                                    organization: [
+                                        { value: 'ALL', label: 'All Organizations' },
+                                        ...organizations.map(org => ({
+                                            value: org.id.toString(),
+                                            label: org.name
+                                        }))
+                                    ]
+                                }}
+                                onFilterChange={handleClientFilterChange}
+                                sortBy={clientSortBy}
+                                sortOptions={[
+                                    { value: 'DATE_DESC', label: 'Newest First' },
+                                    { value: 'DATE_ASC', label: 'Oldest First' },
+                                    { value: 'TITLE_ASC', label: 'Name A-Z' },
+                                    { value: 'TITLE_DESC', label: 'Name Z-A' }
+                                ]}
+                                onSortChange={handleClientSortChange}
+                                onClearFilters={clearClientFilters}
+                                activeFiltersCount={clientActiveFiltersCount}
+                                resultCount={clientResultCount}
+                                totalCount={clientTotalCount}
+                            />
+
+                            {clientsLoading ? (
+                                <Box className="loading-container">
+                                    <Typography>Loading...</Typography>
+                                </Box>
+                            ) : filteredClients.length === 0 ? (
+                                <Box className="empty-state">
+                                    <People className="empty-state-icon"/>
+                                    <Typography className="empty-state-title">No clients yet</Typography>
+                                    <Typography className="empty-state-description">
+                                        Add your first client to get started
+                                    </Typography>
+                                </Box>
+                            ) : (
+                                <Box className="cards-grid">
+                                    {filteredClients.map((client, index) => (
+                                        <Fade key={client.id} in={true} timeout={800} style={{transitionDelay: `${index * 50}ms`}}>
+                                            <Box className="org-card">
+                                                <Box className="org-card-header">
+                                                    <Avatar className="org-avatar">
+                                                        {client.firstName[0]}{client.lastName[0]}
                                                     </Avatar>
-                                                </Box>
-                                                <Typography className="card-title">
-                                                    {client.firstName} {client.lastName}
-                                                </Typography>
-                                                <Box className="card-meta">
-                                                    {client.email && (
-                                                        <Typography className="meta-item">
-                                                            📧 {client.email}
+                                                    <Box className="org-info">
+                                                        <Typography className="org-name">
+                                                            {client.firstName} {client.lastName}
                                                         </Typography>
+                                                    </Box>
+                                                </Box>
+
+                                                <Box className="org-details">
+                                                    {client.email && (
+                                                        <Box className="org-detail-item">
+                                                            <span>📧</span>
+                                                            <span>{client.email}</span>
+                                                        </Box>
                                                     )}
                                                     {client.phoneNumber && (
-                                                        <Typography className="meta-item">
-                                                            📞 {client.phoneNumber}
-                                                        </Typography>
-                                                    )}
-                                                    {client.city && client.country && (
-                                                        <Typography className="meta-item">
-                                                            📍 {client.city}, {client.country}
-                                                        </Typography>
+                                                        <Box className="org-detail-item">
+                                                            <span>📞</span>
+                                                            <span>{client.phoneNumber}</span>
+                                                        </Box>
                                                     )}
                                                 </Box>
-                                                <Box className="card-actions">
-                                                    <IconButton className="action-btn view"
-                                                                onClick={() => handleOpenClientViewDialog(client)}>
-                                                        <Visibility/>
+
+                                                <Box className="org-actions">
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleOpenClientViewDialog(client)}
+                                                        className="icon-button"
+                                                    >
+                                                        <Visibility fontSize="small"/>
                                                     </IconButton>
-                                                    <IconButton className="action-btn edit"
-                                                                onClick={() => handleOpenClientDialog(client)}>
-                                                        <Edit/>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleOpenClientDialog(client)}
+                                                        className="icon-button"
+                                                    >
+                                                        <Edit fontSize="small"/>
                                                     </IconButton>
-                                                    <IconButton className="action-btn delete"
-                                                                onClick={() => handleOpenClientDeleteDialog(client)}>
-                                                        <Delete/>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleOpenClientDeleteDialog(client)}
+                                                        className="icon-button"
+                                                    >
+                                                        <Delete fontSize="small"/>
                                                     </IconButton>
                                                 </Box>
                                             </Box>
-                                        </Zoom>
-                                    ))
-                                )}
-                            </Box>
+                                        </Fade>
+                                    ))}
+                                </Box>
+                            )}
                         </Box>
                     </Fade>
 
-                    {/* Users Section */}
-                    <Fade in={true} timeout={2500}>
-                        <Box className="cyber-section">
+                    {/* USERS SECTION */}
+                    <Fade in={true} timeout={3000}>
+                        <Box className="section-container">
                             <Box className="section-header">
-                                <Box className="section-title-wrapper">
-                                    <People className="section-icon"/>
+                                <Box>
                                     <Typography className="section-title">Team Members</Typography>
-                                    <Chip label={users.length} className="section-badge"/>
+                                    <Typography className="section-subtitle">
+                                        {users.length} total users
+                                    </Typography>
                                 </Box>
                                 <Button
-                                    className="cyber-button primary"
+                                    className="action-button"
                                     startIcon={<PersonAdd/>}
                                     onClick={() => handleOpenUserDialog()}
                                 >
-                                    <span className="btn-text">Add User</span>
+                                    Add User
                                 </Button>
                             </Box>
 
-                            <Box className="user-grid">
-                                {users.slice(0, 8).map((usr, index) => (
-                                    <Zoom key={usr.username} in={true} style={{transitionDelay: `${index * 50}ms`}}>
-                                        <Box className="user-card">
-                                            <div className="card-glow"></div>
-                                            <Avatar className="user-avatar">
-                                                {usr.name?.charAt(0)}{usr.surname?.charAt(0)}
-                                            </Avatar>
-                                            <Typography className="user-name">{usr.name} {usr.surname}</Typography>
-                                            <Typography className="user-username">@{usr.username}</Typography>
-                                            <Chip
-                                                label={usr.role}
-                                                className={`role-chip ${usr.role.toLowerCase()}`}
-                                            />
-                                            <Box className="user-actions">
-                                                <IconButton
-                                                    className="action-btn view"
-                                                    size="small"
-                                                    onClick={() => handleOpenUserViewDialog(usr)}
-                                                >
-                                                    <Visibility fontSize="small"/>
-                                                </IconButton>
-                                                <IconButton
-                                                    className="action-btn edit"
-                                                    size="small"
-                                                    onClick={() => handleOpenUserDialog(usr)}
-                                                >
-                                                    <Edit fontSize="small"/>
-                                                </IconButton>
-                                                <IconButton
-                                                    className="action-btn delete"
-                                                    size="small"
-                                                    onClick={() => handleOpenUserDeleteDialog(usr)}
-                                                >
-                                                    <Delete fontSize="small"/>
-                                                </IconButton>
+                            {usersLoading ? (
+                                <Box className="loading-container">
+                                    <Typography>Loading...</Typography>
+                                </Box>
+                            ) : users.length === 0 ? (
+                                <Box className="empty-state">
+                                    <People className="empty-state-icon"/>
+                                    <Typography className="empty-state-title">No users yet</Typography>
+                                    <Typography className="empty-state-description">
+                                        Add your first user to get started
+                                    </Typography>
+                                </Box>
+                            ) : (
+                                <Box className="cards-grid">
+                                    {users.map((usr, index) => (
+                                        <Fade key={usr.username} in={true} timeout={800} style={{transitionDelay: `${index * 50}ms`}}>
+                                            <Box className="org-card">
+                                                <Box className="org-card-header">
+                                                    <Avatar className="org-avatar">
+                                                        {usr.name[0]}{usr.surname[0]}
+                                                    </Avatar>
+                                                    <Box className="org-info">
+                                                        <Typography className="org-name">
+                                                            {usr.name} {usr.surname}
+                                                        </Typography>
+                                                        <Chip
+                                                            label={usr.role}
+                                                            size="small"
+                                                            className="org-type"
+                                                        />
+                                                    </Box>
+                                                </Box>
+
+                                                <Box className="org-details">
+                                                    <Box className="org-detail-item">
+                                                        <span>👤</span>
+                                                        <span>@{usr.username}</span>
+                                                    </Box>
+                                                </Box>
+
+                                                <Box className="org-actions">
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleOpenUserViewDialog(usr)}
+                                                        className="icon-button"
+                                                    >
+                                                        <Visibility fontSize="small"/>
+                                                    </IconButton>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleOpenUserDialog(usr)}
+                                                        className="icon-button"
+                                                    >
+                                                        <Edit fontSize="small"/>
+                                                    </IconButton>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleOpenUserDeleteDialog(usr)}
+                                                        className="icon-button"
+                                                    >
+                                                        <Delete fontSize="small"/>
+                                                    </IconButton>
+                                                </Box>
                                             </Box>
-                                        </Box>
-                                    </Zoom>
-                                ))}
-                            </Box>
+                                        </Fade>
+                                    ))}
+                                </Box>
+                            )}
                         </Box>
                     </Fade>
 
-                    {/* Records Section */}
-                    <Fade in={true} timeout={3000}>
-                        <Box className="cyber-section">
+                    {/* RECORDS SECTION */}
+                    <Fade in={true} timeout={3500}>
+                        <Box className="section-container">
                             <Box className="section-header">
-                                <Box className="section-title-wrapper">
-                                    <Assignment className="section-icon"/>
+                                <Box>
                                     <Typography className="section-title">Records</Typography>
-                                    <Chip label={records.length} className="section-badge"/>
+                                    <Typography className="section-subtitle">
+                                        {records.length} total records
+                                    </Typography>
                                 </Box>
                                 <Button
-                                    className="cyber-button accent"
+                                    className="action-button"
                                     startIcon={<Add/>}
                                     onClick={() => handleOpenRecordDialog()}
                                 >
-                                    <span className="btn-text">Create Record</span>
+                                    Create Record
                                 </Button>
                             </Box>
 
-                            <Box className="data-grid">
-                                {records.length === 0 ? (
-                                    <Box className="empty-state">
-                                        <Assignment className="empty-icon"/>
-                                        <Typography className="empty-text">No records found</Typography>
-                                        <Typography className="empty-subtext">Create your first record to get
-                                            started</Typography>
-                                    </Box>
-                                ) : (
-                                    records.map((record, index) => (
-                                        <Zoom key={record.id} in={true} style={{transitionDelay: `${index * 50}ms`}}>
-                                            <Box className="data-card">
-                                                <div className="card-glow"></div>
-                                                <Box className="card-header">
-                                                    <Box className="card-icon">📋</Box>
-                                                    {record.status && (
-                                                        <Chip
-                                                            label={record.status}
-                                                            className={`status-chip ${record.status.toLowerCase()}`}
-                                                        />
-                                                    )}
+                            {recordsLoading ? (
+                                <Box className="loading-container">
+                                    <Typography>Loading...</Typography>
+                                </Box>
+                            ) : records.length === 0 ? (
+                                <Box className="empty-state">
+                                    <Assignment className="empty-state-icon"/>
+                                    <Typography className="empty-state-title">No records yet</Typography>
+                                    <Typography className="empty-state-description">
+                                        Create your first record to get started
+                                    </Typography>
+                                </Box>
+                            ) : (
+                                <Box className="cards-grid">
+                                    {records.map((record, index) => (
+                                        <Fade key={record.id} in={true} timeout={800} style={{transitionDelay: `${index * 50}ms`}}>
+                                            <Box className="org-card">
+                                                <Box className="org-card-header">
+                                                    <Avatar className="org-avatar">
+                                                        📄
+                                                    </Avatar>
+                                                    <Box className="org-info">
+                                                        <Typography className="org-name">
+                                                            Record #{record.id}
+                                                        </Typography>
+                                                    </Box>
                                                 </Box>
-                                                <Typography className="card-title">
-                                                    {record.title || `Record #${record.id}`}
-                                                </Typography>
+
                                                 {record.description && (
-                                                    <Typography className="card-description">
-                                                        {record.description.substring(0, 80)}...
+                                                    <Typography className="org-description">
+                                                        {record.description.substring(0, 100)}...
                                                     </Typography>
                                                 )}
-                                                <Box className="card-meta">
-                                                    {record.client && (
-                                                        <Typography className="meta-item">
-                                                            👤 {record.client.firstName} {record.client.lastName}
-                                                        </Typography>
-                                                    )}
-                                                    {record.organization && (
-                                                        <Typography className="meta-item">
-                                                            🏢 {record.organization.name}
-                                                        </Typography>
-                                                    )}
+
+                                                <Box className="org-details">
                                                     {record.createdAt && (
-                                                        <Typography className="meta-item">
-                                                            📅 {new Date(record.createdAt).toLocaleDateString()}
-                                                        </Typography>
+                                                        <Box className="org-detail-item">
+                                                            <span>📅</span>
+                                                            <span>{new Date(record.createdAt).toLocaleDateString()}</span>
+                                                        </Box>
                                                     )}
                                                 </Box>
-                                                <Box className="card-actions">
-                                                    <IconButton className="action-btn view"
-                                                                onClick={() => handleOpenRecordViewDialog(record)}>
-                                                        <Visibility/>
+
+                                                <Box className="org-actions">
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleOpenRecordViewDialog(record)}
+                                                        className="icon-button"
+                                                    >
+                                                        <Visibility fontSize="small"/>
                                                     </IconButton>
-                                                    <IconButton className="action-btn edit"
-                                                                onClick={() => handleOpenRecordDialog(record)}>
-                                                        <Edit/>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleOpenRecordDialog(record)}
+                                                        className="icon-button"
+                                                    >
+                                                        <Edit fontSize="small"/>
                                                     </IconButton>
-                                                    <IconButton className="action-btn delete"
-                                                                onClick={() => handleOpenRecordDeleteDialog(record)}>
-                                                        <Delete/>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleOpenRecordDeleteDialog(record)}
+                                                        className="icon-button"
+                                                    >
+                                                        <Delete fontSize="small"/>
                                                     </IconButton>
                                                 </Box>
                                             </Box>
-                                        </Zoom>
-                                    ))
-                                )}
-                            </Box>
+                                        </Fade>
+                                    ))}
+                                </Box>
+                            )}
                         </Box>
                     </Fade>
 
                 </Container>
             </Box>
 
-            {/* Modals */}
+            {/* ALL MODALS */}
             <OrganizationForm
                 open={openDialog}
                 onClose={handleCloseDialog}
                 onSubmit={handleSubmit}
                 organization={editingOrg}
-                managers={managers}
             />
 
             <OrganizationDetailsModal
@@ -943,7 +1149,8 @@ const AdminDashboard = () => {
             <CreateManagerForm
                 open={openManagerDialog}
                 onClose={handleCloseManagerDialog}
-                onSubmit={handleCreateManager}
+                onSubmit={handleSubmitManager}
+                organizations={organizations}
             />
 
             <TaskCreate
@@ -960,15 +1167,15 @@ const AdminDashboard = () => {
                 open={openTaskViewDialog}
                 onClose={handleCloseTaskViewDialog}
                 task={viewingTask}
-                onEdit={handleOpenTaskDialog}
             />
 
             <TaskDelete
                 open={openTaskDeleteDialog}
                 onClose={handleCloseTaskDeleteDialog}
-                task={deletingTask}
                 onConfirm={handleConfirmDeleteTask}
+                task={deletingTask}
             />
+
             <ClientCreate
                 open={openClientDialog}
                 onClose={handleCloseClientDialog}
@@ -981,71 +1188,56 @@ const AdminDashboard = () => {
                 open={openClientViewDialog}
                 onClose={handleCloseClientViewDialog}
                 client={viewingClient}
-                onEdit={handleOpenClientDialog}
             />
 
             <ClientDelete
                 open={openClientDeleteDialog}
                 onClose={handleCloseClientDeleteDialog}
-                client={deletingClient}
                 onConfirm={handleConfirmDeleteClient}
-            />
-            <ClientDelete
-                open={openClientDeleteDialog}
-                onClose={handleCloseClientDeleteDialog}
                 client={deletingClient}
-                onConfirm={handleConfirmDeleteClient}
             />
-
 
             <UserCreate
                 open={openUserDialog}
                 onClose={handleCloseUserDialog}
                 onSubmit={handleSubmitUser}
                 user={editingUser}
+                organizations={organizations}
             />
 
             <UserView
                 open={openUserViewDialog}
                 onClose={handleCloseUserViewDialog}
                 user={viewingUser}
-                onEdit={handleOpenUserDialog}
             />
 
             <UserDelete
                 open={openUserDeleteDialog}
                 onClose={handleCloseUserDeleteDialog}
-                user={deletingUser}
                 onConfirm={handleConfirmDeleteUser}
+                user={deletingUser}
             />
-
 
             <RecordCreate
                 open={openRecordDialog}
                 onClose={handleCloseRecordDialog}
                 onSubmit={handleSubmitRecord}
                 record={editingRecord}
-                organizations={organizations}
                 clients={clients}
-                users={users}
             />
-
 
             <RecordView
                 open={openRecordViewDialog}
                 onClose={handleCloseRecordViewDialog}
                 record={viewingRecord}
-                onEdit={handleOpenRecordDialog}
             />
 
             <RecordDelete
                 open={openRecordDeleteDialog}
                 onClose={handleCloseRecordDeleteDialog}
-                record={deletingRecord}
                 onConfirm={handleConfirmDeleteRecord}
+                record={deletingRecord}
             />
-
-
         </>
     );
 };
