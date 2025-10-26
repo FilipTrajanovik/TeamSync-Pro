@@ -1,183 +1,251 @@
-/* Apple Dialog */
-.apple-dialog {
-    background: rgba(255, 255, 255, 0.95) !important;
+/* ==================== CLIENT CREATE DIALOG - BLACK/WHITE GLASSMORPHISM ==================== */
+/* Unique classes prefixed with .client-create- to avoid conflicts */
+/* Matching Manager Dashboard, UserCreate & TaskCreate Apple Style */
+
+/* Dialog Container */
+.client-create-dialog {
+    background: rgba(20, 20, 20, 0.95) !important;
     backdrop-filter: blur(40px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
     border-radius: 28px !important;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15), 0 0 0 0.5px rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5) !important;
     overflow: hidden;
 }
 
+.client-create-dialog .MuiDialog-paper {
+    background: transparent !important;
+}
+
 /* Header */
-.apple-dialog-header {
+.client-create-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 28px 32px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(249, 249, 249, 0.8) 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
 }
 
-.header-content {
+.client-create-header-content {
     display: flex;
     align-items: center;
     gap: 16px;
 }
 
-.header-avatar {
+.client-create-header-avatar {
     width: 56px !important;
     height: 56px !important;
-    background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%) !important;
-    box-shadow: 0 8px 24px rgba(0, 122, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.1);
+    color: #ffffff !important;
 }
 
-.header-title {
+.client-create-header-title {
     font-size: 28px !important;
     font-weight: 700 !important;
-    color: #1d1d1f !important;
+    color: #ffffff !important;
     letter-spacing: -0.5px;
 }
 
-.header-subtitle {
+.client-create-header-subtitle {
     font-size: 15px !important;
-    color: #86868b !important;
+    color: rgba(255, 255, 255, 0.5) !important;
     margin-top: 2px !important;
 }
 
-.close-button {
+.client-create-close-button {
     width: 40px !important;
     height: 40px !important;
-    background: rgba(0, 0, 0, 0.04) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    border-radius: 10px !important;
 }
 
-.close-button:hover {
-    background: rgba(0, 0, 0, 0.08) !important;
+.client-create-close-button:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
     transform: scale(1.05);
 }
 
-.close-button svg {
-    color: #1d1d1f;
+.client-create-close-button svg {
+    color: #ffffff;
 }
 
 /* Content */
-.apple-dialog-content {
+.client-create-content {
     padding: 32px;
     max-height: 60vh;
     overflow-y: auto;
 }
 
-.apple-dialog-content::-webkit-scrollbar {
+.client-create-content::-webkit-scrollbar {
     width: 8px;
 }
 
-.apple-dialog-content::-webkit-scrollbar-track {
+.client-create-content::-webkit-scrollbar-track {
     background: transparent;
 }
 
-.apple-dialog-content::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.12);
+.client-create-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
 }
 
-.apple-dialog-content::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.18);
+.client-create-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.15);
 }
 
 /* Form Sections */
-.form-section {
+.client-create-form-section {
     margin-bottom: 32px;
 }
 
-.form-section:last-child {
+.client-create-form-section:last-child {
     margin-bottom: 0;
 }
 
-.section-title {
+.client-create-section-title {
     font-size: 20px !important;
     font-weight: 600 !important;
-    color: #1d1d1f !important;
+    color: #ffffff !important;
     margin-bottom: 16px !important;
     letter-spacing: -0.3px;
 }
 
-/* Apple Input Group */
-.apple-input-group {
+/* Input Group */
+.client-create-input-group {
     position: relative;
 }
 
-.input-icon {
+.client-create-input-icon {
     position: absolute;
     left: 16px;
     top: 50%;
     transform: translateY(-50%);
-    color: #86868b;
+    color: rgba(255, 255, 255, 0.5);
     z-index: 1;
     pointer-events: none;
 }
 
-.apple-input .MuiOutlinedInput-root {
-    background: rgba(255, 255, 255, 0.8);
+.client-create-input .MuiOutlinedInput-root {
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 12px;
     padding-left: 48px;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.apple-input .MuiOutlinedInput-notchedOutline {
-    border-color: rgba(0, 0, 0, 0.08);
+.client-create-input .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.08);
     border-width: 1px;
 }
 
-.apple-input .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-    border-color: rgba(0, 0, 0, 0.12);
+.client-create-input .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.12);
 }
 
-.apple-input .MuiOutlinedInput-root.Mui-focused {
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+.client-create-input .MuiOutlinedInput-root.Mui-focused {
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
 }
 
-.apple-input .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-    border-color: #007AFF;
+.client-create-input .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.3);
     border-width: 2px;
 }
 
-.apple-input label {
-    color: #86868b !important;
+.client-create-input label {
+    color: rgba(255, 255, 255, 0.5) !important;
     left: 32px;
     font-weight: 500;
 }
 
-.apple-input label.Mui-focused {
-    color: #007AFF !important;
+.client-create-input label.Mui-focused {
+    color: rgba(255, 255, 255, 0.9) !important;
     left: 0;
 }
 
-.apple-input label.MuiFormLabel-filled {
+.client-create-input label.MuiFormLabel-filled {
     left: 0;
 }
 
-.apple-input input {
-    color: #1d1d1f !important;
+.client-create-input input,
+.client-create-input textarea {
+    color: #ffffff !important;
     font-size: 16px;
 }
 
-.apple-input .MuiFormHelperText-root {
+.client-create-input .MuiFormHelperText-root {
     margin-left: 4px;
     font-size: 13px;
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.client-create-input .MuiFormHelperText-root.Mui-error {
+    color: rgba(239, 68, 68, 0.9) !important;
+}
+
+/* Select */
+.client-create-select .MuiOutlinedInput-root {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding-left: 48px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.client-create-select .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.08);
+    border-width: 1px;
+}
+
+.client-create-select .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.client-create-select .MuiOutlinedInput-root.Mui-focused {
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
+}
+
+.client-create-select .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.3);
+    border-width: 2px;
+}
+
+.client-create-select .MuiInputLabel-root {
+    color: rgba(255, 255, 255, 0.5) !important;
+    left: 32px;
+    font-weight: 500;
+}
+
+.client-create-select .MuiInputLabel-root.Mui-focused {
+    color: rgba(255, 255, 255, 0.9) !important;
+    left: 0;
+}
+
+.client-create-select .MuiInputLabel-root.MuiFormLabel-filled {
+    left: 0;
+}
+
+.client-create-select .MuiSelect-select {
+    color: #ffffff !important;
+}
+
+.client-create-select .MuiSelect-icon {
+    color: rgba(255, 255, 255, 0.4) !important;
 }
 
 /* Footer */
-.apple-dialog-footer {
+.client-create-footer {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
     padding: 20px 32px;
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
-    background: linear-gradient(180deg, rgba(249, 249, 249, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
 }
 
-/* Apple Buttons */
-.apple-button {
+/* Buttons */
+.client-create-button {
     padding: 12px 28px !important;
     border-radius: 12px !important;
     text-transform: none !important;
@@ -187,93 +255,75 @@
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-.apple-button.primary {
-    background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%) !important;
-    color: white !important;
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+.client-create-button.primary {
+    background: rgba(255, 255, 255, 0.95) !important;
+    color: #000000 !important;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
 }
 
-.apple-button.primary:hover {
-    box-shadow: 0 8px 20px rgba(0, 122, 255, 0.4);
+.client-create-button.primary:hover {
+    background: #ffffff !important;
+    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.25);
     transform: translateY(-1px);
 }
 
-.apple-button.secondary {
-    background: rgba(0, 0, 0, 0.04) !important;
-    color: #1d1d1f !important;
+.client-create-button.secondary {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #ffffff !important;
 }
 
-.apple-button.secondary:hover {
-    background: rgba(0, 0, 0, 0.08) !important;
+.client-create-button.secondary:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
     transform: translateY(-1px);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-    .apple-dialog-header {
+    .client-create-header {
         padding: 20px;
     }
 
-    .apple-dialog-content {
+    .client-create-content {
         padding: 20px;
     }
 
-    .apple-dialog-footer {
+    .client-create-footer {
         padding: 16px 20px;
         flex-direction: column;
     }
 
-    .apple-button {
+    .client-create-button {
         width: 100%;
     }
 
-    .header-title {
+    .client-create-header-title {
         font-size: 24px !important;
     }
 }
 
-/* Apple Select */
-.apple-select .MuiOutlinedInput-root {
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 12px;
-    padding-left: 48px;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+/* Menu Paper Override for Select Dropdowns */
+.MuiPaper-root.MuiMenu-paper {
+    background: rgba(20, 20, 20, 0.95) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
 }
 
-.apple-select .MuiOutlinedInput-notchedOutline {
-    border-color: rgba(0, 0, 0, 0.08);
-    border-width: 1px;
+.MuiPaper-root.MuiMenu-paper .MuiMenuItem-root {
+    color: #ffffff !important;
+    transition: all 0.2s ease !important;
 }
 
-.apple-select .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-    border-color: rgba(0, 0, 0, 0.12);
+.MuiPaper-root.MuiMenu-paper .MuiMenuItem-root:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
 }
 
-.apple-select .MuiOutlinedInput-root.Mui-focused {
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+.MuiPaper-root.MuiMenu-paper .MuiMenuItem-root.Mui-selected {
+    background: rgba(255, 255, 255, 0.12) !important;
 }
 
-.apple-select .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-    border-color: #007AFF;
-    border-width: 2px;
-}
-
-.apple-select .MuiInputLabel-root {
-    color: #86868b !important;
-    left: 32px;
-    font-weight: 500;
-}
-
-.apple-select .MuiInputLabel-root.Mui-focused {
-    color: #007AFF !important;
-    left: 0;
-}
-
-.apple-select .MuiInputLabel-root.MuiFormLabel-filled {
-    left: 0;
-}
-
-.apple-select .MuiSelect-select {
-    color: #1d1d1f !important;
+.MuiPaper-root.MuiMenu-paper .MuiMenuItem-root.Mui-selected:hover {
+    background: rgba(255, 255, 255, 0.16) !important;
 }

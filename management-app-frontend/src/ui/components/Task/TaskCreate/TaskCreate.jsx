@@ -14,16 +14,16 @@ import {
     MenuItem
 } from '@mui/material';
 import {
-    Close as CloseIcon,
-    Assignment as AssignmentIcon,
-    CalendarToday as CalendarIcon,
-    Business as BusinessIcon,
-    Person as PersonIcon,
-    Group as GroupIcon
+    Close,
+    Assignment,
+    CalendarToday,
+    Business,
+    Person,
+    Group
 } from '@mui/icons-material';
 import './TaskCreate.css';
 
-const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organizations = [], clients = [], isManagerView=false }) => {
+const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organizations = [], clients = [], isManagerView = false }) => {
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -51,7 +51,6 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
                 assignedToUserId: task.assignedToUserId || '',
                 organizationId: task.organizationId || '',
                 finished: task.finished || false
-
             });
         } else {
             if (isManagerView && organizations.length > 0) {
@@ -63,7 +62,7 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
                 resetForm();
             }
         }
-    }, [task, open]);
+    }, [task, open, isManagerView, organizations]);
 
     const resetForm = () => {
         setFormData({
@@ -78,20 +77,22 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
             finished: false
         });
         setErrors({});
+        setFocusedField('');
     };
+
     const priorities = [
-        { value: 'LOW', label: 'Low', icon: '🟢', gradient: 'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)' },
-        { value: 'MEDIUM', label: 'Medium', icon: '🟡', gradient: 'linear-gradient(135deg, #ffd89b 0%, #19547b 100%)' },
-        { value: 'HIGH', label: 'High', icon: '🟠', gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
-        { value: 'URGENT', label: 'Urgent', icon: '🔴', gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }
+        { value: 'LOW', label: 'Low', icon: '🟢' },
+        { value: 'MEDIUM', label: 'Medium', icon: '🟡' },
+        { value: 'HIGH', label: 'High', icon: '🟠' },
+        { value: 'URGENT', label: 'Urgent', icon: '🔴' }
     ];
 
     const statuses = [
-        { value: 'PENDING', label: 'Pending', color: '#fbbf24', glow: 'rgba(251, 191, 36, 0.4)' },
-        { value: 'IN_PROGRESS', label: 'In Progress', color: '#60a5fa', glow: 'rgba(96, 165, 250, 0.4)' },
-        { value: 'COMPLETED', label: 'Completed', color: '#34d399', glow: 'rgba(52, 211, 153, 0.4)' },
-        { value: 'ON_HOLD', label: 'On Hold', color: '#94a3b8', glow: 'rgba(148, 163, 184, 0.4)' },
-        { value: 'CANCELLED', label: 'Cancelled', color: '#f87171', glow: 'rgba(248, 113, 113, 0.4)' }
+        { value: 'PENDING', label: 'Pending' },
+        { value: 'IN_PROGRESS', label: 'In Progress' },
+        { value: 'COMPLETED', label: 'Completed' },
+        { value: 'ON_HOLD', label: 'On Hold' },
+        { value: 'CANCELLED', label: 'Cancelled' }
     ];
 
     const handleChange = (e) => {
@@ -106,17 +107,13 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
         const newErrors = {};
         if (!formData.title.trim()) newErrors.title = 'Title is required';
         if (!formData.description.trim()) newErrors.description = 'Description is required';
-        if (!formData.organizationId) newErrors.organizationId = 'Organization is required';
 
-        if(isManagerView)
-        {
-            if(!formData.clientId) newErrors.clientId = 'Client is required'
-            if(!formData.assignedToUserId) newErrors.assignedToUserId = 'User assignment is required'
-        }else {
-            // For admins, organization is required
+        if (isManagerView) {
+            if (!formData.clientId) newErrors.clientId = 'Client is required';
+            if (!formData.assignedToUserId) newErrors.assignedToUserId = 'User assignment is required';
+        } else {
             if (!formData.organizationId) newErrors.organizationId = 'Organization is required';
         }
-
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -135,8 +132,6 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
         onClose();
     };
 
-    const selectedStatus = statuses.find(s => s.value === formData.status);
-
     return (
         <Dialog
             open={open}
@@ -144,48 +139,40 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
             maxWidth="lg"
             fullWidth
             PaperProps={{
-                className: 'modern-task-dialog'
+                className: 'task-create-dialog'
             }}
         >
-            {/* Animated Background Elements */}
-            <div className="task-dialog-bg">
-                <div className="floating-orb orb-1"></div>
-                <div className="floating-orb orb-2"></div>
-                <div className="floating-orb orb-3"></div>
-            </div>
-
             {/* Header */}
-            <Box className="modern-task-header">
-                <Box className="header-content">
-                    <Box className="header-icon-wrapper">
-                        <AssignmentIcon className="header-icon" />
-                        <div className="icon-pulse"></div>
+            <Box className="task-create-header">
+                <Box className="task-create-header-content">
+                    <Box className="task-create-header-icon-wrapper">
+                        <Assignment className="task-create-header-icon" />
                     </Box>
-                    <Box>
-                        <Typography variant="h4" className="header-title">
-                            {task ? '✨ Edit Task' : '🚀 Create New Task'}
+                    <Box className="task-create-header-text">
+                        <Typography className="task-create-header-title">
+                            {task ? 'Edit Task' : 'Create New Task'}
                         </Typography>
-                        <Typography className="header-subtitle">
-                            {task ? 'Update your task details below' : 'Fill in the magic and watch it happen'}
+                        <Typography className="task-create-header-subtitle">
+                            {task ? 'Update your task details below' : 'Fill in the details to create a new task'}
                         </Typography>
                     </Box>
                 </Box>
-                <IconButton onClick={handleClose} className="modern-close-btn">
-                    <CloseIcon />
+                <IconButton onClick={handleClose} className="task-create-close-btn">
+                    <Close />
                 </IconButton>
             </Box>
 
             {/* Content */}
-            <Box className="modern-task-content">
+            <Box className="task-create-content">
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={3}>
                         {/* Main Info Card */}
                         <Grid item xs={12}>
-                            <Box className="info-section">
-                                <Typography className="section-label">📝 Task Information</Typography>
+                            <Box className="task-create-info-section">
+                                <Typography className="task-create-section-label">Task Information</Typography>
                                 <Grid container spacing={2}>
                                     <Grid item xs={12} md={isManagerView ? 12 : 6}>
-                                        <Box className={`modern-input-wrapper ${focusedField === 'title' ? 'focused' : ''}`}>
+                                        <Box className={`task-create-input-wrapper ${focusedField === 'title' ? 'focused' : ''}`}>
                                             <TextField
                                                 name="title"
                                                 label="Task Title"
@@ -197,14 +184,14 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
                                                 onBlur={() => setFocusedField('')}
                                                 error={!!errors.title}
                                                 helperText={errors.title}
-                                                placeholder="Enter an awesome task title..."
+                                                placeholder="Enter task title..."
                                                 variant="outlined"
-                                                className="modern-input"
+                                                className="task-create-input"
                                             />
                                         </Box>
                                     </Grid>
                                     <Grid item xs={12} md={isManagerView ? 12 : 6}>
-                                        <Box className={`modern-input-wrapper ${focusedField === 'description' ? 'focused' : ''}`}>
+                                        <Box className={`task-create-input-wrapper ${focusedField === 'description' ? 'focused' : ''}`}>
                                             <TextField
                                                 name="description"
                                                 label="Description"
@@ -220,7 +207,7 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
                                                 helperText={errors.description}
                                                 placeholder="What needs to be done?"
                                                 variant="outlined"
-                                                className="modern-input"
+                                                className="task-create-input"
                                             />
                                         </Box>
                                     </Grid>
@@ -230,20 +217,17 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
 
                         {/* Priority Section */}
                         <Grid item xs={12} md={isManagerView ? 12 : 6}>
-                            <Box className="info-section">
-                                <Typography className="section-label">⚡ Priority Level</Typography>
-                                <Box className="priority-selector">
+                            <Box className="task-create-info-section">
+                                <Typography className="task-create-section-label">Priority Level</Typography>
+                                <Box className="task-create-priority-selector">
                                     {priorities.map((priority) => (
                                         <Box
                                             key={priority.value}
-                                            className={`priority-pill ${formData.priority === priority.value ? 'selected' : ''}`}
+                                            className={`task-create-priority-pill ${formData.priority === priority.value ? 'selected' : ''}`}
                                             onClick={() => setFormData(prev => ({ ...prev, priority: priority.value }))}
-                                            sx={{
-                                                background: formData.priority === priority.value ? priority.gradient : 'rgba(255,255,255,0.05)',
-                                            }}
                                         >
-                                            <span className="priority-icon">{priority.icon}</span>
-                                            <span className="priority-label">{priority.label}</span>
+                                            <span className="task-create-priority-icon">{priority.icon}</span>
+                                            <span className="task-create-priority-label">{priority.label}</span>
                                         </Box>
                                     ))}
                                 </Box>
@@ -253,14 +237,14 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
                         {/* Client, User & Due Date Selection - For Managers */}
                         {isManagerView && (
                             <Grid item xs={12}>
-                                <Box className="info-section">
-                                    <Typography className="section-label">👥 Assignment Details</Typography>
+                                <Box className="task-create-info-section">
+                                    <Typography className="task-create-section-label">Assignment Details</Typography>
                                     <Grid container spacing={2}>
                                         {/* Client Selection */}
                                         <Grid item xs={12} md={4}>
-                                            <Box className={`modern-select-wrapper ${focusedField === 'client' ? 'focused' : ''}`}>
-                                                <PersonIcon className="select-icon" />
-                                                <FormControl fullWidth required>
+                                            <Box className={`task-create-select-wrapper ${focusedField === 'client' ? 'focused' : ''}`}>
+                                                <Person className="task-create-select-icon" />
+                                                <FormControl fullWidth required error={!!errors.clientId}>
                                                     <InputLabel>Select Client</InputLabel>
                                                     <Select
                                                         name="clientId"
@@ -269,7 +253,7 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
                                                         onFocus={() => setFocusedField('client')}
                                                         onBlur={() => setFocusedField('')}
                                                         label="Select Client"
-                                                        className="modern-select"
+                                                        className="task-create-select"
                                                     >
                                                         <MenuItem value="">
                                                             <em>Select a client</em>
@@ -286,9 +270,9 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
 
                                         {/* User Assignment */}
                                         <Grid item xs={12} md={4}>
-                                            <Box className={`modern-select-wrapper ${focusedField === 'user' ? 'focused' : ''}`}>
-                                                <GroupIcon className="select-icon" />
-                                                <FormControl fullWidth required>
+                                            <Box className={`task-create-select-wrapper ${focusedField === 'user' ? 'focused' : ''}`}>
+                                                <Group className="task-create-select-icon" />
+                                                <FormControl fullWidth required error={!!errors.assignedToUserId}>
                                                     <InputLabel>Assign To User</InputLabel>
                                                     <Select
                                                         name="assignedToUserId"
@@ -297,13 +281,13 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
                                                         onFocus={() => setFocusedField('user')}
                                                         onBlur={() => setFocusedField('')}
                                                         label="Assign To User"
-                                                        className="modern-select"
+                                                        className="task-create-select"
                                                     >
                                                         <MenuItem value="">
                                                             <em>Select a team member</em>
                                                         </MenuItem>
                                                         {users.map((user) => (
-                                                            <MenuItem key={user.id} value={user.username}>
+                                                            <MenuItem key={user.username} value={user.username}>
                                                                 {user.name} {user.surname} (@{user.username})
                                                             </MenuItem>
                                                         ))}
@@ -314,8 +298,8 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
 
                                         {/* Due Date */}
                                         <Grid item xs={12} md={4}>
-                                            <Box className={`modern-input-wrapper date-input ${focusedField === 'dueDate' ? 'focused' : ''}`}>
-                                                <CalendarIcon className="input-icon" />
+                                            <Box className={`task-create-input-wrapper task-create-date-input ${focusedField === 'dueDate' ? 'focused' : ''}`}>
+                                                <CalendarToday className="task-create-input-icon" />
                                                 <TextField
                                                     name="dueDate"
                                                     label="Due Date"
@@ -326,7 +310,7 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
                                                     onFocus={() => setFocusedField('dueDate')}
                                                     onBlur={() => setFocusedField('')}
                                                     InputLabelProps={{ shrink: true }}
-                                                    className="modern-input"
+                                                    className="task-create-input"
                                                 />
                                             </Box>
                                         </Grid>
@@ -338,27 +322,21 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
                         {/* Status & Date Section - Only for Admin */}
                         {!isManagerView && (
                             <Grid item xs={12} md={6}>
-                                <Box className="info-section">
-                                    <Typography className="section-label">📊 Status & Date</Typography>
-                                    <Box className="status-date-wrapper">
-                                        <Box className="status-chips">
+                                <Box className="task-create-info-section">
+                                    <Typography className="task-create-section-label">Status & Date</Typography>
+                                    <Box className="task-create-status-date-wrapper">
+                                        <Box className="task-create-status-chips">
                                             {statuses.map((status) => (
                                                 <Chip
                                                     key={status.value}
                                                     label={status.label}
                                                     onClick={() => setFormData(prev => ({ ...prev, status: status.value }))}
-                                                    className={`status-chip ${formData.status === status.value ? 'selected' : ''}`}
-                                                    sx={{
-                                                        background: formData.status === status.value ? status.color : 'rgba(255,255,255,0.05)',
-                                                        color: formData.status === status.value ? '#000' : '#fff',
-                                                        fontWeight: formData.status === status.value ? 'bold' : 'normal',
-                                                        boxShadow: formData.status === status.value ? `0 0 20px ${status.glow}` : 'none',
-                                                    }}
+                                                    className={`task-create-status-chip ${formData.status === status.value ? 'selected' : ''}`}
                                                 />
                                             ))}
                                         </Box>
-                                        <Box className={`modern-input-wrapper date-input ${focusedField === 'dueDate' ? 'focused' : ''}`}>
-                                            <CalendarIcon className="input-icon" />
+                                        <Box className={`task-create-input-wrapper task-create-date-input ${focusedField === 'dueDate' ? 'focused' : ''}`}>
+                                            <CalendarToday className="task-create-input-icon" />
                                             <TextField
                                                 name="dueDate"
                                                 label="Due Date"
@@ -369,7 +347,7 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
                                                 onFocus={() => setFocusedField('dueDate')}
                                                 onBlur={() => setFocusedField('')}
                                                 InputLabelProps={{ shrink: true }}
-                                                className="modern-input"
+                                                className="task-create-input"
                                             />
                                         </Box>
                                     </Box>
@@ -380,12 +358,12 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
                         {/* Assignment Section - Only for Admin */}
                         {!isManagerView && (
                             <Grid item xs={12}>
-                                <Box className="info-section">
-                                    <Typography className="section-label">👥 Assignment Details</Typography>
+                                <Box className="task-create-info-section">
+                                    <Typography className="task-create-section-label">Assignment Details</Typography>
                                     <Grid container spacing={2}>
                                         <Grid item xs={12} md={4}>
-                                            <Box className={`modern-select-wrapper ${focusedField === 'org' ? 'focused' : ''}`}>
-                                                <BusinessIcon className="select-icon" />
+                                            <Box className={`task-create-select-wrapper ${focusedField === 'org' ? 'focused' : ''}`}>
+                                                <Business className="task-create-select-icon" />
                                                 <FormControl fullWidth required error={!!errors.organizationId}>
                                                     <InputLabel>Organization</InputLabel>
                                                     <Select
@@ -395,7 +373,7 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
                                                         onFocus={() => setFocusedField('org')}
                                                         onBlur={() => setFocusedField('')}
                                                         label="Organization"
-                                                        className="modern-select"
+                                                        className="task-create-select"
                                                     >
                                                         <MenuItem value="">
                                                             <em>Select Organization</em>
@@ -411,8 +389,8 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
                                         </Grid>
 
                                         <Grid item xs={12} md={4}>
-                                            <Box className={`modern-select-wrapper ${focusedField === 'client' ? 'focused' : ''}`}>
-                                                <PersonIcon className="select-icon" />
+                                            <Box className={`task-create-select-wrapper ${focusedField === 'client' ? 'focused' : ''}`}>
+                                                <Person className="task-create-select-icon" />
                                                 <FormControl fullWidth>
                                                     <InputLabel>Client (Optional)</InputLabel>
                                                     <Select
@@ -422,7 +400,7 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
                                                         onFocus={() => setFocusedField('client')}
                                                         onBlur={() => setFocusedField('')}
                                                         label="Client (Optional)"
-                                                        className="modern-select"
+                                                        className="task-create-select"
                                                     >
                                                         <MenuItem value="">
                                                             <em>No Client</em>
@@ -438,8 +416,8 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
                                         </Grid>
 
                                         <Grid item xs={12} md={4}>
-                                            <Box className={`modern-select-wrapper ${focusedField === 'user' ? 'focused' : ''}`}>
-                                                <GroupIcon className="select-icon" />
+                                            <Box className={`task-create-select-wrapper ${focusedField === 'user' ? 'focused' : ''}`}>
+                                                <Group className="task-create-select-icon" />
                                                 <FormControl fullWidth>
                                                     <InputLabel>Assigned To (Optional)</InputLabel>
                                                     <Select
@@ -449,14 +427,14 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
                                                         onFocus={() => setFocusedField('user')}
                                                         onBlur={() => setFocusedField('')}
                                                         label="Assigned To (Optional)"
-                                                        className="modern-select"
+                                                        className="task-create-select"
                                                     >
                                                         <MenuItem value="">
                                                             <em>Unassigned</em>
                                                         </MenuItem>
                                                         {users.map((user) => (
-                                                            <MenuItem key={user.id} value={user.username}>
-                                                                {user.name} {user.surname} ({user.username})
+                                                            <MenuItem key={user.username} value={user.username}>
+                                                                {user.name} {user.surname} (@{user.username})
                                                             </MenuItem>
                                                         ))}
                                                     </Select>
@@ -467,57 +445,26 @@ const TaskCreate = ({ open, onClose, onSubmit, task = null, users = [], organiza
                                 </Box>
                             </Grid>
                         )}
-
-                        {/* Read-only info for managers when editing */}
-                        {isManagerView && task && (
-                            <Grid item xs={12}>
-                                <Box className="info-section" sx={{ opacity: 0.8, bgcolor: 'action.hover', p: 2, borderRadius: 2 }}>
-                                    <Typography className="section-label" sx={{ mb: 2 }}>ℹ️ Task Details (Read-only)</Typography>
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={12} md={4}>
-                                            <Typography variant="caption" color="text.secondary" display="block">Status</Typography>
-                                            <Chip
-                                                label={task.status?.replace('_', ' ')}
-                                                size="small"
-                                                sx={{ mt: 0.5 }}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} md={4}>
-                                            <Typography variant="caption" color="text.secondary" display="block">Assigned To</Typography>
-                                            <Typography variant="body2" sx={{ mt: 0.5 }}>
-                                                {task.assignedToUserName || 'Unassigned'}
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item xs={12} md={4}>
-                                            <Typography variant="caption" color="text.secondary" display="block">Due Date</Typography>
-                                            <Typography variant="body2" sx={{ mt: 0.5 }}>
-                                                {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No due date'}
-                                            </Typography>
-                                        </Grid>
-                                    </Grid>
-                                </Box>
-                            </Grid>
-                        )}
                     </Grid>
-                </form>
-            </Box>
 
-            {/* Footer Actions */}
-            <Box className="modern-task-footer">
-                <Button
-                    onClick={handleClose}
-                    className="cancel-btn"
-                >
-                    Cancel
-                </Button>
-                <Button
-                    onClick={handleSubmit}
-                    className="submit-btn"
-                >
-                    <span className="btn-icon">{task ? '💾' : '✨'}</span>
-                    <span className="btn-text">{task ? 'Update Task' : 'Create Task'}</span>
-                    <div className="btn-glow"></div>
-                </Button>
+                    {/* Footer - INSIDE FORM */}
+                    <Box className="task-create-footer">
+                        <Button
+                            type="button"
+                            onClick={handleClose}
+                            className="task-create-cancel-btn"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type="submit"
+                            className="task-create-submit-btn"
+                        >
+                            <span className="task-create-btn-icon">{task ? '💾' : '✨'}</span>
+                            {task ? 'Update Task' : 'Create Task'}
+                        </Button>
+                    </Box>
+                </form>
             </Box>
         </Dialog>
     );

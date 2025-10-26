@@ -53,6 +53,12 @@ const EditMyOrganization = () => {
     const organization = organizations && organizations.length > 0 ? organizations[0] : null;
 
     useEffect(() => {
+        console.log('🔍 EditMyOrganization - Loading:', loadingOrg);
+        console.log('🔍 EditMyOrganization - Organizations:', organizations);
+    }, [loadingOrg, organizations]);
+
+
+    useEffect(() => {
         if (organization) {
             setFormData({
                 name: organization.name || '',

@@ -1,237 +1,262 @@
-/* Apple Dialog - Base Styles (can be shared) */
-.apple-dialog {
-    background: rgba(255, 255, 255, 0.95) !important;
+/* ==================== USER CREATE DIALOG - BLACK/WHITE GLASSMORPHISM ==================== */
+/* Matching Manager Dashboard Apple Style */
+
+/* Dialog Container - DARK GLASS */
+.user-create-dialog {
+    background: rgba(20, 20, 20, 0.95) !important;
     backdrop-filter: blur(40px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
     border-radius: 28px !important;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15), 0 0 0 0.5px rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5) !important;
     overflow: hidden;
+    max-width: 600px !important;
 }
 
-/* Header */
-.apple-dialog-header {
+.user-create-dialog .MuiDialog-paper {
+    margin: 24px;
+    background: transparent !important;
+}
+
+/* Header - DARK */
+.user-create-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 28px 32px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(249, 249, 249, 0.8) 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
 }
 
-.header-content {
+.user-create-header-content {
     display: flex;
     align-items: center;
     gap: 16px;
 }
 
-.header-avatar {
+.user-create-header-avatar {
     width: 56px !important;
     height: 56px !important;
-    background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%) !important;
-    box-shadow: 0 8px 24px rgba(0, 122, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.1);
+    color: #ffffff !important;
+    font-weight: 700 !important;
 }
 
-.header-title {
+.user-create-header-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-create-header-title {
     font-size: 28px !important;
     font-weight: 700 !important;
-    color: #1d1d1f !important;
+    color: #ffffff !important;
     letter-spacing: -0.5px;
+    line-height: 1.2 !important;
 }
 
-.header-subtitle {
+.user-create-header-subtitle {
     font-size: 15px !important;
-    color: #86868b !important;
+    color: rgba(255, 255, 255, 0.5) !important;
     margin-top: 2px !important;
 }
 
-.close-button {
+.user-create-close-button {
     width: 40px !important;
     height: 40px !important;
-    background: rgba(0, 0, 0, 0.04) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    border-radius: 10px !important;
 }
 
-.close-button:hover {
-    background: rgba(0, 0, 0, 0.08) !important;
+.user-create-close-button:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
     transform: scale(1.05);
 }
 
-.close-button svg {
-    color: #1d1d1f;
+.user-create-close-button svg {
+    color: #ffffff;
 }
 
-/* Content */
-.apple-dialog-content {
+/* Content - DARK */
+.user-create-content {
     padding: 32px;
     max-height: 60vh;
     overflow-y: auto;
+    background: transparent !important;
 }
 
-.apple-dialog-content::-webkit-scrollbar {
+.user-create-content::-webkit-scrollbar {
     width: 8px;
 }
 
-.apple-dialog-content::-webkit-scrollbar-track {
+.user-create-content::-webkit-scrollbar-track {
     background: transparent;
 }
 
-.apple-dialog-content::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.12);
+.user-create-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
 }
 
-.apple-dialog-content::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.18);
+.user-create-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.15);
 }
 
 /* Form Sections */
-.form-section {
+.user-create-form-section {
     margin-bottom: 32px;
 }
 
-.form-section:last-child {
+.user-create-form-section:last-child {
     margin-bottom: 0;
 }
 
-.section-title {
+.user-create-section-title {
     font-size: 20px !important;
     font-weight: 600 !important;
-    color: #1d1d1f !important;
+    color: #ffffff !important;
     margin-bottom: 16px !important;
     letter-spacing: -0.3px;
 }
 
-/* Apple Input Group */
-.apple-input-group {
+/* Input Group */
+.user-create-input-group {
     position: relative;
+    margin-bottom: 24px;
 }
 
-.input-icon {
+.user-create-input-icon {
     position: absolute;
     left: 16px;
     top: 50%;
     transform: translateY(-50%);
-    color: #86868b;
+    color: rgba(255, 255, 255, 0.5);
     z-index: 1;
     pointer-events: none;
 }
 
-.apple-input .MuiOutlinedInput-root {
-    background: rgba(255, 255, 255, 0.8);
+.user-create-input .MuiOutlinedInput-root {
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 12px;
     padding-left: 48px;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.apple-input .MuiOutlinedInput-notchedOutline {
-    border-color: rgba(0, 0, 0, 0.08);
+.user-create-input .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.08);
     border-width: 1px;
 }
 
-.apple-input .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-    border-color: rgba(0, 0, 0, 0.12);
+.user-create-input .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.12);
 }
 
-.apple-input .MuiOutlinedInput-root.Mui-focused {
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+.user-create-input .MuiOutlinedInput-root.Mui-focused {
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
 }
 
-.apple-input .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-    border-color: #007AFF;
+.user-create-input .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.3);
     border-width: 2px;
 }
 
-.apple-input .MuiOutlinedInput-root.Mui-disabled {
-    background: rgba(0, 0, 0, 0.03);
+.user-create-input .MuiOutlinedInput-root.Mui-disabled {
+    background: rgba(255, 255, 255, 0.03);
 }
 
-.apple-input label {
-    color: #86868b !important;
+.user-create-input label {
+    color: rgba(255, 255, 255, 0.5) !important;
     left: 32px;
     font-weight: 500;
 }
 
-.apple-input label.Mui-focused {
-    color: #007AFF !important;
+.user-create-input label.Mui-focused {
+    color: rgba(255, 255, 255, 0.9) !important;
     left: 0;
 }
 
-.apple-input label.MuiFormLabel-filled {
+.user-create-input label.MuiFormLabel-filled {
     left: 0;
 }
 
-.apple-input input {
-    color: #1d1d1f !important;
+.user-create-input input {
+    color: #ffffff !important;
     font-size: 16px;
 }
 
-.apple-input .MuiFormHelperText-root {
+.user-create-input .MuiFormHelperText-root {
     margin-left: 4px;
     font-size: 13px;
+    color: rgba(255, 255, 255, 0.5) !important;
 }
 
-/* Password Input Adjustments */
-.apple-input-group .MuiInputAdornment-root {
+.user-create-input .MuiFormHelperText-root.Mui-error {
+    color: rgba(239, 68, 68, 0.9) !important;
+}
+
+/* Password Input */
+.user-create-input-group .MuiInputAdornment-root {
     margin-right: 8px;
 }
 
-.apple-input .MuiInputAdornment-root button {
-    color: #86868b;
+.user-create-input .MuiInputAdornment-root button {
+    color: rgba(255, 255, 255, 0.5);
     transition: color 0.2s ease;
 }
 
-.apple-input .MuiInputAdornment-root button:hover {
-    color: #007AFF;
-    background: rgba(0, 122, 255, 0.08);
+.user-create-input .MuiInputAdornment-root button:hover {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.08);
 }
 
-/* Role Cards */
-.role-card {
+/* Role Info Banner */
+.user-create-role-banner {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 24px;
-    border-radius: 16px;
-    border: 2px solid rgba(0, 0, 0, 0.08);
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    background: rgba(255, 255, 255, 0.6);
+    gap: 12px;
+    padding: 16px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    margin-bottom: 24px;
 }
 
-.role-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+.user-create-role-banner-icon {
+    color: rgba(255, 255, 255, 0.7) !important;
+    font-size: 24px !important;
 }
 
-.role-card.selected {
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 8px 24px rgba(0, 122, 255, 0.15);
+.user-create-role-banner-text {
+    flex: 1;
 }
 
-.role-icon {
-    font-size: 40px !important;
-    margin-bottom: 12px !important;
-}
-
-.role-label {
-    font-size: 16px !important;
+.user-create-role-banner-title {
+    font-size: 15px !important;
     font-weight: 600 !important;
-    color: #1d1d1f !important;
+    color: #ffffff !important;
+    margin-bottom: 2px !important;
 }
 
-/* Footer */
-.apple-dialog-footer {
+.user-create-role-banner-subtitle {
+    font-size: 13px !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Footer - DARK */
+.user-create-footer {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
     padding: 20px 32px;
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
-    background: linear-gradient(180deg, rgba(249, 249, 249, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
 }
 
-/* Apple Buttons */
-.apple-button {
+/* Buttons */
+.user-create-button {
     padding: 12px 28px !important;
     border-radius: 12px !important;
     text-transform: none !important;
@@ -241,129 +266,131 @@
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-.apple-button.primary {
-    background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%) !important;
-    color: white !important;
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+.user-create-button-primary {
+    background: rgba(255, 255, 255, 0.95) !important;
+    color: #000000 !important;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
 }
 
-.apple-button.primary:hover {
-    box-shadow: 0 8px 20px rgba(0, 122, 255, 0.4);
+.user-create-button-primary:hover {
+    background: #ffffff !important;
+    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.25);
     transform: translateY(-1px);
 }
 
-.apple-button.secondary {
-    background: rgba(0, 0, 0, 0.04) !important;
-    color: #1d1d1f !important;
+.user-create-button-primary:disabled {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: rgba(255, 255, 255, 0.3) !important;
+    box-shadow: none !important;
+    transform: none !important;
 }
 
-.apple-button.secondary:hover {
-    background: rgba(0, 0, 0, 0.08) !important;
+.user-create-button-secondary {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #ffffff !important;
+}
+
+.user-create-button-secondary:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
     transform: translateY(-1px);
 }
 
-/* Apple Select (if needed) */
-.apple-select .MuiOutlinedInput-root {
-    background: rgba(255, 255, 255, 0.8);
+/* Error Message */
+.user-create-error {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
     border-radius: 12px;
-    padding-left: 48px;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 24px;
 }
 
-.apple-select .MuiOutlinedInput-notchedOutline {
-    border-color: rgba(0, 0, 0, 0.08);
-    border-width: 1px;
+.user-create-error-icon {
+    color: rgba(239, 68, 68, 0.9) !important;
+    font-size: 24px !important;
 }
 
-.apple-select .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-    border-color: rgba(0, 0, 0, 0.12);
+.user-create-error-text {
+    flex: 1;
+    font-size: 14px !important;
+    color: #ffffff !important;
+    font-weight: 500 !important;
 }
 
-.apple-select .MuiOutlinedInput-root.Mui-focused {
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+/* Loading State */
+.user-create-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
 }
 
-.apple-select .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-    border-color: #007AFF;
-    border-width: 2px;
-}
-
-.apple-select .MuiInputLabel-root {
-    color: #86868b !important;
-    left: 32px;
-    font-weight: 500;
-}
-
-.apple-select .MuiInputLabel-root.Mui-focused {
-    color: #007AFF !important;
-    left: 0;
-}
-
-.apple-select .MuiInputLabel-root.MuiFormLabel-filled {
-    left: 0;
-}
-
-.apple-select .MuiSelect-select {
-    color: #1d1d1f !important;
+.user-create-loading-spinner {
+    color: rgba(255, 255, 255, 0.9) !important;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-    .apple-dialog-header {
+    .user-create-dialog {
+        max-width: 100% !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+    }
+
+    .user-create-header {
         padding: 20px;
     }
 
-    .apple-dialog-content {
+    .user-create-content {
         padding: 20px;
     }
 
-    .apple-dialog-footer {
+    .user-create-footer {
         padding: 16px 20px;
         flex-direction: column;
     }
 
-    .apple-button {
+    .user-create-button {
         width: 100%;
     }
 
-    .header-title {
+    .user-create-header-title {
         font-size: 24px !important;
     }
 
-    .role-card {
-        padding: 20px;
-    }
-
-    .role-icon {
-        font-size: 36px !important;
+    .user-create-header-avatar {
+        width: 48px !important;
+        height: 48px !important;
     }
 }
 
-/* Menu Paper Override for Dropdowns */
-.MuiMenu-paper {
-    background: rgba(255, 255, 255, 0.95) !important;
+/* Menu/Dropdown Paper Override */
+.MuiPaper-root.MuiMenu-paper {
+    background: rgba(20, 20, 20, 0.95) !important;
     backdrop-filter: blur(20px) !important;
-    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
     border-radius: 12px !important;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
 }
 
-.MuiMenuItem-root {
-    color: #1d1d1f !important;
+.MuiPaper-root.MuiMenu-paper .MuiMenuItem-root {
+    color: #ffffff !important;
     transition: all 0.2s ease !important;
     border-radius: 8px !important;
     margin: 4px 8px !important;
 }
 
-.MuiMenuItem-root:hover {
-    background: rgba(0, 122, 255, 0.08) !important;
+.MuiPaper-root.MuiMenu-paper .MuiMenuItem-root:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
 }
 
-.MuiMenuItem-root.Mui-selected {
-    background: rgba(0, 122, 255, 0.12) !important;
+.MuiPaper-root.MuiMenu-paper .MuiMenuItem-root.Mui-selected {
+    background: rgba(255, 255, 255, 0.12) !important;
 }
 
-.MuiMenuItem-root.Mui-selected:hover {
-    background: rgba(0, 122, 255, 0.16) !important;
+.MuiPaper-root.MuiMenu-paper .MuiMenuItem-root.Mui-selected:hover {
+    background: rgba(255, 255, 255, 0.16) !important;
 }
