@@ -38,6 +38,21 @@ import {
     TrendingUp,
     Settings
 } from '@mui/icons-material';
+import {
+    PieChart,
+    Pie,
+    Cell,
+    BarChart,
+    Bar,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    Legend,
+    ResponsiveContainer,
+    LineChart,
+    Line
+} from 'recharts';
 import ClientCreate from '../../../components/Client/ClientCreate/ClientCreate.jsx'
 import TaskCreate from '../../../components/Task/TaskCreate/TaskCreate.jsx';
 import UserCreate from '../../../components/Users/UserCreate/UserCreate.jsx';
@@ -53,7 +68,7 @@ import {useNavigate} from "react-router-dom";
 import './ManagerDashboard.css'
 import useSearchFilter from '../../../../hooks/useSearchFilter.js'
 import SearchFilter from '../../../components/SearchFilter/SearchFilter.jsx'
-
+import useManagerAnalytics from '../../../../hooks/useManagerAnalytics.js';
 
 const ManagerDashboard = () => {
     const [activeTab, setActiveTab] = useState(0);
@@ -67,6 +82,9 @@ const ManagerDashboard = () => {
         console.log('User organizations:', user?.organizations);
         console.log('First org:', user?.organizations?.[0]);
     }, [user]);
+
+
+
 
     const {
         clients,
@@ -183,6 +201,30 @@ const ManagerDashboard = () => {
         }
     }, [managerOrganizationId, fetchMyUsers, fetchClientsByOrganization]);
 
+    const {
+        taskStats: analyticsTaskStats,
+        priorityDistribution,
+        taskTrend,
+        clientTaskDistribution,
+        loading: analyticsLoading,
+        error: analyticsError,
+        fetchAllData: fetchAnalytics
+    } = useManagerAnalytics();
+
+    // Replace the existing analytics useEffect with this:
+    useEffect(() => {
+        console.log('🔍 Analytics useEffect triggered');
+        console.log('📦 managerOrganizationId:', managerOrganizationId);
+        console.log('📦 organizations:', organizations);
+        console.log('📦 user:', user);
+
+        if (managerOrganizationId) {
+            console.log('✅ Fetching analytics for org:', managerOrganizationId);
+            fetchAnalytics(managerOrganizationId, 30);
+        } else {
+            console.warn('⚠️ No managerOrganizationId available yet');
+        }
+    }, [managerOrganizationId, fetchAnalytics]);
 
     const showSnackbar = (message, severity = 'success') => {
         setSnackbar({open: true, message, severity});
@@ -555,6 +597,17 @@ const ManagerDashboard = () => {
                     >
                         Organization
                     </Button>
+                    <Button
+                        fullWidth
+                        className={`menu-nav-button ${activeTab === 4 ? 'active' : ''}`}
+                        startIcon={<TrendingUp />}
+                        onClick={() => {
+                            setActiveTab(4);
+                            setMenuOpen(false);
+                        }}
+                    >
+                        Analytics
+                    </Button>
                 </Box>
             </Box>
 
@@ -605,7 +658,9 @@ const ManagerDashboard = () => {
                                         ],
                                         assignedUser: [
                                             { value: 'ALL', label: 'All Users' },
-                                            ...users.map(user => ({
+                                            ...users
+                                                .filter(user => user && user.id)
+                                                .map(user => ({
                                                 value: user.id.toString(),
                                                 label: user.name
                                             }))
@@ -1109,10 +1164,371 @@ const ManagerDashboard = () => {
                             )}
                         </Box>
                     )}
+
+                    {/* Analytics Tab - IMPROVED DESIGN */}
+                    {activeTab === 4 && (
+                        <Box>
+                            <Box className="content-header-apple">
+                                <Box>
+                                    <Typography className="content-title-apple">
+                                        Analytics Dashboard
+                                    </Typography>
+                                    <Typography className="content-subtitle-apple">
+                                        Performance insights and trends for your organization
+                                    </Typography>
+                                </Box>
+                            </Box>
+
+                            {analyticsLoading ? (
+                                <Box className="loading-container-apple">
+                                    <Typography className="loading-text-apple">Loading analytics...</Typography>
+                                </Box>
+                            ) : analyticsError ? (
+                                <Box className="empty-state-apple">
+                                    <Typography className="empty-title-apple">Error loading analytics</Typography>
+                                    <Typography className="empty-text-apple">{analyticsError}</Typography>
+                                </Box>
+                            ) : (
+                                <>
+                                    {/* Task Stats Cards - 4 Cards in a Row */}
+                                    <Grid container spacing={2} sx={{ mb: 4 }}>
+                                        <Grid item xs={12} sm={6} md={3}>
+                                            <Card className="analytics-card-apple">
+                                                <CardContent sx={{ p: 2.5 }}>
+                                                    <Box display="flex" alignItems="center" gap={2}>
+                                                        <Box
+                                                            sx={{
+                                                                width: 48,
+                                                                height: 48,
+                                                                borderRadius: '12px',
+                                                                background: 'rgba(255, 255, 255, 0.1)',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center'
+                                                            }}
+                                                        >
+                                                            <Assignment sx={{ color: '#fff', fontSize: 24 }} />
+                                                        </Box>
+                                                        <Box flex={1}>
+                                                            <Typography className="analytics-card-title-apple">Total</Typography>
+                                                            <Typography className="analytics-card-value-apple" sx={{ fontSize: '2rem !important' }}>
+                                                                {analyticsTaskStats?.total || 0}
+                                                            </Typography>
+                                                        </Box>
+                                                    </Box>
+                                                </CardContent>
+                                            </Card>
+                                        </Grid>
+
+                                        <Grid item xs={12} sm={6} md={3}>
+                                            <Card className="analytics-card-apple">
+                                                <CardContent sx={{ p: 2.5 }}>
+                                                    <Box display="flex" alignItems="center" gap={2}>
+                                                        <Box
+                                                            sx={{
+                                                                width: 48,
+                                                                height: 48,
+                                                                borderRadius: '12px',
+                                                                background: 'rgba(16, 185, 129, 0.15)',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center'
+                                                            }}
+                                                        >
+                                                            <CheckCircle sx={{ color: '#10b981', fontSize: 24 }} />
+                                                        </Box>
+                                                        <Box flex={1}>
+                                                            <Typography className="analytics-card-title-apple">Completed</Typography>
+                                                            <Typography className="analytics-card-value-apple" sx={{ fontSize: '2rem !important', color: '#10b981 !important' }}>
+                                                                {analyticsTaskStats?.completed || 0}
+                                                            </Typography>
+                                                        </Box>
+                                                    </Box>
+                                                </CardContent>
+                                            </Card>
+                                        </Grid>
+
+                                        <Grid item xs={12} sm={6} md={3}>
+                                            <Card className="analytics-card-apple">
+                                                <CardContent sx={{ p: 2.5 }}>
+                                                    <Box display="flex" alignItems="center" gap={2}>
+                                                        <Box
+                                                            sx={{
+                                                                width: 48,
+                                                                height: 48,
+                                                                borderRadius: '12px',
+                                                                background: 'rgba(59, 130, 246, 0.15)',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center'
+                                                            }}
+                                                        >
+                                                            <Schedule sx={{ color: '#3b82f6', fontSize: 24 }} />
+                                                        </Box>
+                                                        <Box flex={1}>
+                                                            <Typography className="analytics-card-title-apple">Pending</Typography>
+                                                            <Typography className="analytics-card-value-apple" sx={{ fontSize: '2rem !important', color: '#3b82f6 !important' }}>
+                                                                {analyticsTaskStats?.pending || 0}
+                                                            </Typography>
+                                                        </Box>
+                                                    </Box>
+                                                </CardContent>
+                                            </Card>
+                                        </Grid>
+
+                                        <Grid item xs={12} sm={6} md={3}>
+                                            <Card className="analytics-card-apple">
+                                                <CardContent sx={{ p: 2.5 }}>
+                                                    <Box display="flex" alignItems="center" gap={2}>
+                                                        <Box
+                                                            sx={{
+                                                                width: 48,
+                                                                height: 48,
+                                                                borderRadius: '12px',
+                                                                background: 'rgba(245, 158, 11, 0.15)',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center'
+                                                            }}
+                                                        >
+                                                            <TrendingUp sx={{ color: '#f59e0b', fontSize: 24 }} />
+                                                        </Box>
+                                                        <Box flex={1}>
+                                                            <Typography className="analytics-card-title-apple">On Hold</Typography>
+                                                            <Typography className="analytics-card-value-apple" sx={{ fontSize: '2rem !important', color: '#f59e0b !important' }}>
+                                                                {analyticsTaskStats?.onHold || 0}
+                                                            </Typography>
+                                                        </Box>
+                                                    </Box>
+                                                </CardContent>
+                                            </Card>
+                                        </Grid>
+                                    </Grid>
+
+                                    {/* Charts Section - 2 Columns */}
+                                    <Grid container spacing={3}>
+                                        {/* Task Status Distribution - DONUT PIE CHART */}
+                                        <Grid item xs={12} lg={6}>
+                                            <Box className="chart-container-apple" sx={{ height: '500px' }}>
+                                                <Typography className="chart-title-apple" sx={{ mb: 3 }}>
+                                                    Task Status Overview
+                                                </Typography>
+                                                <ResponsiveContainer width="100%" height="85%">
+                                                    <PieChart>
+                                                        <Pie
+                                                            data={[
+                                                                { name: 'Completed', value: analyticsTaskStats?.completed || 0 },
+                                                                { name: 'Pending', value: analyticsTaskStats?.pending || 0 },
+                                                                { name: 'In Progress', value: analyticsTaskStats?.inProgress || 0 },
+                                                                { name: 'On Hold', value: analyticsTaskStats?.onHold || 0 }
+                                                            ].filter(item => item.value > 0)}
+                                                            cx="50%"
+                                                            cy="50%"
+                                                            innerRadius={80}
+                                                            outerRadius={140}
+                                                            paddingAngle={5}
+                                                            dataKey="value"
+                                                            label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
+                                                            labelLine={false}
+                                                        >
+                                                            <Cell fill="#10b981" />
+                                                            <Cell fill="#f59e0b" />
+                                                            <Cell fill="#3b82f6" />
+                                                            <Cell fill="#ef4444" />
+                                                        </Pie>
+                                                        <Tooltip
+                                                            contentStyle={{
+                                                                backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                                                                border: '1px solid rgba(255, 255, 255, 0.2)',
+                                                                borderRadius: '12px',
+                                                                color: '#fff',
+                                                                padding: '12px'
+                                                            }}
+                                                        />
+                                                        <Legend
+                                                            verticalAlign="bottom"
+                                                            height={36}
+                                                            iconType="circle"
+                                                            wrapperStyle={{
+                                                                color: '#fff',
+                                                                fontSize: '14px',
+                                                                paddingTop: '20px'
+                                                            }}
+                                                        />
+                                                    </PieChart>
+                                                </ResponsiveContainer>
+                                            </Box>
+                                        </Grid>
+
+                                        {/* Priority Distribution - DONUT PIE CHART */}
+                                        <Grid item xs={12} lg={6}>
+                                            <Box className="chart-container-apple" sx={{ height: '500px' }}>
+                                                <Typography className="chart-title-apple" sx={{ mb: 3 }}>
+                                                    Tasks by Priority Level
+                                                </Typography>
+                                                <ResponsiveContainer width="100%" height="85%">
+                                                    <PieChart>
+                                                        <Pie
+                                                            data={priorityDistribution?.map(item => ({
+                                                                name: item.fieldName,
+                                                                value: item.count
+                                                            }))}
+                                                            cx="50%"
+                                                            cy="50%"
+                                                            innerRadius={80}
+                                                            outerRadius={140}
+                                                            paddingAngle={5}
+                                                            dataKey="value"
+                                                            label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
+                                                            labelLine={false}
+                                                        >
+                                                            {priorityDistribution?.map((entry, index) => {
+                                                                const colors = ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'];
+                                                                return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />;
+                                                            })}
+                                                        </Pie>
+                                                        <Tooltip
+                                                            contentStyle={{
+                                                                backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                                                                border: '1px solid rgba(255, 255, 255, 0.2)',
+                                                                borderRadius: '12px',
+                                                                color: '#fff',
+                                                                padding: '12px'
+                                                            }}
+                                                        />
+                                                        <Legend
+                                                            verticalAlign="bottom"
+                                                            height={36}
+                                                            iconType="circle"
+                                                            wrapperStyle={{
+                                                                color: '#fff',
+                                                                fontSize: '14px',
+                                                                paddingTop: '20px'
+                                                            }}
+                                                        />
+                                                    </PieChart>
+                                                </ResponsiveContainer>
+                                            </Box>
+                                        </Grid>
+
+                                        {/* Task Trend - LINE CHART (Full Width) */}
+                                        <Grid item xs={12}>
+                                            <Box className="chart-container-apple" sx={{ height: '400px' }}>
+                                                <Typography className="chart-title-apple" sx={{ mb: 3 }}>
+                                                    Task Activity (Last 30 Days)
+                                                </Typography>
+                                                <ResponsiveContainer width="100%" height="85%">
+                                                    <LineChart
+                                                        data={taskTrend?.map(day => ({
+                                                            date: new Date(day.date).toLocaleDateString('en-US', {
+                                                                month: 'short',
+                                                                day: 'numeric'
+                                                            }),
+                                                            tasks: day.count
+                                                        }))}
+                                                        margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
+                                                    >
+                                                        <defs>
+                                                            <linearGradient id="colorTasks" x1="0" y1="0" x2="0" y2="1">
+                                                                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                                                                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                                                            </linearGradient>
+                                                        </defs>
+                                                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" />
+                                                        <XAxis
+                                                            dataKey="date"
+                                                            stroke="rgba(255, 255, 255, 0.3)"
+                                                            tick={{ fill: 'rgba(255, 255, 255, 0.6)', fontSize: 12 }}
+                                                        />
+                                                        <YAxis
+                                                            stroke="rgba(255, 255, 255, 0.3)"
+                                                            tick={{ fill: 'rgba(255, 255, 255, 0.6)', fontSize: 12 }}
+                                                        />
+                                                        <Tooltip
+                                                            contentStyle={{
+                                                                backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                                                                border: '1px solid rgba(255, 255, 255, 0.2)',
+                                                                borderRadius: '12px',
+                                                                color: '#fff',
+                                                                padding: '12px'
+                                                            }}
+                                                        />
+                                                        <Line
+                                                            type="monotone"
+                                                            dataKey="tasks"
+                                                            stroke="#3b82f6"
+                                                            strokeWidth={3}
+                                                            fill="url(#colorTasks)"
+                                                            dot={{ fill: '#3b82f6', r: 5, strokeWidth: 2, stroke: '#fff' }}
+                                                            activeDot={{ r: 7, strokeWidth: 2 }}
+                                                        />
+                                                    </LineChart>
+                                                </ResponsiveContainer>
+                                            </Box>
+                                        </Grid>
+
+                                        {/* Client Task Distribution - HORIZONTAL BAR CHART */}
+                                        <Grid item xs={12}>
+                                            <Box className="chart-container-apple" sx={{ height: '500px' }}>
+                                                <Typography className="chart-title-apple" sx={{ mb: 3 }}>
+                                                    Client Performance Overview
+                                                </Typography>
+                                                <ResponsiveContainer width="100%" height="85%">
+                                                    <BarChart
+                                                        data={clientTaskDistribution?.slice(0, 8).map(client => ({
+                                                            name: `${client.firstName} ${client.lastName}`,
+                                                            completed: client.completedTasks,
+                                                            pending: client.totalTasks - client.completedTasks,
+                                                            completionRate: client.completionRate
+                                                        }))}
+                                                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                                                        layout="horizontal"
+                                                    >
+                                                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" />
+                                                        <XAxis
+                                                            type="number"
+                                                            stroke="rgba(255, 255, 255, 0.3)"
+                                                            tick={{ fill: 'rgba(255, 255, 255, 0.6)', fontSize: 12 }}
+                                                        />
+                                                        <YAxis
+                                                            type="category"
+                                                            dataKey="name"
+                                                            stroke="rgba(255, 255, 255, 0.3)"
+                                                            tick={{ fill: 'rgba(255, 255, 255, 0.6)', fontSize: 12 }}
+                                                            width={150}
+                                                        />
+                                                        <Tooltip
+                                                            contentStyle={{
+                                                                backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                                                                border: '1px solid rgba(255, 255, 255, 0.2)',
+                                                                borderRadius: '12px',
+                                                                color: '#fff',
+                                                                padding: '12px'
+                                                            }}
+                                                        />
+                                                        <Legend
+                                                            wrapperStyle={{
+                                                                color: '#fff',
+                                                                fontSize: '14px',
+                                                                paddingTop: '10px'
+                                                            }}
+                                                            iconType="circle"
+                                                        />
+                                                        <Bar dataKey="completed" stackId="a" fill="#10b981" name="Completed" radius={[0, 8, 8, 0]} />
+                                                        <Bar dataKey="pending" stackId="a" fill="#f59e0b" name="Pending" radius={[0, 8, 8, 0]} />
+                                                    </BarChart>
+                                                </ResponsiveContainer>
+                                            </Box>
+                                        </Grid>
+                                    </Grid>
+                                </>
+                            )}
+                        </Box>
+                    )}
                 </Container>
             </Box>
 
-            {/* Dialogs - NO CHANGES */}
+            {/* Dialogs */}
             <TaskCreate
                 open={openTaskDialog}
                 onClose={() => {

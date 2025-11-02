@@ -17,6 +17,12 @@ axiosInstance.interceptors.request.use(
         if (jwtToken) {
             config.headers.Authorization = `Bearer ${jwtToken}`;
         }
+
+        const sessionId = localStorage.getItem("sessionId");
+        if (sessionId) {
+            config.headers['X-Session-ID'] = sessionId;
+        }
+
         return config;
     },
     (error) => {

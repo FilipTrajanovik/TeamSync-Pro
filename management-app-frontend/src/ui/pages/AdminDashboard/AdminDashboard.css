@@ -572,3 +572,16 @@
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.25);
 }
+
+/* ===== PRIORITY DISTRIBUTION FIX ===== */
+.priority-distribution-container .priority-label {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+}
+
+.priority-distribution-container .priority-count {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+}

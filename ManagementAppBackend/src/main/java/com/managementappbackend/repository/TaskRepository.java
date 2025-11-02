@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +34,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     Long countByOrganization(Organization organization);
     Long countByStatusAndOrganization(ServiceStatus serviceStatus, Organization organization);
     Long countByPriorityAndOrganization(ServicePriority servicePriority, Organization organization);
+
     @Query("SELECT COUNT(t) FROM Task t " +
             "WHERE t.organization = :organization " +
             "AND t.dueDate < CURRENT_DATE " +
@@ -43,50 +44,45 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     Long countByAssignedToUserId(User user);
     Long countByStatusAndAssignedToUserId(ServiceStatus serviceStatus, User user);
     Long countByPriorityAndAssignedToUserId(ServicePriority servicePriority, User user);
+
     @Query("SELECT COUNT(t) FROM Task t " +
             "WHERE t.assignedToUserId = :user " +
             "AND t.dueDate < CURRENT_DATE " +
             "AND t.status != 'COMPLETED'")
     Long countOverdueByUser(@Param("user") User user);
 
-    // 1. ADMIN - All tasks trend
-    @Query("SELECT DATE(t.completedDate) as date, COUNT(t) as count " +
+    // ⭐ CHANGED: DATE() → CAST() for H2 compatibility
+    @Query("SELECT CAST(t.completedDate AS date) as date, COUNT(t) as count " +
             "FROM Task t " +
             "WHERE t.completedDate >= :startDate " +
             "AND t.status = 'COMPLETED' " +
-            "GROUP BY DATE(t.completedDate) " +
-            "ORDER BY DATE(t.completedDate)")
-    List<Object[]> findTaskTrendData(@Param("startDate") LocalDate startDate);
+            "GROUP BY CAST(t.completedDate AS date) " +
+            "ORDER BY CAST(t.completedDate AS date)")
+    List<Object[]> findTaskTrendData(@Param("startDate") LocalDateTime startDate);
 
-    // 2. MANAGER - Organization tasks trend
-    @Query("SELECT DATE(t.completedDate) as date, COUNT(t) as count " +
+    @Query("SELECT CAST(t.completedDate AS date) as date, COUNT(t) as count " +
             "FROM Task t " +
             "WHERE t.organization = :organization " +
             "AND t.completedDate >= :startDate " +
             "AND t.status = 'COMPLETED' " +
-            "GROUP BY DATE(t.completedDate) " +
-            "ORDER BY DATE(t.completedDate)")
+            "GROUP BY CAST(t.completedDate AS date) " +
+            "ORDER BY CAST(t.completedDate AS date)")
     List<Object[]> findTaskTrendDataByOrganization(
             @Param("organization") Organization organization,
-            @Param("startDate") LocalDate startDate
+            @Param("startDate") LocalDateTime startDate
     );
 
-    // 3. USER - User tasks trend
-    @Query("SELECT DATE(t.completedDate) as date, COUNT(t) as count " +
+    @Query("SELECT CAST(t.completedDate AS date) as date, COUNT(t) as count " +
             "FROM Task t " +
             "WHERE t.assignedToUserId = :user " +
             "AND t.completedDate >= :startDate " +
             "AND t.status = 'COMPLETED' " +
-            "GROUP BY DATE(t.completedDate) " +
-            "ORDER BY DATE(t.completedDate)")
+            "GROUP BY CAST(t.completedDate AS date) " +
+            "ORDER BY CAST(t.completedDate AS date)")
     List<Object[]> findTaskTrendDataByUser(
             @Param("user") User user,
-            @Param("startDate") LocalDate startDate
+            @Param("startDate") LocalDateTime startDate
     );
-
 
     List<Task> findAllByAssignedToUserIdAndStatus(User user, ServiceStatus status);
 }
-
-
-

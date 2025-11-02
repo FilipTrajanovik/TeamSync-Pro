@@ -41,6 +41,10 @@ public class User implements UserDetails {
     @ManyToMany
     private List<Organization> organizations;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Comment> comments;
+
+
     public User() {
     }
 
@@ -51,6 +55,7 @@ public class User implements UserDetails {
         this.surname = surname;
         this.role = role;
         this.organizations = new ArrayList<>();
+        this.comments = new ArrayList<>();
     }
 
     public User(String username, String password, String name, String surname) {
@@ -59,6 +64,8 @@ public class User implements UserDetails {
         this.name = name;
         this.surname = surname;
         this.role = Role.USER;
+        this.organizations = new ArrayList<>();
+        this.comments = new ArrayList<>();
     }
 
     public User(UserDetails userDetails) {
@@ -154,6 +161,14 @@ public class User implements UserDetails {
 
     public void setOrganizations(List<Organization> organizations) {
         this.organizations = organizations;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 }
 

@@ -15,7 +15,8 @@ import com.managementappbackend.service.domain.UserService;
 import com.managementappbackend.service.domain.analytics.TaskAnalyticsService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.sql.Date;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -189,7 +190,7 @@ public class TaskAnalyticsApplicationServiceImpl implements TaskAnalyticsApplica
     private List<TrendDataDto> convertToTrendDataDto(List<Object[]> results) {
         return results.stream()
                 .map(row -> new TrendDataDto(
-                        (LocalDate) row[0],  // date
+                        (Date) row[0],  // date
                         (Long) row[1],       // count
                         "Tasks Completed"
                 ))

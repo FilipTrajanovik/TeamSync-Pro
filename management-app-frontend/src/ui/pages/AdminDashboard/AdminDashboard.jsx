@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Avatar, Box, Button, Chip, Container, Fade, Grid, IconButton, Typography, Zoom} from '@mui/material';
 import {
     Add,
@@ -36,6 +36,7 @@ import RecordDelete from "../../components/Records/RecordDelete/RecordDelete.jsx
 import RecordView from "../../components/Records/RecordView/RecordView.jsx";
 import useSearchFilter  from "../../../hooks/useSearchFilter.js";
 import SearchFilter from '../../components/SearchFilter/SearchFilter';
+import useAdminAnalytics from "../../../hooks/useAdminAnalytics.js";
 
 const AdminDashboard = () => {
     const {user} = useAuth();
@@ -167,6 +168,42 @@ const AdminDashboard = () => {
         filterableFields: ['organization'],  // Filter by organization
         defaultSortBy: 'DATE_DESC'
     });
+
+
+    const {
+        taskStats,
+        priorityDistribution,
+        taskTrend,
+        loading,
+        error,
+        fetchAllData
+    } = useAdminAnalytics();
+
+    useEffect(() => {
+        fetchAllData(30); // Get last 30 days of data
+    }, [fetchAllData]);
+
+    useEffect(() => {
+        console.log("Task Stats:", taskStats);
+        console.log("Priority Distribution:", priorityDistribution);
+        console.log("Task Trend:", taskTrend);
+    }, [taskStats, priorityDistribution, taskTrend]);
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="text-xl">Loading analytics...</div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="text-xl text-red-500">Error: {error}</div>
+            </div>
+        );
+    }
 
     // ORG HANDLERS
     const handleOpenDialog = (org = null) => {
@@ -477,6 +514,14 @@ const AdminDashboard = () => {
         </Zoom>
     );
 
+    console.log("Priority Distribution Data:", priorityDistribution);
+    console.log("Is it an array?", Array.isArray(priorityDistribution));
+    console.log("Length:", priorityDistribution?.length);
+    if (priorityDistribution && priorityDistribution.length > 0) {
+        console.log("First item:", priorityDistribution[0]);
+        console.log("First item field:", priorityDistribution[0]?.field);
+    }
+
     return (
         <>
             <Navbar/>
@@ -516,41 +561,126 @@ const AdminDashboard = () => {
                         </Box>
                     </Fade>
 
-                    {/* STATS GRID */}
-                    <Grid container spacing={3} className="stats-grid">
-                        <Grid item xs={12} sm={6} lg={3}>
-                            <StatCard
-                                title="Organizations"
-                                value={stats.totalOrganizations}
-                                icon={<Business sx={{fontSize: 28}}/>}
-                                delay={100}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6} lg={3}>
-                            <StatCard
-                                title="Managers"
-                                value={stats.totalManagers}
-                                icon={<People sx={{fontSize: 28}}/>}
-                                delay={200}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6} lg={3}>
-                            <StatCard
-                                title="Users"
-                                value={stats.totalUsers}
-                                icon={<People sx={{fontSize: 28}}/>}
-                                delay={300}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6} lg={3}>
-                            <StatCard
-                                title="Records"
-                                value={stats.totalRecords}
-                                icon={<Assignment sx={{fontSize: 28}}/>}
-                                delay={400}
-                            />
-                        </Grid>
-                    </Grid>
+
+
+                    {/* ANALYTICS SECTION - ADD THIS */}
+                    <Fade in={true} timeout={1200}>
+                        <Box className="section-container">
+                            <Box className="section-header">
+                                <Typography className="section-title">Analytics Overview</Typography>
+                                <Typography className="section-subtitle">
+                                    Task statistics and trends
+                                </Typography>
+                            </Box>
+
+                            {loading ? (
+                                <Box className="loading-container">
+                                    <Typography>Loading analytics...</Typography>
+                                </Box>
+                            ) : error ? (
+                                <Box style={{padding: '20px', background: '#fee', borderRadius: '8px'}}>
+                                    <Typography color="error">Error loading analytics: {error}</Typography>
+                                </Box>
+                            ) : (
+                                <>
+                                    {/* Task Stats Cards */}
+                                    <Grid container spacing={3} sx={{marginBottom: 4}}>
+                                        <Grid item xs={12} sm={6} md={3}>
+                                            <Box className="org-card" style={{textAlign: 'center'}}>
+                                                <Typography variant="h6" color="textSecondary">Total Tasks</Typography>
+                                                <Typography variant="h3" sx={{fontWeight: 'bold', marginTop: 1}}>
+                                                    {taskStats?.total || 0}
+                                                </Typography>
+                                            </Box>
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={3}>
+                                            <Box className="org-card" style={{textAlign: 'center'}}>
+                                                <Typography variant="h6" color="textSecondary">Completed</Typography>
+                                                <Typography variant="h3" sx={{fontWeight: 'bold', marginTop: 1, color: '#10b981'}}>
+                                                    {taskStats?.completed || 0}
+                                                </Typography>
+                                            </Box>
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={3}>
+                                            <Box className="org-card" style={{textAlign: 'center'}}>
+                                                <Typography variant="h6" color="textSecondary">Pending</Typography>
+                                                <Typography variant="h3" sx={{fontWeight: 'bold', marginTop: 1, color: '#3b82f6'}}>
+                                                    {taskStats?.pending || 0}
+                                                </Typography>
+                                            </Box>
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={3}>
+                                            <Box className="org-card" style={{textAlign: 'center'}}>
+                                                <Typography variant="h6" color="textSecondary">On Hold</Typography>
+                                                <Typography variant="h3" sx={{fontWeight: 'bold', marginTop: 1, color: '#f59e0b'}}>
+                                                    {taskStats?.onHold || 0}
+                                                </Typography>
+                                            </Box>
+                                        </Grid>
+                                    </Grid>
+
+                                    {/* Priority Distribution */}
+                                    <Box className="org-card priority-distribution-container" sx={{marginBottom: 3}}>
+                                        <Typography variant="h6" sx={{marginBottom: 2, fontWeight: 'bold', color: '#fff'}}>
+                                            Tasks by Priority
+                                        </Typography>
+                                        <Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
+                                            {priorityDistribution?.map((item, index) => (
+                                                <Box key={index} sx={{display: 'flex', alignItems: 'center', gap: 2}}>
+                                                    <Typography className="priority-label" sx={{minWidth: '150px'}}>
+                                                        {item.fieldName}
+                                                    </Typography>
+                                                    <Box sx={{
+                                                        flex: 1,
+                                                        background: '#e5e7eb',
+                                                        borderRadius: '8px',
+                                                        height: '24px',
+                                                        overflow: 'hidden'
+                                                    }}>
+                                                        <Box
+                                                            sx={{
+                                                                background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)',
+                                                                height: '100%',
+                                                                width: `${(item.count / taskStats?.total) * 100}%`,
+                                                                transition: 'width 0.5s ease',
+                                                                borderRadius: '8px'
+                                                            }}
+                                                        />
+                                                    </Box>
+                                                    <Typography className="priority-count" sx={{minWidth: '40px', textAlign: 'right'}}>
+                                                        {item.count}
+                                                    </Typography>
+                                                </Box>
+                                            ))}
+                                        </Box>
+                                    </Box>
+
+                                    {/* Task Trend */}
+                                    <Box className="org-card">
+                                        <Typography variant="h6" sx={{marginBottom: 2, fontWeight: 'bold'}}>
+                                            Task Trend (Last 30 Days)
+                                        </Typography>
+                                        <Box sx={{maxHeight: '400px', overflowY: 'auto'}}>
+                                            {taskTrend?.slice(0, 10).map((day, index) => (
+                                                <Box
+                                                    key={index}
+                                                    sx={{
+                                                        display: 'flex',
+                                                        justifyContent: 'space-between',
+                                                        padding: '12px 0',
+                                                        borderBottom: '1px solid #e5e7eb'
+                                                    }}
+                                                >
+                                                    <Typography>{day.date}</Typography>
+                                                    <Typography sx={{fontWeight: 'bold'}}>{day.count} tasks</Typography>
+                                                </Box>
+                                            ))}
+                                        </Box>
+                                    </Box>
+                                </>
+                            )}
+                        </Box>
+                    </Fade>
 
                     {/* ORGANIZATIONS SECTION */}
                     <Fade in={true} timeout={1500}>

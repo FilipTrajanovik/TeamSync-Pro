@@ -1,7 +1,6 @@
 package com.managementappbackend.config.init;
 
 import com.managementappbackend.model.domain.*;
-import com.managementappbackend.model.domain.Record;
 import com.managementappbackend.model.enumerations.OrganizationType;
 import com.managementappbackend.model.enumerations.Role;
 import com.managementappbackend.model.enumerations.ServicePriority;
@@ -12,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Random;
 
 @Component
 public class DataInitializer {
@@ -20,7 +20,6 @@ public class DataInitializer {
     private final OrganizationRepository organizationRepository;
     private final ClientRepository clientRepository;
     private final TaskRepository taskRepository;
-    private final RecordRepository recordRepository;
     private final PasswordEncoder passwordEncoder;
 
     public DataInitializer(
@@ -28,21 +27,21 @@ public class DataInitializer {
             OrganizationRepository organizationRepository,
             ClientRepository clientRepository,
             TaskRepository taskRepository,
-            RecordRepository recordRepository,
             PasswordEncoder passwordEncoder
     ) {
         this.userRepository = userRepository;
         this.organizationRepository = organizationRepository;
         this.clientRepository = clientRepository;
         this.taskRepository = taskRepository;
-        this.recordRepository = recordRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     @PostConstruct
     public void init() {
+        Random random = new Random();
+
         // ========================================
-        // 1. CREATE USERS FIRST
+        // 1. CREATE ADMIN USER
         // ========================================
         User admin = new User(
                 "admin",
@@ -53,202 +52,255 @@ public class DataInitializer {
         );
         userRepository.save(admin);
 
-        User manager = new User(
-                "manager",
-                passwordEncoder.encode("manager123"),
-                "Manager",
-                "Smith",
-                Role.MANAGER
-        );
-        userRepository.save(manager);
+        // ========================================
+        // 2. CREATE MANAGERS (5 managers)
+        // ========================================
+        User manager1 = new User("manager1", passwordEncoder.encode("manager123"), "Michael", "Scott", Role.MANAGER);
+        User manager2 = new User("manager2", passwordEncoder.encode("manager123"), "Sarah", "Johnson", Role.MANAGER);
+        User manager3 = new User("manager3", passwordEncoder.encode("manager123"), "David", "Chen", Role.MANAGER);
+        User manager4 = new User("manager4", passwordEncoder.encode("manager123"), "Emma", "Williams", Role.MANAGER);
+        User manager5 = new User("manager5", passwordEncoder.encode("manager123"), "James", "Brown", Role.MANAGER);
 
-        User regularUser = new User(
-                "user",
-                passwordEncoder.encode("user123"),
-                "Regular",
-                "User",
-                Role.USER
-        );
-        userRepository.save(regularUser);
+        userRepository.save(manager1);
+        userRepository.save(manager2);
+        userRepository.save(manager3);
+        userRepository.save(manager4);
+        userRepository.save(manager5);
 
         // ========================================
-        // 2. CREATE ORGANIZATIONS
+        // 3. CREATE REGULAR USERS (10 users)
         // ========================================
-        Organization hospital = new Organization();
-        hospital.setName("City Hospital");
-        hospital.setDescription("Main city hospital providing general healthcare");
-        hospital.setType(OrganizationType.HOSPITAL);
-        hospital.setContactEmail("info@cityhospital.com");
-        hospital.setContactPhone("555-1234");
-        hospital.setAddress("123 Medical Center Drive");
-        hospital.setActive(true);
-        hospital.setCreatedAt(LocalDateTime.now());
-        hospital.setUpdatedAt(LocalDateTime.now());
-        organizationRepository.save(hospital);
+        User user1 = new User("user1", passwordEncoder.encode("user123"), "John", "Doe", Role.USER);
+        User user2 = new User("user2", passwordEncoder.encode("user123"), "Jane", "Smith", Role.USER);
+        User user3 = new User("user3", passwordEncoder.encode("user123"), "Robert", "Anderson", Role.USER);
+        User user4 = new User("user4", passwordEncoder.encode("user123"), "Maria", "Garcia", Role.USER);
+        User user5 = new User("user5", passwordEncoder.encode("user123"), "William", "Martinez", Role.USER);
+        User user6 = new User("user6", passwordEncoder.encode("user123"), "Linda", "Taylor", Role.USER);
+        User user7 = new User("user7", passwordEncoder.encode("user123"), "Richard", "Lee", Role.USER);
+        User user8 = new User("user8", passwordEncoder.encode("user123"), "Patricia", "White", Role.USER);
+        User user9 = new User("user9", passwordEncoder.encode("user123"), "Charles", "Harris", Role.USER);
+        User user10 = new User("user10", passwordEncoder.encode("user123"), "Jennifer", "Clark", Role.USER);
 
-        Organization autoShop = new Organization();
-        autoShop.setName("Quick Fix Auto Repair");
-        autoShop.setDescription("Professional auto repair and maintenance services");
-        autoShop.setType(OrganizationType.AUTO_REPAIR);
-        autoShop.setContactEmail("service@quickfix.com");
-        autoShop.setContactPhone("555-5678");
-        autoShop.setAddress("456 Garage Street");
-        autoShop.setActive(true);
-        autoShop.setCreatedAt(LocalDateTime.now());
-        autoShop.setUpdatedAt(LocalDateTime.now());
-        organizationRepository.save(autoShop);
+        userRepository.save(user1);
+        userRepository.save(user2);
+        userRepository.save(user3);
+        userRepository.save(user4);
+        userRepository.save(user5);
+        userRepository.save(user6);
+        userRepository.save(user7);
+        userRepository.save(user8);
+        userRepository.save(user9);
+        userRepository.save(user10);
 
         // ========================================
-        // 3. LINK USERS TO ORGANIZATIONS
+        // 4. CREATE ORGANIZATIONS (4 organizations)
         // ========================================
-        admin.getOrganizations().add(hospital);
-        admin.getOrganizations().add(autoShop); // Admin can see both organizations
+        Organization hospital1 = createOrganization("City Hospital", "Main city hospital", OrganizationType.HOSPITAL,
+                "info@cityhospital.com", "555-1234", "123 Medical Center Drive");
+        organizationRepository.save(hospital1);
 
-        manager.getOrganizations().add(autoShop); // Manager belongs to Auto Shop
+        Organization hospital2 = createOrganization("St. Mary's Medical Center", "Specialized medical care", OrganizationType.HOSPITAL,
+                "contact@stmarys.com", "555-2345", "456 Healthcare Boulevard");
+        organizationRepository.save(hospital2);
 
-        regularUser.getOrganizations().add(hospital); // Regular user belongs to Hospital
+        Organization autoShop1 = createOrganization("Quick Fix Auto Repair", "Professional auto repair", OrganizationType.AUTO_REPAIR,
+                "service@quickfix.com", "555-5678", "456 Garage Street");
+        organizationRepository.save(autoShop1);
 
-        // CRITICAL: Save users again after linking organizations
+        Organization autoShop2 = createOrganization("Premium Auto Service", "Luxury vehicle maintenance", OrganizationType.AUTO_REPAIR,
+                "info@premiumauto.com", "555-6789", "789 Motor Avenue");
+        organizationRepository.save(autoShop2);
+
+        // ========================================
+        // 5. LINK USERS TO ORGANIZATIONS
+        // ========================================
+        // Admin sees all organizations
+        admin.getOrganizations().add(hospital1);
+        admin.getOrganizations().add(hospital2);
+        admin.getOrganizations().add(autoShop1);
+        admin.getOrganizations().add(autoShop2);
         userRepository.save(admin);
-        userRepository.save(manager);
-        userRepository.save(regularUser);
+
+        // Managers assigned to different organizations
+        linkUserToOrg(manager1, hospital1);
+        linkUserToOrg(manager2, hospital1);
+        linkUserToOrg(manager3, hospital2);
+        linkUserToOrg(manager4, autoShop1);
+        linkUserToOrg(manager5, autoShop2);
+
+        // Users distributed across organizations
+        linkUserToOrg(user1, hospital1);
+        linkUserToOrg(user2, hospital1);
+        linkUserToOrg(user3, hospital1);
+        linkUserToOrg(user4, hospital2);
+        linkUserToOrg(user5, hospital2);
+        linkUserToOrg(user6, autoShop1);
+        linkUserToOrg(user7, autoShop1);
+        linkUserToOrg(user8, autoShop1);
+        linkUserToOrg(user9, autoShop2);
+        linkUserToOrg(user10, autoShop2);
 
         // ========================================
-        // 4. CREATE CLIENTS
+        // 6. CREATE CLIENTS (20 clients)
         // ========================================
-        Client client1 = new Client();
-        client1.setFirstName("John");
-        client1.setLastName("Doe");
-        client1.setEmail("john.doe@email.com");
-        client1.setPhone("555-1111");
-        client1.setAddress("789 Patient Lane");
-        client1.setOrganization(hospital);
-        client1.setActive(true);
-        client1.setCreatedAt(LocalDateTime.now());
-        client1.setUpdatedAt(LocalDateTime.now());
-        clientRepository.save(client1);
+        Client[] hospital1Clients = {
+                createClient("John", "Doe", "john.doe@email.com", "555-1111", "100 Patient Lane", hospital1),
+                createClient("Jane", "Smith", "jane.smith@email.com", "555-2222", "101 Health Street", hospital1),
+                createClient("Robert", "Wilson", "robert.w@email.com", "555-3333", "102 Care Road", hospital1),
+                createClient("Mary", "Davis", "mary.d@email.com", "555-4444", "103 Wellness Ave", hospital1),
+                createClient("Thomas", "Miller", "thomas.m@email.com", "555-5555", "104 Medical Plaza", hospital1)
+        };
 
-        Client client2 = new Client();
-        client2.setFirstName("Jane");
-        client2.setLastName("Smith");
-        client2.setEmail("jane.smith@email.com");
-        client2.setPhone("555-2222");
-        client2.setAddress("321 Customer Road");
-        client2.setOrganization(hospital);
-        client2.setActive(true);
-        client2.setCreatedAt(LocalDateTime.now());
-        client2.setUpdatedAt(LocalDateTime.now());
-        clientRepository.save(client2);
+        Client[] hospital2Clients = {
+                createClient("Lisa", "Moore", "lisa.m@email.com", "555-6666", "200 Clinic Way", hospital2),
+                createClient("Daniel", "Taylor", "daniel.t@email.com", "555-7777", "201 Doctor Drive", hospital2),
+                createClient("Nancy", "Anderson", "nancy.a@email.com", "555-8888", "202 Hospital Blvd", hospital2),
+                createClient("Paul", "Thomas", "paul.t@email.com", "555-9999", "203 Care Center", hospital2),
+                createClient("Karen", "Jackson", "karen.j@email.com", "555-1010", "204 Health Plaza", hospital2)
+        };
 
-        Client client3 = new Client();
-        client3.setFirstName("Mike");
-        client3.setLastName("Johnson");
-        client3.setEmail("mike.johnson@email.com");
-        client3.setPhone("555-3333");
-        client3.setAddress("654 Car Owner Avenue");
-        client3.setOrganization(autoShop);
-        client3.setActive(true);
-        client3.setCreatedAt(LocalDateTime.now());
-        client3.setUpdatedAt(LocalDateTime.now());
-        clientRepository.save(client3);
+        Client[] autoShop1Clients = {
+                createClient("Mike", "Johnson", "mike.j@email.com", "555-2020", "300 Car Owner Ave", autoShop1),
+                createClient("Susan", "White", "susan.w@email.com", "555-3030", "301 Auto Lane", autoShop1),
+                createClient("Brian", "Harris", "brian.h@email.com", "555-4040", "302 Garage Road", autoShop1),
+                createClient("Jessica", "Martin", "jessica.m@email.com", "555-5050", "303 Mechanic St", autoShop1),
+                createClient("Kevin", "Thompson", "kevin.t@email.com", "555-6060", "304 Service Drive", autoShop1)
+        };
 
-        // ========================================
-        // 5. CREATE TASKS
-        // ========================================
-        Task task1 = new Task();
-        task1.setTitle("General Checkup");
-        task1.setDescription("Annual physical examination for patient");
-        task1.setStatus(ServiceStatus.PENDING);
-        task1.setPriority(ServicePriority.MEDIUM);
-        task1.setDueDate(LocalDateTime.now().plusDays(7));
-        task1.setClient(client1);
-        task1.setAssignedToUserId(regularUser);
-        task1.setCreatedByUserId(admin);
-        task1.setOrganization(hospital);
-        task1.setCreatedDate(LocalDateTime.now());
-        task1.setUpdatedDate(LocalDateTime.now());
-        taskRepository.save(task1);
+        Client[] autoShop2Clients = {
+                createClient("Laura", "Garcia", "laura.g@email.com", "555-7070", "400 Motor Way", autoShop2),
+                createClient("Steven", "Martinez", "steven.m@email.com", "555-8080", "401 Vehicle Blvd", autoShop2),
+                createClient("Michelle", "Robinson", "michelle.r@email.com", "555-9090", "402 Repair Road", autoShop2),
+                createClient("Gary", "Clark", "gary.c@email.com", "555-1212", "403 Auto Plaza", autoShop2),
+                createClient("Betty", "Rodriguez", "betty.r@email.com", "555-1313", "404 Service Center", autoShop2)
+        };
 
-        Task task2 = new Task();
-        task2.setTitle("Blood Test Results Review");
-        task2.setDescription("Review and discuss blood test results with patient");
-        task2.setStatus(ServiceStatus.IN_PROGRESS);
-        task2.setPriority(ServicePriority.HIGH);
-        task2.setDueDate(LocalDateTime.now().plusDays(2));
-        task2.setClient(client2);
-        task2.setAssignedToUserId(regularUser);
-        task2.setCreatedByUserId(admin);
-        task2.setOrganization(hospital);
-        task2.setCreatedDate(LocalDateTime.now());
-        task2.setUpdatedDate(LocalDateTime.now());
-        taskRepository.save(task2);
-
-        Task task3 = new Task();
-        task3.setTitle("Oil Change Service");
-        task3.setDescription("Regular oil change and filter replacement");
-        task3.setStatus(ServiceStatus.COMPLETED);
-        task3.setPriority(ServicePriority.LOW);
-        task3.setDueDate(LocalDateTime.now().minusDays(1));
-        task3.setCompletedDate(LocalDateTime.now());
-        task3.setClient(client3);
-        task3.setAssignedToUserId(manager);
-        task3.setCreatedByUserId(manager);
-        task3.setOrganization(autoShop);
-        task3.setCreatedDate(LocalDateTime.now().minusDays(2));
-        task3.setUpdatedDate(LocalDateTime.now());
-        taskRepository.save(task3);
-
-        Task task4 = new Task();
-        task4.setTitle("Brake Inspection");
-        task4.setDescription("Inspect brake pads and rotors");
-        task4.setStatus(ServiceStatus.PENDING);
-        task4.setPriority(ServicePriority.URGENT);
-        task4.setDueDate(LocalDateTime.now().plusDays(1));
-        task4.setClient(client3);
-        task4.setAssignedToUserId(manager);
-        task4.setCreatedByUserId(manager);
-        task4.setOrganization(autoShop);
-        task4.setCreatedDate(LocalDateTime.now());
-        task4.setUpdatedDate(LocalDateTime.now());
-        taskRepository.save(task4);
+        for (Client c : hospital1Clients) clientRepository.save(c);
+        for (Client c : hospital2Clients) clientRepository.save(c);
+        for (Client c : autoShop1Clients) clientRepository.save(c);
+        for (Client c : autoShop2Clients) clientRepository.save(c);
 
         // ========================================
-        // 6. CREATE RECORDS
+        // 7. CREATE TASKS (50 tasks with varied data for analytics)
         // ========================================
-        Record record1 = new Record();
-        record1.setClient(client1);
-        record1.setProfileType("MEDICAL");
-        record1.setJsonData("{\"bloodType\":\"O+\",\"allergies\":[\"Penicillin\"],\"conditions\":[\"Hypertension\"]}");
-        record1.setCreatedAt(LocalDateTime.now());
-        record1.setUpdatedAt(LocalDateTime.now());
-        recordRepository.save(record1);
+        ServiceStatus[] statuses = ServiceStatus.values();
+        ServicePriority[] priorities = ServicePriority.values();
 
-        Record record2 = new Record();
-        record2.setClient(client2);
-        record2.setProfileType("MEDICAL");
-        record2.setJsonData("{\"bloodType\":\"A-\",\"allergies\":[],\"conditions\":[]}");
-        record2.setCreatedAt(LocalDateTime.now());
-        record2.setUpdatedAt(LocalDateTime.now());
-        recordRepository.save(record2);
+        // Hospital 1 tasks (15 tasks)
+        createTasksForOrganization(hospital1, hospital1Clients, new User[]{user1, user2, user3},
+                manager1, 15, statuses, priorities, random);
 
-        Record record3 = new Record();
-        record3.setClient(client3);
-        record3.setProfileType("VEHICLE");
-        record3.setJsonData("{\"make\":\"Toyota\",\"model\":\"Camry\",\"year\":2020,\"mileage\":45000,\"lastService\":\"2024-09-15\"}");
-        record3.setCreatedAt(LocalDateTime.now());
-        record3.setUpdatedAt(LocalDateTime.now());
-        recordRepository.save(record3);
+        // Hospital 2 tasks (12 tasks)
+        createTasksForOrganization(hospital2, hospital2Clients, new User[]{user4, user5},
+                manager3, 12, statuses, priorities, random);
 
+        // Auto Shop 1 tasks (13 tasks)
+        createTasksForOrganization(autoShop1, autoShop1Clients, new User[]{user6, user7, user8},
+                manager4, 13, statuses, priorities, random);
+
+        // Auto Shop 2 tasks (10 tasks)
+        createTasksForOrganization(autoShop2, autoShop2Clients, new User[]{user9, user10},
+                manager5, 10, statuses, priorities, random);
+
+        // ========================================
+        // SUMMARY
+        // ========================================
         System.out.println("✅ Data initialization completed!");
-        System.out.println("👤 Users created: admin/admin123, manager/manager123, user/user123");
-        System.out.println("🏢 Organizations: City Hospital, Quick Fix Auto Repair");
-        System.out.println("👥 Clients: 3 clients created (2 Hospital, 1 Auto Shop)");
-        System.out.println("📋 Tasks: 4 tasks created (2 Hospital, 2 Auto Shop)");
-        System.out.println("📄 Records: 3 records created");
+        System.out.println("👤 Users created:");
+        System.out.println("   - 1 Admin: admin/admin123");
+        System.out.println("   - 5 Managers: manager1-manager5/manager123");
+        System.out.println("   - 10 Users: user1-user10/user123");
+        System.out.println("🏢 Organizations: 4 (2 Hospitals, 2 Auto Shops)");
+        System.out.println("👥 Clients: 20 clients (5 per organization)");
+        System.out.println("📋 Tasks: 50 tasks with varied statuses and priorities");
         System.out.println("");
-        System.out.println("🔗 User-Organization Links:");
-        System.out.println("   - admin: Hospital + Auto Shop (can manage both)");
-        System.out.println("   - manager: Auto Shop only");
-        System.out.println("   - user: Hospital only");
+        System.out.println("📊 Analytics Test Data:");
+        System.out.println("   - Tasks distributed across all statuses");
+        System.out.println("   - Tasks with different priorities");
+        System.out.println("   - Tasks from last 30 days for trend analysis");
+        System.out.println("   - Multiple users per organization for performance metrics");
+    }
+
+    private Organization createOrganization(String name, String description, OrganizationType type,
+                                            String email, String phone, String address) {
+        Organization org = new Organization();
+        org.setName(name);
+        org.setDescription(description);
+        org.setType(type);
+        org.setContactEmail(email);
+        org.setContactPhone(phone);
+        org.setAddress(address);
+        org.setActive(true);
+        org.setCreatedAt(LocalDateTime.now());
+        org.setUpdatedAt(LocalDateTime.now());
+        return org;
+    }
+
+    private Client createClient(String firstName, String lastName, String email,
+                                String phone, String address, Organization org) {
+        Client client = new Client();
+        client.setFirstName(firstName);
+        client.setLastName(lastName);
+        client.setEmail(email);
+        client.setPhone(phone);
+        client.setAddress(address);
+        client.setOrganization(org);
+        client.setActive(true);
+        client.setCreatedAt(LocalDateTime.now());
+        client.setUpdatedAt(LocalDateTime.now());
+        return client;
+    }
+
+    private void linkUserToOrg(User user, Organization org) {
+        user.getOrganizations().add(org);
+        userRepository.save(user);
+    }
+
+    private void createTasksForOrganization(Organization org, Client[] clients, User[] users,
+                                            User manager, int count, ServiceStatus[] statuses,
+                                            ServicePriority[] priorities, Random random) {
+        String[] hospitalTasks = {
+                "General Checkup", "Blood Test", "X-Ray Examination", "Vaccination", "Physical Therapy",
+                "Dental Cleaning", "Eye Examination", "Prescription Refill", "Lab Work", "Consultation"
+        };
+
+        String[] autoTasks = {
+                "Oil Change", "Brake Inspection", "Tire Rotation", "Engine Diagnostic", "Battery Replacement",
+                "Transmission Service", "Air Filter Replacement", "Wheel Alignment", "Coolant Flush", "Tune-Up"
+        };
+
+        String[] taskTitles = org.getType() == OrganizationType.HOSPITAL ? hospitalTasks : autoTasks;
+
+        for (int i = 0; i < count; i++) {
+            Task task = new Task();
+            task.setTitle(taskTitles[random.nextInt(taskTitles.length)]);
+            task.setDescription("Task description for " + task.getTitle());
+            task.setStatus(statuses[random.nextInt(statuses.length)]);
+            task.setPriority(priorities[random.nextInt(priorities.length)]);
+
+            // Create tasks from last 30 days
+            int daysAgo = random.nextInt(30);
+            task.setCreatedDate(LocalDateTime.now().minusDays(daysAgo));
+            task.setUpdatedDate(LocalDateTime.now().minusDays(daysAgo));
+
+            // Set due date based on priority
+            int dueDays = task.getPriority() == ServicePriority.URGENT ? 1 :
+                    task.getPriority() == ServicePriority.HIGH ? 3 :
+                            task.getPriority() == ServicePriority.MEDIUM ? 7 : 14;
+            task.setDueDate(task.getCreatedDate().plusDays(dueDays));
+
+            // Set completed date for completed tasks
+            if (task.getStatus() == ServiceStatus.COMPLETED) {
+                task.setCompletedDate(task.getCreatedDate().plusDays(random.nextInt(dueDays)));
+                task.setFinished(true);
+            }
+
+            task.setClient(clients[random.nextInt(clients.length)]);
+            task.setAssignedToUserId(users[random.nextInt(users.length)]);
+            task.setCreatedByUserId(manager);
+            task.setOrganization(org);
+
+            taskRepository.save(task);
+        }
     }
 }

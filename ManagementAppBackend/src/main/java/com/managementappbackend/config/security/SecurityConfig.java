@@ -67,10 +67,21 @@ public class SecurityConfig {
                                 "/h2-console/**",
                                 "/"
                         ).permitAll()
+
+
+                        //ANALYTICS SECURITY
+                        .requestMatchers("/api/analytics/admin/**").hasAnyRole("ADMIN", "OWNER")
+                        .requestMatchers("/api/analytics/manager/**").hasAnyRole("MANAGER", "ADMIN", "OWNER")
+                        .requestMatchers("/api/analytics/user/**").hasAnyRole("USER", "MANAGER", "ADMIN", "OWNER")
+
                         .requestMatchers(
-                                "/api/tasks/toggle-finish", // or whatever your endpoint is
+                                "/api/tasks/toggle-finish",
                                 "/api/tasks/*/update"
                         ).hasAnyRole("USER", "MANAGER", "ADMIN", "OWNER")
+
+
+                        .requestMatchers("/api/comments/**").hasAnyRole("USER", "MANAGER", "ADMIN", "OWNER")
+
                         .requestMatchers("/api/users/create").hasAnyRole("MANAGER", "ADMIN", "OWNER")
                         .requestMatchers("/api/users/managers").hasAnyRole("ADMIN", "OWNER")
                         .requestMatchers("/api/users/organization/**").hasAnyRole("MANAGER", "ADMIN", "OWNER")  // ✅ Add this for your org-specific endpoints

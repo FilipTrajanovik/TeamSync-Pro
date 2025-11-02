@@ -82,17 +82,14 @@ public class TaskServiceImpl implements TaskService {
                 throw new NotOwnedTaskException("You can only toggle your own assigned tasks");
             }
 
-            // Toggle the finished status
+
             task.setFinished(!task.isFinished());
             task.setUpdatedDate(LocalDateTime.now());
 
-            // FIXED: Only set COMPLETED status and completedDate when marking as finished
             if (task.isFinished()) {
-                // Task is now FINISHED → set status to COMPLETED
                 task.setCompletedDate(LocalDateTime.now());
                 task.setStatus(ServiceStatus.COMPLETED);
             } else {
-                // Task is UNMARKED → set status back to IN_PROGRESS and clear completedDate
                 task.setCompletedDate(null);
                 task.setStatus(ServiceStatus.IN_PROGRESS);
             }

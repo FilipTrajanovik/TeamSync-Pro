@@ -10,6 +10,7 @@ import com.managementappbackend.service.domain.analytics.TaskAnalyticsService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -85,19 +86,19 @@ public class TaskAnalyticsServiceImpl implements TaskAnalyticsService {
 
     @Override
     public List<Object[]> getTaskTrend(int days) {
-        LocalDate startDate = LocalDate.now().minusDays(days);
+        LocalDateTime startDate = LocalDateTime.now().minusDays(days);
         return taskRepository.findTaskTrendData(startDate);
     }
 
     @Override
     public List<Object[]> getTaskTrendByOrganization(Organization org, int days) {
-        LocalDate startDate = LocalDate.now().minusDays(days);
+        LocalDateTime startDate = LocalDateTime.now().minusDays(days);
         return taskRepository.findTaskTrendDataByOrganization(org, startDate);
     }
 
     @Override
     public List<Object[]> getTaskTrendByUser(User user, int days) {
-        LocalDate startDate = LocalDate.now().minusDays(days);
+        LocalDateTime startDate = LocalDateTime.now().minusDays(days);
         return taskRepository.findTaskTrendDataByUser(user, startDate);
     }
 

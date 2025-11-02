@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -39,6 +41,10 @@ public class Task {
     @ManyToOne(fetch = FetchType.LAZY)
     private Organization organization;
 
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
+    private List<Comment> comments;
+
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
 
@@ -61,6 +67,7 @@ public class Task {
         this.createdDate = createdDate;
         this.updatedDate = updatedDate;
         this.finished=finished;
+        this.comments = new ArrayList<>();
     }
 
     public boolean isFinished() {
@@ -173,5 +180,13 @@ public class Task {
 
     public void setUpdatedDate(LocalDateTime updatedDate) {
         this.updatedDate = updatedDate;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 }
