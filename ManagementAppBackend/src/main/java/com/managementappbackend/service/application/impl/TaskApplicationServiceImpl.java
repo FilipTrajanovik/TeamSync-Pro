@@ -6,6 +6,7 @@ import com.managementappbackend.dto.DisplayTaskDto;
 import com.managementappbackend.model.domain.Client;
 import com.managementappbackend.model.domain.Organization;
 import com.managementappbackend.model.domain.User;
+import com.managementappbackend.model.enumerations.Role;
 import com.managementappbackend.model.exceptions.ClientNotFoundException;
 import com.managementappbackend.model.exceptions.OrganizationNotFoundException;
 import com.managementappbackend.service.application.TaskApplicationService;
@@ -90,5 +91,18 @@ public class TaskApplicationServiceImpl implements TaskApplicationService {
     @Override
     public void delete(Long id) {
         taskService.delete(id);
+    }
+
+    @Override
+    public List<DisplayTaskDto> findByOrganization() {
+        String currentUsername = SecurityContextHolder.getContext()
+                .getAuthentication().getName();
+        User user = userService.findByUsername(currentUsername);
+        if(user.getRole().equals(Role.MANAGER))
+        {
+            Organization org = user.getOrganizations().get(0);
+            return taskService.findAllByOrganization(org).stream().map(DisplayTaskDto::from).toList();
+        }
+        return List.of();
     }
 }

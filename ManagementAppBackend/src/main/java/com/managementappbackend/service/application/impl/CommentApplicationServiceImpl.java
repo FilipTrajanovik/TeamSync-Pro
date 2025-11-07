@@ -16,6 +16,7 @@ import com.managementappbackend.service.domain.UserService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,6 +50,7 @@ public class CommentApplicationServiceImpl implements CommentApplicationService 
 
         Task task = taskService.findById(createCommentDto.taskId()).
                 orElseThrow(() -> new TaskNotFoundException("Task with " + createCommentDto.taskId() + " not found"));
+
 
         return commentService.save(createCommentDto.toComment(user, task)).map(DisplayCommentDto::from);
     }

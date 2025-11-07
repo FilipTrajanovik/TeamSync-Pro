@@ -1,5 +1,6 @@
 package com.managementappbackend.service.domain;
 
+import com.managementappbackend.model.domain.Organization;
 import com.managementappbackend.model.domain.Task;
 import com.managementappbackend.model.domain.User;
 
@@ -16,4 +17,5 @@ public interface TaskService {
     List<Task> findByAssignedTo(User user);
     void delete(Long id);
     Optional<Task> toggleFinished(Long id, String username);
+    List<Task> findAllByOrganization(Organization organization);
 }

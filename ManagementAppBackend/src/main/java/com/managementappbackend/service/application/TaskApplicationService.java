@@ -18,4 +18,5 @@ public interface TaskApplicationService {
     List<DisplayTaskDto> findByAssignedTo(String username);
     Optional<DisplayTaskDto> toggleFinished(Long id, String username);
     void delete(Long id);
+    List<DisplayTaskDto> findByOrganization();
 }

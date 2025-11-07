@@ -1,0 +1,108 @@
+/* Comment List Dialog - Black/White Glassmorphism */
+.comment-list-dialog {
+    background: rgba(20, 20, 20, 0.95) !important;
+    backdrop-filter: blur(40px) !important;
+    -webkit-backdrop-filter: blur(40px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Header */
+.comment-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 28px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.comment-list-title {
+    color: #ffffff !important;
+    font-size: 1.25rem !important;
+    font-weight: 600 !important;
+}
+
+.comment-list-close {
+    color: rgba(255, 255, 255, 0.7) !important;
+    transition: all 0.3s ease !important;
+}
+
+.comment-list-close:hover {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Content */
+.comment-list-content {
+    padding: 20px 28px;
+    max-height: 500px;
+    overflow-y: auto;
+    min-height: 200px;
+}
+
+/* Loading State */
+.comment-list-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 0;
+}
+
+/* Empty State */
+.comment-list-empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.comment-list-empty p {
+    color: rgba(255, 255, 255, 0.5) !important;
+    font-size: 0.95rem !important;
+}
+
+/* Comments List */
+.comment-list-items {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Footer */
+.comment-list-footer {
+    padding: 20px 28px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* Custom Scrollbar */
+.comment-list-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.comment-list-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 4px;
+}
+
+.comment-list-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.comment-list-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .comment-list-header,
+    .comment-list-content,
+    .comment-list-footer {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}

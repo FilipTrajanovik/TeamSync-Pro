@@ -66,11 +66,9 @@ const useClients = () => {
             })
             .catch((err) => {
                 console.log(err);
-                setState({ clients: [], loading: false });
+                setState({clients: [], loading: false});
             })
-    },[])
-
+    }, [])
     return {...state, onAdd, onEdit, onDelete, fetchClientsByOrganization};
-};
-
+}
 export default useClients;

@@ -1,10 +1,12 @@
 package com.managementappbackend.service.domain.impl;
 
+import com.managementappbackend.events.CommentAddedEvent;
 import com.managementappbackend.model.domain.Comment;
 import com.managementappbackend.model.domain.Task;
 import com.managementappbackend.model.domain.User;
 import com.managementappbackend.repository.CommentRepository;
 import com.managementappbackend.service.domain.CommentService;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,9 +17,11 @@ import java.util.Optional;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public CommentServiceImpl(CommentRepository commentRepository) {
+    public CommentServiceImpl(CommentRepository commentRepository, ApplicationEventPublisher eventPublisher) {
         this.commentRepository = commentRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -32,11 +36,19 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Optional<Comment> save(Comment comment) {
+        eventPublisher.publishEvent(new CommentAddedEvent(
+                this,
+                comment.getUser().getUsername(),
+                comment.getTask().getAssignedToUserId().getUsername(),
+                comment.getTask().getId(),
+                comment.getTask().getTitle()
+        ));
         return Optional.of(commentRepository.save(comment));
     }
 
     @Override
     public Optional<Comment> update(Long id, Comment comment) {
+
         return commentRepository.findById(id)
                 .map((existingComment) -> {
                     existingComment.setText(comment.getText());

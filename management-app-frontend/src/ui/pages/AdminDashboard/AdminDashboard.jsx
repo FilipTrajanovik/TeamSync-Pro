@@ -48,8 +48,8 @@ const AdminDashboard = () => {
         onEdit: editOrganization,
         onDelete: deleteOrganization
     } = useOrganizations();
-    const {users, loading: usersLoading, onAdd: addUser, onEdit: editUser, onDelete: deleteUser} = useUsers();
-    const {tasks, loading: tasksLoading, onAdd: addTask, onEdit: editTask, onDelete: deleteTask} = useTasks();
+    const {users, loading: usersLoading,onAdd: addUser, onEdit: editUser, onDelete: deleteUser} = useUsers();
+    const {tasks, loading: tasksLoading, onAdd: addTask, onEdit: editTask, onDelete: deleteTask, fetchTasks: fetchTasks } = useTasks();
     const {
         clients,
         loading: clientsLoading,
@@ -103,6 +103,10 @@ const AdminDashboard = () => {
     const [openRecordViewDialog, setOpenRecordViewDialog] = useState(false);
     const [viewingRecord, setViewingRecord] = useState(null);
     const [deletingRecord, setDeletingRecord] = useState(null);
+
+    useEffect(() => {
+        fetchTasks()
+    }, [fetchTasks]);
 
     //TASKS FILTER
     const {

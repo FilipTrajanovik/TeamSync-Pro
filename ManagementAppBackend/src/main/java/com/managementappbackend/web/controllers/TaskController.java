@@ -81,4 +81,11 @@ public class TaskController {
         String username = authentication.getName();
         return taskApplicationService.toggleFinished(id, username).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
+
+    @Operation(summary = "Get tasks by organization", description = "Retrieves all tasks for a specific organization")
+    @GetMapping("/organization-tasks")
+    public List<DisplayTaskDto> findTasksByOrganization()
+    {
+        return taskApplicationService.findByOrganization();
+    }
 }

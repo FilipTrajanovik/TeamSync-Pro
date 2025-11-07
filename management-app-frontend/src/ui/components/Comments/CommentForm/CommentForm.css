@@ -1,0 +1,65 @@
+/* Comment Form - Inline at bottom of CommentList */
+.comment-form {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    padding: 0;
+}
+
+.comment-form-input .MuiOutlinedInput-root {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-radius: 12px !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    transition: all 0.3s ease !important;
+}
+
+.comment-form-input .MuiOutlinedInput-root:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.comment-form-input .MuiOutlinedInput-root.Mui-focused {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.comment-form-input .MuiOutlinedInput-notchedOutline {
+    border: none !important;
+}
+
+.comment-form-input input,
+.comment-form-input textarea {
+    color: #ffffff !important;
+    font-size: 0.95rem !important;
+}
+
+.comment-form-input input::placeholder,
+.comment-form-input textarea::placeholder {
+    color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.comment-form-submit {
+    background: rgba(255, 255, 255, 0.95) !important;
+    color: #1a1a1a !important;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 12px !important;
+    transition: all 0.3s ease !important;
+}
+
+.comment-form-submit:hover:not(:disabled) {
+    background: #ffffff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2) !important;
+}
+
+.comment-form-submit:disabled {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: rgba(255, 255, 255, 0.3) !important;
+    cursor: not-allowed !important;
+}
+
+.comment-form-submit svg {
+    font-size: 20px !important;
+}

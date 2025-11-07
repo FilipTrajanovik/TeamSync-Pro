@@ -27,6 +27,9 @@ const taskRepository = {
     },
     toggleFinish: async (id) => {
         return axiosInstance.put(`/tasks/toggle-finish?id=${id}`)
+    },
+    findByOrganization: async() => {
+        return axiosInstance.get(`/tasks/organization-tasks`)
     }
 
 

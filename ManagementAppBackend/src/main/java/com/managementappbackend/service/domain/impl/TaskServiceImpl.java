@@ -1,5 +1,7 @@
 package com.managementappbackend.service.domain.impl;
 
+import com.managementappbackend.events.TaskAssignedEvent;
+import com.managementappbackend.model.domain.Organization;
 import com.managementappbackend.model.domain.Task;
 import com.managementappbackend.model.domain.User;
 import com.managementappbackend.model.enumerations.ServiceStatus;
@@ -7,6 +9,8 @@ import com.managementappbackend.model.exceptions.NotOwnedTaskException;
 import com.managementappbackend.model.exceptions.TaskNotFoundException;
 import com.managementappbackend.repository.TaskRepository;
 import com.managementappbackend.service.domain.TaskService;
+import com.sun.source.util.TaskEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,9 +21,12 @@ import java.util.Optional;
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public TaskServiceImpl(TaskRepository taskRepository) {
+
+    public TaskServiceImpl(TaskRepository taskRepository, ApplicationEventPublisher eventPublisher) {
         this.taskRepository = taskRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -34,6 +41,13 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Optional<Task> save(Task task) {
+        eventPublisher.publishEvent(new TaskAssignedEvent(
+                this,
+                task.getCreatedByUserId().getUsername(),
+                task.getAssignedToUserId().getUsername(),
+                task.getId(),
+                task.getTitle()
+        ));
         return Optional.of(taskRepository.save(task));
     }
 
@@ -98,5 +112,10 @@ public class TaskServiceImpl implements TaskService {
         } else {
             throw new TaskNotFoundException("Task with ID:" + id + " has not been found");
         }
+    }
+
+    @Override
+    public List<Task> findAllByOrganization(Organization organization) {
+        return taskRepository.findByOrganization(organization);
     }
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
     AppBar,
     Toolbar,
@@ -19,15 +19,31 @@ import {
     Settings,
     Business
 } from '@mui/icons-material';
-import { useAuth } from '../../../hooks/useAuth.js'
-import { useNavigate } from 'react-router-dom';
+import {useAuth} from '../../../hooks/useAuth.js'
+import {useNavigate} from 'react-router-dom';
 import './Navbar.css';
+import useNotifications from "../../../hooks/useNotifications.js";
+import NotificationDropdown from "../Notifications/NotificationDropdown/NotificationDropdown.jsx";
+import NotificationBell from "../Notifications/NotificationBell/NotificationBell.jsx";
 
 const Navbar = () => {
-    const { logout, user } = useAuth();
+    const {logout, user} = useAuth();
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
+    const {
+        notifications,
+        unreadCount,
+        loading,
+        fetchMyNotifications,
+        getUnreadNotifications,
+        fetchUnreadCount,
+        markItAsRead,
+        markItAsUnread
+    } = useNotifications()
+
+    const [openNotificationView, setOpenNotificationView] = useState(false)
+
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -47,6 +63,15 @@ const Navbar = () => {
         navigate('/login');
         handleClose();
     };
+
+    const handleNotificationsOpen= () => {
+        fetchMyNotifications()
+        setOpenNotificationView(true)
+    }
+
+    const handleNotificationsClose = () => {
+        setOpenNotificationView(false)
+    }
 
     const getInitials = () => {
         if (user?.name && user?.surname) {
@@ -80,8 +105,8 @@ const Navbar = () => {
                 boxShadow: '0 4px 30px rgba(0, 0, 0, 0.3)'
             }}
         >
-            <Toolbar sx={{ padding: '12px 24px' }}>
-                <Business sx={{ mr: 2, fontSize: 32, color: '#ffffff' }} />
+            <Toolbar sx={{padding: '12px 24px'}}>
+                <Business sx={{mr: 2, fontSize: 32, color: '#ffffff'}}/>
                 <Typography
                     variant="h6"
                     component="div"
@@ -96,13 +121,16 @@ const Navbar = () => {
                     Management System
                 </Typography>
 
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
+                    <IconButton onClick={handleNotificationsOpen} sx={{ p: 0 }}>
+                        <NotificationBell unreadCount={unreadCount} />
+                    </IconButton>
                     <Box
                         sx={{
                             flexDirection: 'column',
                             alignItems: 'flex-end',
                             mr: 1,
-                            display: { xs: 'none', sm: 'flex' }
+                            display: {xs: 'none', sm: 'flex'}
                         }}
                     >
                         <Typography
@@ -130,7 +158,7 @@ const Navbar = () => {
                         </Box>
                     </Box>
 
-                    <IconButton onClick={handleClick} sx={{ p: 0 }}>
+                    <IconButton onClick={handleClick} sx={{p: 0}}>
                         <Avatar
                             sx={{
                                 bgcolor: 'rgba(255, 255, 255, 0.15)',
@@ -185,11 +213,11 @@ const Navbar = () => {
                             },
                         }
                     }}
-                    transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                    anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                    transformOrigin={{horizontal: 'right', vertical: 'top'}}
+                    anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
                 >
-                    <Box sx={{ px: 2, py: 2 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Box sx={{px: 2, py: 2}}>
+                        <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
                             <Avatar
                                 sx={{
                                     bgcolor: 'rgba(255, 255, 255, 0.15)',
@@ -224,7 +252,7 @@ const Navbar = () => {
                         </Box>
                     </Box>
 
-                    <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)' }} />
+                    <Divider sx={{borderColor: 'rgba(255, 255, 255, 0.1)'}}/>
 
                     <MenuItem
                         onClick={handleDashboard}
@@ -238,7 +266,7 @@ const Navbar = () => {
                         }}
                     >
                         <ListItemIcon>
-                            <Dashboard fontSize="small" sx={{ color: 'rgba(255, 255, 255, 0.9)' }} />
+                            <Dashboard fontSize="small" sx={{color: 'rgba(255, 255, 255, 0.9)'}}/>
                         </ListItemIcon>
                         <ListItemText>Dashboard</ListItemText>
                     </MenuItem>
@@ -254,7 +282,7 @@ const Navbar = () => {
                         }}
                     >
                         <ListItemIcon>
-                            <Person fontSize="small" sx={{ color: 'rgba(255, 255, 255, 0.9)' }} />
+                            <Person fontSize="small" sx={{color: 'rgba(255, 255, 255, 0.9)'}}/>
                         </ListItemIcon>
                         <ListItemText>Profile</ListItemText>
                     </MenuItem>
@@ -270,12 +298,12 @@ const Navbar = () => {
                         }}
                     >
                         <ListItemIcon>
-                            <Settings fontSize="small" sx={{ color: 'rgba(255, 255, 255, 0.9)' }} />
+                            <Settings fontSize="small" sx={{color: 'rgba(255, 255, 255, 0.9)'}}/>
                         </ListItemIcon>
                         <ListItemText>Settings</ListItemText>
                     </MenuItem>
 
-                    <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)' }} />
+                    <Divider sx={{borderColor: 'rgba(255, 255, 255, 0.1)'}}/>
 
                     <MenuItem
                         onClick={handleLogout}
@@ -289,11 +317,19 @@ const Navbar = () => {
                         }}
                     >
                         <ListItemIcon>
-                            <Logout fontSize="small" sx={{ color: '#ff4444' }} />
+                            <Logout fontSize="small" sx={{color: '#ff4444'}}/>
                         </ListItemIcon>
                         <ListItemText>Logout</ListItemText>
                     </MenuItem>
                 </Menu>
+
+                <NotificationDropdown
+                    open={openNotificationView}
+                    onClose={handleNotificationsClose}
+                    notifications={notifications}
+                    onMarkAsRead={markItAsRead}
+                    onMarkAsUnread={markItAsUnread}
+                />
             </Toolbar>
         </AppBar>
     );

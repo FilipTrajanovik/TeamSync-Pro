@@ -73,13 +73,14 @@ public class SecurityConfig {
                         .requestMatchers("/api/analytics/admin/**").hasAnyRole("ADMIN", "OWNER")
                         .requestMatchers("/api/analytics/manager/**").hasAnyRole("MANAGER", "ADMIN", "OWNER")
                         .requestMatchers("/api/analytics/user/**").hasAnyRole("USER", "MANAGER", "ADMIN", "OWNER")
+                        .requestMatchers("/api/tasks/organization-tasks").hasAnyRole("MANAGER", "ADMIN")
 
                         .requestMatchers(
                                 "/api/tasks/toggle-finish",
                                 "/api/tasks/*/update"
                         ).hasAnyRole("USER", "MANAGER", "ADMIN", "OWNER")
 
-
+                        .requestMatchers("/api/notifications/**").hasAnyRole("USER", "MANAGER", "ADMIN", "OWNER")
                         .requestMatchers("/api/comments/**").hasAnyRole("USER", "MANAGER", "ADMIN", "OWNER")
 
                         .requestMatchers("/api/users/create").hasAnyRole("MANAGER", "ADMIN", "OWNER")
