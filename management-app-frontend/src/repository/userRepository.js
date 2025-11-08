@@ -24,6 +24,12 @@ const userRepository = {
     },
     createUser: async (data) => {
         return axiosInstance.post("/users/create", data);
+    },
+    updateProfile: async (data) => {
+        return axiosInstance.put("/users/update", data);
+    },
+    changePassword: async (data) => {
+        return axiosInstance.put("/users/change-password", data);
     }
 };
 export default userRepository;

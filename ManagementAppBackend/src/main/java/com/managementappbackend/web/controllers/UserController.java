@@ -1,9 +1,6 @@
 package com.managementappbackend.web.controllers;
 
-import com.managementappbackend.dto.CreateUserDto;
-import com.managementappbackend.dto.DisplayUserDto;
-import com.managementappbackend.dto.LoginResponseDto;
-import com.managementappbackend.dto.LoginUserDto;
+import com.managementappbackend.dto.*;
 import com.managementappbackend.model.enumerations.Role;
 import com.managementappbackend.model.exceptions.InvalidArgumentsException;
 import com.managementappbackend.model.exceptions.InvalidUserCredentialsException;
@@ -112,6 +109,30 @@ public class UserController {
     @PostMapping("/create")
     public ResponseEntity<DisplayUserDto> create(@RequestBody CreateUserDto createUserDto) {
         return userApplicationService.createUser(createUserDto).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @Operation(summary = "Updates user values",
+            description = "Update of name surname username password")
+    @PutMapping("/update")
+    public ResponseEntity<DisplayUserDto> update(@RequestBody CreateUserDto createUserDto) {
+        return userApplicationService.updateUser(createUserDto).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+    @Operation(summary = "Change password",
+            description = "Allows user to change their password")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Password changed successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid password or passwords don't match"),
+            @ApiResponse(responseCode = "401", description = "Current password is incorrect")
+    })
+    @PutMapping("/change-password")
+    public ResponseEntity<DisplayUserDto> changePassword(@RequestBody ChangePasswordDto changePasswordDto) {
+        try {
+            return userApplicationService.changePassword(changePasswordDto)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.badRequest().build());
+        } catch (InvalidUserCredentialsException | PasswordsDoNotMatchException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
 

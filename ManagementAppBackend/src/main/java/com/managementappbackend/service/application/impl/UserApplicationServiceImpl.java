@@ -1,9 +1,6 @@
 package com.managementappbackend.service.application.impl;
 
-import com.managementappbackend.dto.CreateUserDto;
-import com.managementappbackend.dto.DisplayUserDto;
-import com.managementappbackend.dto.LoginResponseDto;
-import com.managementappbackend.dto.LoginUserDto;
+import com.managementappbackend.dto.*;
 import com.managementappbackend.helpers.JwtHelper;
 import com.managementappbackend.model.domain.User;
 import com.managementappbackend.model.enumerations.Role;
@@ -93,6 +90,18 @@ public class UserApplicationServiceImpl implements UserApplicationService {
                 createUserDto.organizationId()
         );
         return Optional.of(DisplayUserDto.from(user));
+    }
+
+    @Override
+    public Optional<DisplayUserDto> updateUser(CreateUserDto createUserDto) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userService.updateUser(username, createUserDto.toUser()).map(DisplayUserDto::from);
+    }
+
+    @Override
+    public Optional<DisplayUserDto> changePassword(ChangePasswordDto changePasswordDto) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userService.changePassword(username, changePasswordDto.currentPassword(), changePasswordDto.newPassword(), changePasswordDto.confirmPassword()).map(DisplayUserDto::from);
     }
 
 

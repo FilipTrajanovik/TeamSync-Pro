@@ -14,7 +14,8 @@ import UserDashboard from './ui/pages/UserDashboard/UserDashboard';
 import './App.css';
 import { ThemeProvider } from './context/ThemeContext';
 import EditMyOrganization from "./ui/pages/Manager/EditMyOrganization/EditMyOrganization.jsx";
-
+import Settings from './ui/pages/Settings/Settings.jsx';
+import LandingPage from './ui/pages/LandingPage/LandingPage.jsx';
 function App() {
 
     useEffect(() => {
@@ -31,14 +32,15 @@ function App() {
             <AuthProvider>
                 <Routes>
                     {/* LOGIN PAGES - NO THEME PROVIDER */}
-                    <Route path="/" element={<PortalSelection />} />
+                    <Route path="/" element={<LandingPage />} />
+                    <Route path="/portal" element={<PortalSelection />} />
                     <Route path="/admin-login" element={<AdminLogin />} />
                     <Route path="/manager/login" element={<ManagerLogin />} />
                     <Route path="/user/login" element={<UserLogin />} />
                     <Route path="/login" element={<Navigate to="/" replace />} />
-                    <Route path="/register" element={<Register />} />
+                    {/*<Route path="/register" element={<Register />} />*/}
 
-                    {/* DASHBOARD PAGES - WITH THEME PROVIDER */}
+
                     <Route path="/*" element={
                         <ThemeProvider>
                             <Routes>
@@ -82,8 +84,22 @@ function App() {
                                         </ProtectedRoute>
                                     }
                                 />
+
+                                <Route
+                                path="/settings"
+                                element={
+                                    <ProtectedRoute allowedRoles={['USER', 'MANAGER', 'ADMIN', 'OWNER']}>
+                                        <Settings/>
+                                    </ProtectedRoute>
+                                }
+                                >
+
+                                </Route>
+
                                 <Route path="*" element={<Navigate to="/" replace />} />
                             </Routes>
+
+
                         </ThemeProvider>
                     } />
                 </Routes>

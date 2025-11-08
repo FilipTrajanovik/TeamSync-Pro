@@ -1,9 +1,6 @@
 package com.managementappbackend.service.application;
 
-import com.managementappbackend.dto.CreateUserDto;
-import com.managementappbackend.dto.DisplayUserDto;
-import com.managementappbackend.dto.LoginResponseDto;
-import com.managementappbackend.dto.LoginUserDto;
+import com.managementappbackend.dto.*;
 import com.managementappbackend.model.domain.User;
 import com.managementappbackend.model.enumerations.Role;
 
@@ -22,4 +19,6 @@ public interface UserApplicationService {
     List<DisplayUserDto> findByOrganizationId(Long organizationId);
     List<DisplayUserDto> findByOrganizationIdAndRole(Long organizationId);
     Optional<DisplayUserDto> createUser(CreateUserDto createUserDto);
+    Optional<DisplayUserDto> updateUser(CreateUserDto createUserDto);
+    Optional<DisplayUserDto> changePassword(ChangePasswordDto changePasswordDto);
 }

@@ -86,6 +86,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/create").hasAnyRole("MANAGER", "ADMIN", "OWNER")
                         .requestMatchers("/api/users/managers").hasAnyRole("ADMIN", "OWNER")
                         .requestMatchers("/api/users/organization/**").hasAnyRole("MANAGER", "ADMIN", "OWNER")  // ✅ Add this for your org-specific endpoints
+                        .requestMatchers("/api/users/update").hasAnyRole("USER", "MANAGER", "ADMIN", "OWNER")
+                        .requestMatchers("/api/users/change-password").hasAnyRole("USER", "MANAGER", "ADMIN", "OWNER")
+
 
                         .requestMatchers("/api/organizations/**").hasAnyRole("ADMIN", "OWNER","MANAGER")
                         .requestMatchers(

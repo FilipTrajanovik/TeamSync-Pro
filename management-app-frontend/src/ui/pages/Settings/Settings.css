@@ -1,0 +1,182 @@
+.settings-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    padding: 40px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.settings-page::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+            radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.settings-container {
+    position: relative;
+    z-index: 1;
+}
+
+.settings-title {
+    color: #ffffff;
+    font-weight: 700;
+    margin-bottom: 32px;
+    text-align: center;
+    letter-spacing: -0.5px;
+}
+
+.settings-alert {
+    margin-bottom: 24px;
+    background: rgba(76, 175, 80, 0.1) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(76, 175, 80, 0.3) !important;
+    border-radius: 12px !important;
+    color: #4caf50 !important;
+}
+
+.settings-card {
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 16px !important;
+    padding: 32px !important;
+    margin-bottom: 24px;
+    box-shadow:
+            0 8px 32px 0 rgba(0, 0, 0, 0.37),
+            inset 0 1px 0 0 rgba(255, 255, 255, 0.05) !important;
+    transition: all 0.3s ease;
+}
+
+.settings-card:hover {
+    background: rgba(255, 255, 255, 0.07) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    transform: translateY(-2px);
+    box-shadow:
+            0 12px 40px 0 rgba(0, 0, 0, 0.5),
+            inset 0 1px 0 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+.settings-card-title {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    margin-bottom: 16px !important;
+    font-size: 20px !important;
+}
+
+.settings-divider {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    margin-bottom: 24px !important;
+}
+
+.settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.settings-input {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-radius: 12px !important;
+}
+
+.settings-input .MuiInputBase-root {
+    color: #ffffff !important;
+    border-radius: 12px;
+}
+
+.settings-input .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px;
+}
+
+.settings-input:hover .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.settings-input .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    border-width: 2px;
+}
+
+.settings-input .MuiInputLabel-root {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.settings-input .MuiInputLabel-root.Mui-focused {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.settings-input .MuiFormHelperText-root {
+    color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.settings-input .MuiInputBase-input.Mui-disabled {
+    -webkit-text-fill-color: rgba(255, 255, 255, 0.3) !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+}
+
+.settings-submit-button {
+    margin-top: 8px !important;
+    padding: 12px 32px !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 12px !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    text-transform: none !important;
+    font-size: 16px !important;
+    transition: all 0.3s ease !important;
+}
+
+.settings-submit-button:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+.settings-submit-button:disabled {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.settings-danger-button {
+    background: linear-gradient(135deg, rgba(244, 67, 54, 0.2) 0%, rgba(244, 67, 54, 0.1) 100%) !important;
+    border-color: rgba(244, 67, 54, 0.3) !important;
+}
+
+.settings-danger-button:hover {
+    background: linear-gradient(135deg, rgba(244, 67, 54, 0.3) 0%, rgba(244, 67, 54, 0.15) 100%) !important;
+    border-color: rgba(244, 67, 54, 0.5) !important;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .settings-page {
+        padding: 20px 0;
+    }
+
+    .settings-card {
+        padding: 24px !important;
+        border-radius: 12px !important;
+    }
+
+    .settings-title {
+        font-size: 28px;
+        margin-bottom: 24px;
+    }
+
+    .settings-card-title {
+        font-size: 18px !important;
+    }
+}

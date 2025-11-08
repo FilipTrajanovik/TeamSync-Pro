@@ -80,6 +80,11 @@ const Navbar = () => {
         return user?.username?.[0]?.toUpperCase() || 'U';
     };
 
+    const handleSettings = () => {
+        navigate('/settings');
+        handleClose();
+    }
+
     const getRoleBadgeColor = (role) => {
         switch (role) {
             case 'ADMIN':
@@ -296,6 +301,7 @@ const Navbar = () => {
                                 backgroundColor: 'rgba(255, 255, 255, 0.08)'
                             }
                         }}
+                        onClick={handleSettings}
                     >
                         <ListItemIcon>
                             <Settings fontSize="small" sx={{color: 'rgba(255, 255, 255, 0.9)'}}/>

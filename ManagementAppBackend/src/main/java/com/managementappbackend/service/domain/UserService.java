@@ -5,6 +5,7 @@ import com.managementappbackend.model.enumerations.Role;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService extends UserDetailsService {
     User register(String username, String password, String repeatPassword, String name, String surname, Role role, Long orgId);
@@ -17,4 +18,6 @@ public interface UserService extends UserDetailsService {
     List<User> findByRole(Role role);
     List<User> findByOrganizationId(Long organizationId);
     List<User> findByOrganizationIdAndRole(Long organizationId, Role role);
+    Optional<User> updateUser(String username, User user);
+    Optional<User> changePassword(String username, String oldPassword, String newPassword, String confirmPassword);
 }

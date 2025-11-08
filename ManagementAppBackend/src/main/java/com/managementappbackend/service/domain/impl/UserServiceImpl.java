@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -91,5 +92,31 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> findByOrganizationIdAndRole(Long organizationId, Role role) {
         return userRepository.findByOrganizationIdAndRole(organizationId, role);
+    }
+
+    @Override
+    public Optional<User> updateUser(String username, User user) {
+        return userRepository.findByUsername(username)
+                .map(existingUser -> {
+                    existingUser.setName(user.getName());
+                    existingUser.setSurname(user.getSurname());
+                    return userRepository.save(existingUser);
+                });
+    }
+
+    @Override
+    public Optional<User> changePassword(String username, String oldPassword, String newPassword, String confirmPassword) {
+        if(!newPassword.equals(confirmPassword))
+        {
+            throw new PasswordsDoNotMatchException("New passwords do not match");
+        }
+        return userRepository.findByUsername(username)
+                .map(existingUser -> {
+                    if(!passwordEncoder.matches(oldPassword, existingUser.getPassword())){
+                        throw new PasswordsDoNotMatchException("Old Passwords do not match");
+                    }
+                    existingUser.setPassword(passwordEncoder.encode(newPassword));
+                    return userRepository.save(existingUser);
+                });
     }
 }
