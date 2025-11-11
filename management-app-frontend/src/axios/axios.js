@@ -39,10 +39,10 @@ axiosInstance.interceptors.response.use(
     },
     (error) => {
 
-        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+        if (error.response && (error.response.status === 401)) {
             console.log("Invalid token");
             localStorage.removeItem("token");
-            window.location.href = "/login";
+            window.location.href = "/";
         }
         return Promise.reject(error);
     }

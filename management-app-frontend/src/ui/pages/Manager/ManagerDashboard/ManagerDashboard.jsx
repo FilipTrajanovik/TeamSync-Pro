@@ -34,7 +34,8 @@ import {
     PersonOutline,
     Schedule,
     Settings,
-    TrendingUp
+    TrendingUp,
+
 } from '@mui/icons-material';
 import {
     Bar,
@@ -70,10 +71,11 @@ import useComments from "../../../../hooks/useComments.js";
 import CommentList from '../../../components/Comments/CommentList/CommentList.jsx'
 import useManagerTasks from "../../../../hooks/useManagerTasks.js";
 import Navbar from "../../../components/Navbar/Navbar.jsx";
-
+import useBilling from "../../../../hooks/useBilling.js";
 const ManagerDashboard = () => {
     const [activeTab, setActiveTab] = useState(0);
     const {user} = useAuth();
+    const {startCheckout, loading:billingLoading} = useBilling()
 
     const navigate = useNavigate();
 
@@ -268,16 +270,6 @@ const ManagerDashboard = () => {
                 finished: false
             };
 
-            console.log('=== TASK SUBMIT DEBUG ===');
-            console.log('📤 Original taskData:', taskData);
-            console.log('📤 Cleaned taskDataWithOrg:', taskDataWithOrg);
-            console.log('📤 Required fields:');
-            console.log('  ✅ title:', taskDataWithOrg.title);
-            console.log('  ✅ description:', taskDataWithOrg.description);
-            console.log('  ✅ clientId:', taskDataWithOrg.clientId);
-            console.log('  ✅ assignedToUserId:', taskDataWithOrg.assignedToUserId);
-            console.log('  ✅ organizationId:', taskDataWithOrg.organizationId);
-            console.log('  ✅ dueDate:', taskDataWithOrg.dueDate);
 
             if (editingTask) {
                 await editTask(editingTask.id, taskDataWithOrg);
@@ -291,10 +283,6 @@ const ManagerDashboard = () => {
             setEditingTask(null);
 
         } catch (error) {
-            console.error('❌ Task submit error:', error);
-            console.error('❌ Error response:', error.response);
-            console.error('❌ Error data:', error.response?.data);
-            console.error('❌ Error status:', error.response?.status);
 
             showSnackbar(
                 `Failed to ${editingTask ? 'update' : 'create'} task: ${error.response?.data?.message || error.message}`,
@@ -317,7 +305,6 @@ const ManagerDashboard = () => {
 
     const handleClientSubmit = async (clientData) => {
         try {
-            console.log('📤 Submitting client data:', clientData);
 
             if (editingClient) {
                 await editClient(editingClient.id, clientData);
@@ -371,8 +358,7 @@ const ManagerDashboard = () => {
             setEditingUser(null);
 
         } catch (error) {
-            console.error('❌ User submit error:', error);
-            console.error('Error response:', error.response?.data);
+
             showSnackbar(
                 `Failed to ${editingUser ? 'update' : 'add'} user: ${error.response?.data?.message || error.message}`,
                 'error'
@@ -397,6 +383,13 @@ const ManagerDashboard = () => {
         setOpenCommentsModal(false)
     }
 
+    const handleUpgrade = async (planName) => {
+        try {
+            await startCheckout(planName);
+        } catch (error) {
+            showSnackbar('Failed to start upgrade: ' + error.message, 'error');
+        }
+    };
 
     if (loading) {
         return (
@@ -488,6 +481,17 @@ const ManagerDashboard = () => {
                             }}
                         >
                             Tasks
+                        </Button>
+                        <Button
+                            fullWidth
+                            className={`menu-nav-button ${activeTab === 5 ? 'active' : ''}`}
+                            startIcon={<TrendingUp/>}
+                            onClick={() => {
+                                setActiveTab(5);
+                                setMenuOpen(false);
+                            }}
+                        >
+                            Billing & Plan
                         </Button>
                         <Button
                             fullWidth
@@ -1016,7 +1020,237 @@ const ManagerDashboard = () => {
                                 )}
                             </Box>
                         )}
+                        {/* Billing & Plan Tab */}
+                        {activeTab === 5 && (
+                            <Box>
+                                <Box className="content-header-apple">
+                                    <Box>
+                                        <Typography className="content-title-apple">
+                                            Billing & Subscription
+                                        </Typography>
+                                        <Typography className="content-subtitle-apple">
+                                            Manage your organization's subscription plan
+                                        </Typography>
+                                    </Box>
+                                </Box>
 
+                                {orgsLoading ? (
+                                    <Box className="loading-container-apple">
+                                        <Typography className="loading-text-apple">Loading...</Typography>
+                                    </Box>
+                                ) : organizations.length === 0 ? (
+                                    <Box className="empty-state-apple">
+                                        <Settings className="empty-icon-apple"/>
+                                        <Typography className="empty-title-apple">No organization found</Typography>
+                                    </Box>
+                                ) : (
+                                    <Grid container spacing={3}>
+                                        {/* Current Plan Card */}
+                                        <Grid item xs={12} md={8}>
+                                            <Card className="org-info-card-apple">
+                                                <CardContent sx={{p: 4}}>
+                                                    <Typography variant="h6" sx={{color: '#fff', mb: 3}}>
+                                                        Current Plan
+                                                    </Typography>
+
+                                                    <Box display="flex" alignItems="center" gap={3} mb={3}>
+                                                        <Avatar className="org-avatar-apple"
+                                                                sx={{width: 64, height: 64, fontSize: '2rem'}}>
+                                                            {organizations[0].subscriptionPlanName === 'FREE' && '🆓'}
+                                                            {organizations[0].subscriptionPlanName === 'PRO' && '⭐'}
+                                                            {organizations[0].subscriptionPlanName === 'ENTERPRISE' && '💎'}
+                                                        </Avatar>
+                                                        <Box>
+                                                            <Typography className="org-name-apple"
+                                                                        sx={{fontSize: '2rem'}}>
+                                                                {organizations[0].subscriptionPlanName} Plan
+                                                            </Typography>
+                                                            <Typography sx={{
+                                                                color: 'rgba(255,255,255,0.6)',
+                                                                fontSize: '1.2rem'
+                                                            }}>
+                                                                ${organizations[0].subscriptionPlanPrice?.toFixed(2) || '0.00'} /
+                                                                month
+                                                            </Typography>
+                                                        </Box>
+                                                    </Box>
+
+                                                    <Divider className="divider-apple" sx={{mb: 3}}/>
+
+                                                    {/* Plan Features */}
+                                                    <Typography variant="subtitle1" sx={{color: '#fff', mb: 2}}>
+                                                        Your Plan Includes:
+                                                    </Typography>
+                                                    <Box sx={{mb: 3}}>
+                                                        {organizations[0].subscriptionPlanName === 'FREE' && (
+                                                            <>
+                                                                <Box display="flex" alignItems="center" gap={1} mb={1}>
+                                                                    <CheckCircle sx={{color: '#10b981', fontSize: 20}}/>
+                                                                    <Typography sx={{color: 'rgba(255,255,255,0.8)'}}>
+                                                                        Up to 5 users
+                                                                    </Typography>
+                                                                </Box>
+                                                                <Box display="flex" alignItems="center" gap={1} mb={1}>
+                                                                    <CheckCircle sx={{color: '#10b981', fontSize: 20}}/>
+                                                                    <Typography sx={{color: 'rgba(255,255,255,0.8)'}}>
+                                                                        Basic task management
+                                                                    </Typography>
+                                                                </Box>
+                                                                <Box display="flex" alignItems="center" gap={1} mb={1}>
+                                                                    <CheckCircle sx={{color: '#10b981', fontSize: 20}}/>
+                                                                    <Typography sx={{color: 'rgba(255,255,255,0.8)'}}>
+                                                                        Client management
+                                                                    </Typography>
+                                                                </Box>
+                                                                <Box display="flex" alignItems="center" gap={1}>
+                                                                    <CheckCircle sx={{color: '#10b981', fontSize: 20}}/>
+                                                                    <Typography sx={{color: 'rgba(255,255,255,0.8)'}}>
+                                                                        Basic analytics
+                                                                    </Typography>
+                                                                </Box>
+                                                            </>
+                                                        )}
+
+                                                        {organizations[0].subscriptionPlanName === 'PRO' && (
+                                                            <>
+                                                                <Box display="flex" alignItems="center" gap={1} mb={1}>
+                                                                    <CheckCircle sx={{color: '#10b981', fontSize: 20}}/>
+                                                                    <Typography sx={{color: 'rgba(255,255,255,0.8)'}}>
+                                                                        Unlimited users
+                                                                    </Typography>
+                                                                </Box>
+                                                                <Box display="flex" alignItems="center" gap={1} mb={1}>
+                                                                    <CheckCircle sx={{color: '#10b981', fontSize: 20}}/>
+                                                                    <Typography sx={{color: 'rgba(255,255,255,0.8)'}}>
+                                                                        Advanced task management with AI
+                                                                    </Typography>
+                                                                </Box>
+                                                                <Box display="flex" alignItems="center" gap={1} mb={1}>
+                                                                    <CheckCircle sx={{color: '#10b981', fontSize: 20}}/>
+                                                                    <Typography sx={{color: 'rgba(255,255,255,0.8)'}}>
+                                                                        Client portal access
+                                                                    </Typography>
+                                                                </Box>
+                                                                <Box display="flex" alignItems="center" gap={1}>
+                                                                    <CheckCircle sx={{color: '#10b981', fontSize: 20}}/>
+                                                                    <Typography sx={{color: 'rgba(255,255,255,0.8)'}}>
+                                                                        Advanced analytics & reporting
+                                                                    </Typography>
+                                                                </Box>
+                                                            </>
+                                                        )}
+
+                                                        {organizations[0].subscriptionPlanName === 'ENTERPRISE' && (
+                                                            <>
+                                                                <Box display="flex" alignItems="center" gap={1} mb={1}>
+                                                                    <CheckCircle sx={{color: '#10b981', fontSize: 20}}/>
+                                                                    <Typography sx={{color: 'rgba(255,255,255,0.8)'}}>
+                                                                        Everything in PRO
+                                                                    </Typography>
+                                                                </Box>
+                                                                <Box display="flex" alignItems="center" gap={1} mb={1}>
+                                                                    <CheckCircle sx={{color: '#10b981', fontSize: 20}}/>
+                                                                    <Typography sx={{color: 'rgba(255,255,255,0.8)'}}>
+                                                                        Custom integrations
+                                                                    </Typography>
+                                                                </Box>
+                                                                <Box display="flex" alignItems="center" gap={1} mb={1}>
+                                                                    <CheckCircle sx={{color: '#10b981', fontSize: 20}}/>
+                                                                    <Typography sx={{color: 'rgba(255,255,255,0.8)'}}>
+                                                                        Priority support
+                                                                    </Typography>
+                                                                </Box>
+                                                                <Box display="flex" alignItems="center" gap={1}>
+                                                                    <CheckCircle sx={{color: '#10b981', fontSize: 20}}/>
+                                                                    <Typography sx={{color: 'rgba(255,255,255,0.8)'}}>
+                                                                        White-label options
+                                                                    </Typography>
+                                                                </Box>
+                                                            </>
+                                                        )}
+                                                    </Box>
+
+                                                    {/* Upgrade Button - Only show if not on highest plan */}
+                                                    {organizations[0].subscriptionPlanName !== 'ENTERPRISE' && (
+                                                        <Button
+                                                            variant="contained"
+                                                            fullWidth
+                                                            startIcon={<TrendingUp/>}
+                                                            className="action-button-apple"
+                                                            onClick={() => handleUpgrade(
+                                                                organizations[0].subscriptionPlanName === 'FREE' ? 'PRO' : 'ENTERPRISE'
+                                                            )}
+                                                            disabled={billingLoading}
+                                                            sx={{mt: 2}}
+                                                        >
+                                                            {billingLoading ? 'Loading...' : `Upgrade to ${organizations[0].subscriptionPlanName === 'FREE' ? 'PRO' : 'ENTERPRISE'}`}
+                                                        </Button>
+                                                    )}
+                                                </CardContent>
+                                            </Card>
+                                        </Grid>
+
+                                        {/* Usage Stats Card */}
+                                        <Grid item xs={12} md={4}>
+                                            <Card className="analytics-card-apple">
+                                                <CardContent sx={{p: 3}}>
+                                                    <Typography variant="h6" sx={{color: '#fff', mb: 3}}>
+                                                        Usage Stats
+                                                    </Typography>
+
+                                                    <Box mb={3}>
+                                                        <Box display="flex" justifyContent="space-between" mb={1}>
+                                                            <Typography sx={{color: 'rgba(255,255,255,0.6)'}}>
+                                                                Team Members
+                                                            </Typography>
+                                                            <Typography sx={{color: '#fff', fontWeight: 600}}>
+                                                                {stats.totalUsers} / {organizations[0].subscriptionPlanName === 'FREE' ? '5' : '∞'}
+                                                            </Typography>
+                                                        </Box>
+                                                        {organizations[0].subscriptionPlanName === 'FREE' && (
+                                                            <LinearProgress
+                                                                variant="determinate"
+                                                                value={(stats.totalUsers / 5) * 100}
+                                                                className="progress-bar-apple"
+                                                            />
+                                                        )}
+                                                    </Box>
+
+                                                    <Box mb={3}>
+                                                        <Box display="flex" justifyContent="space-between" mb={1}>
+                                                            <Typography sx={{color: 'rgba(255,255,255,0.6)'}}>
+                                                                Active Tasks
+                                                            </Typography>
+                                                            <Typography sx={{color: '#fff', fontWeight: 600}}>
+                                                                {stats.totalTasks}
+                                                            </Typography>
+                                                        </Box>
+                                                    </Box>
+
+                                                    <Box>
+                                                        <Box display="flex" justifyContent="space-between" mb={1}>
+                                                            <Typography sx={{color: 'rgba(255,255,255,0.6)'}}>
+                                                                Total Clients
+                                                            </Typography>
+                                                            <Typography sx={{color: '#fff', fontWeight: 600}}>
+                                                                {stats.totalClients}
+                                                            </Typography>
+                                                        </Box>
+                                                    </Box>
+
+                                                    <Divider sx={{my: 3, borderColor: 'rgba(255,255,255,0.1)'}}/>
+
+                                                    <Typography variant="caption" sx={{color: 'rgba(255,255,255,0.4)'}}>
+                                                        Subscribed
+                                                        since: {new Date(organizations[0].subscriptionStartDate).toLocaleDateString()}
+                                                    </Typography>
+                                                </CardContent>
+                                            </Card>
+                                        </Grid>
+                                    </Grid>
+                                )}
+                            </Box>
+                        )}
                         {/* Organization Tab */}
                         {activeTab === 3 && (
                             <Box>

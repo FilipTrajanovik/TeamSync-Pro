@@ -1,106 +1,255 @@
-.register-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+/* Background and Layout */
+.register-page {
     min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 20px;
+    background: #000000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    position: relative;
+    overflow: hidden;
 }
 
-.register-card {
-    background: white;
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+.register-purple-lines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.4;
+}
+
+.register-line {
+    position: absolute;
+    height: 1px;
     width: 100%;
-    max-width: 500px;
+    background: linear-gradient(90deg,
+    transparent,
+    rgba(168, 85, 247, 0.4),
+    transparent
+    );
 }
 
-.register-card h2 {
-    margin-bottom: 30px;
-    color: #333;
+.register-line-1 { top: 20%; animation: register-pulse 4s ease-in-out infinite; }
+.register-line-2 { top: 50%; animation: register-pulse 4s ease-in-out infinite 1s; }
+.register-line-3 { top: 80%; animation: register-pulse 4s ease-in-out infinite 2s; }
+
+@keyframes register-pulse {
+    0%, 100% { opacity: 0.2; transform: scaleX(0.8); }
+    50% { opacity: 0.6; transform: scaleX(1); }
+}
+
+/* Container */
+.register-container {
+    width: 100%;
+    max-width: 700px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Glass Card */
+.register-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 48px;
+    box-shadow:
+            0 8px 32px rgba(0, 0, 0, 0.4),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Header */
+.register-header {
     text-align: center;
-    font-size: 28px;
+    margin-bottom: 40px;
 }
 
-.form-group {
-    margin-bottom: 20px;
+.register-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    color: #a855f7;
+    font-weight: 600;
+    font-size: 20px;
 }
 
-.form-row {
+.register-logo-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.register-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 8px 0;
+    letter-spacing: -0.02em;
+}
+
+.register-subtitle {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+}
+
+/* Form Sections */
+.register-form {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.register-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.register-section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #a855f7;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 8px 0;
+}
+
+/* Form Groups */
+.register-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.register-form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 15px;
+    gap: 16px;
 }
 
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    color: #555;
+/* Labels */
+.register-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
     font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
 }
 
-.form-group input,
-.form-group select {
+.register-label svg {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Inputs */
+.register-input {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 14px;
-    transition: border-color 0.3s;
-    box-sizing: border-box;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #ffffff;
+    font-size: 15px;
+    font-family: inherit;
+    transition: all 0.2s ease;
 }
 
-.form-group input:focus,
-.form-group select:focus {
+.register-input:focus {
     outline: none;
-    border-color: #667eea;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: #a855f7;
+    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
 }
 
-.error-message {
-    background-color: #fee;
-    color: #c33;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 15px;
+.register-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.register-textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Error Message */
+.register-error {
+    padding: 12px 16px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 12px;
+    color: #fca5a5;
     font-size: 14px;
+    text-align: center;
 }
 
-button[type="submit"] {
+/* Submit Button */
+.register-submit-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     width: 100%;
-    padding: 12px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    padding: 16px;
+    background: #a855f7;
     border: none;
-    border-radius: 5px;
+    border-radius: 12px;
+    color: #ffffff;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: all 0.2s ease;
+    margin-top: 8px;
 }
 
-button[type="submit"]:hover {
-    transform: translateY(-2px);
+.register-submit-btn:hover:not(:disabled) {
+    background: #9333ea;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(168, 85, 247, 0.3);
 }
 
-button[type="submit"]:disabled {
+.register-submit-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.register-submit-btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
-    transform: none;
 }
 
-.login-link {
+/* Login Link */
+.register-login-link {
     text-align: center;
-    margin-top: 20px;
-    color: #666;
+    margin-top: 24px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
 }
 
-.login-link a {
-    color: #667eea;
+.register-login-link a {
+    color: #a855f7;
     text-decoration: none;
     font-weight: 600;
+    transition: color 0.2s ease;
 }
 
-.login-link a:hover {
-    text-decoration: underline;
+.register-login-link a:hover {
+    color: #c084fc;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .register-card {
+        padding: 32px 24px;
+    }
+
+    .register-title {
+        font-size: 28px;
+    }
+
+    .register-form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .register-submit-btn {
+        padding: 14px;
+    }
 }

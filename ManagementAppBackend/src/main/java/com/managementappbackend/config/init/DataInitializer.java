@@ -5,6 +5,7 @@ import com.managementappbackend.model.enumerations.OrganizationType;
 import com.managementappbackend.model.enumerations.Role;
 import com.managementappbackend.model.enumerations.ServicePriority;
 import com.managementappbackend.model.enumerations.ServiceStatus;
+import com.managementappbackend.model.exceptions.SubscriptionPlanNotFound;
 import com.managementappbackend.repository.*;
 import jakarta.annotation.PostConstruct;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,24 +22,28 @@ public class DataInitializer {
     private final ClientRepository clientRepository;
     private final TaskRepository taskRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SubscriptionPlanRepository subscriptionPlanRepository;
 
     public DataInitializer(
             UserRepository userRepository,
             OrganizationRepository organizationRepository,
             ClientRepository clientRepository,
             TaskRepository taskRepository,
-            PasswordEncoder passwordEncoder
-    ) {
+            PasswordEncoder passwordEncoder,
+            SubscriptionPlanRepository subscriptionPlanRepository) {
         this.userRepository = userRepository;
         this.organizationRepository = organizationRepository;
         this.clientRepository = clientRepository;
         this.taskRepository = taskRepository;
         this.passwordEncoder = passwordEncoder;
+        this.subscriptionPlanRepository = subscriptionPlanRepository;
     }
 
     @PostConstruct
     public void init() {
         Random random = new Random();
+        initializeSubscriptionPlans();
+
 
         // ========================================
         // 1. CREATE ADMIN USER
@@ -219,6 +224,9 @@ public class DataInitializer {
         System.out.println("   - Tasks with different priorities");
         System.out.println("   - Tasks from last 30 days for trend analysis");
         System.out.println("   - Multiple users per organization for performance metrics");
+
+
+
     }
 
     private Organization createOrganization(String name, String description, OrganizationType type,
@@ -233,6 +241,10 @@ public class DataInitializer {
         org.setActive(true);
         org.setCreatedAt(LocalDateTime.now());
         org.setUpdatedAt(LocalDateTime.now());
+        SubscriptionPlan subPlan = subscriptionPlanRepository.findByName("FREE")
+                .orElseThrow(() -> new SubscriptionPlanNotFound("FREE PLAN NOT FOUND"));
+        org.setSubscriptionPlan(subPlan);
+
         return org;
     }
 
@@ -301,6 +313,56 @@ public class DataInitializer {
             task.setOrganization(org);
 
             taskRepository.save(task);
+        }
+    }
+
+
+    private void initializeSubscriptionPlans() {
+        if (subscriptionPlanRepository.count() == 0) {
+            // FREE Plan
+            SubscriptionPlan freePlan = new SubscriptionPlan(
+                    "FREE",
+                    "Free Plan",
+                    0.0,
+                    10,
+                    50,
+                    true,
+                    null, // No Stripe price ID for free
+                    LocalDateTime.now(),
+                    LocalDateTime.now()
+            );
+
+            // PRO Plan
+            SubscriptionPlan proPlan = new SubscriptionPlan(
+                    "PRO",
+                    "Pro Plan",
+                    39.0,
+                    -1, // unlimited users
+                    -1, // unlimited clients
+                    true,
+                    "price_1SRXb49nRU2GQ5J44M3EnN8T", // We'll add Stripe price ID later
+                    LocalDateTime.now(),
+                    LocalDateTime.now()
+            );
+
+            // ENTERPRISE Plan
+            SubscriptionPlan enterprisePlan = new SubscriptionPlan(
+                    "ENTERPRISE",
+                    "Enterprise Plan",
+                    799.0,
+                    -1, // unlimited
+                    -1, // unlimited
+                    true,
+                    null, // We'll add Stripe price ID later
+                    LocalDateTime.now(),
+                    LocalDateTime.now()
+            );
+
+            subscriptionPlanRepository.save(freePlan);
+            subscriptionPlanRepository.save(proPlan);
+            subscriptionPlanRepository.save(enterprisePlan);
+
+            System.out.println("✅ Subscription plans initialized");
         }
     }
 }

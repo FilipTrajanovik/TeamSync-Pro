@@ -39,6 +39,26 @@ public class Organization {
     @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks = new ArrayList<>();
 
+
+    @ManyToOne
+    @JoinColumn(name="subscription_plan_id")
+    private SubscriptionPlan subscriptionPlan;
+
+    @Column(name = "stripe_customer_id")
+    private String stripeCustomerId;
+
+    @Column(name = "stripe_subscription_id")
+    private String stripeSubscriptionId;
+
+    @Column(name="subscription_status")
+    private String subscriptionStatus;
+
+    @Column(name = "subscription_start_date")
+    private LocalDateTime subscriptionStartDate;
+
+    @Column(name = "subscription_end_date")
+    private LocalDateTime subscriptionEndDate;
+
     public Organization() {
     }
 
@@ -55,6 +75,55 @@ public class Organization {
         this.users = new ArrayList<>();
         this.clients = new ArrayList<>();
         this.tasks = new ArrayList<>();
+    }
+
+
+    public SubscriptionPlan getSubscriptionPlan() {
+        return subscriptionPlan;
+    }
+
+    public void setSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
+        this.subscriptionPlan = subscriptionPlan;
+    }
+
+    public String getStripeCustomerId() {
+        return stripeCustomerId;
+    }
+
+    public void setStripeCustomerId(String stripeCustomerId) {
+        this.stripeCustomerId = stripeCustomerId;
+    }
+
+    public String getStripeSubscriptionId() {
+        return stripeSubscriptionId;
+    }
+
+    public void setStripeSubscriptionId(String stripeSubscriptionId) {
+        this.stripeSubscriptionId = stripeSubscriptionId;
+    }
+
+    public String getSubscriptionStatus() {
+        return subscriptionStatus;
+    }
+
+    public void setSubscriptionStatus(String subscriptionStatus) {
+        this.subscriptionStatus = subscriptionStatus;
+    }
+
+    public LocalDateTime getSubscriptionStartDate() {
+        return subscriptionStartDate;
+    }
+
+    public void setSubscriptionStartDate(LocalDateTime subscriptionStartDate) {
+        this.subscriptionStartDate = subscriptionStartDate;
+    }
+
+    public LocalDateTime getSubscriptionEndDate() {
+        return subscriptionEndDate;
+    }
+
+    public void setSubscriptionEndDate(LocalDateTime subscriptionEndDate) {
+        this.subscriptionEndDate = subscriptionEndDate;
     }
 
     public List<User> getUsers() {

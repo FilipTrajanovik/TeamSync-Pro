@@ -3,6 +3,7 @@ package com.managementappbackend.config.security;
 import com.managementappbackend.web.filters.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -56,46 +57,55 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/billing/plans").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
                                 "/swagger-resources/**",
                                 "/webjars/**",
-                                "/api/users/register",  // ✅ Only once
-                                "/api/users/login",
                                 "/h2-console/**",
-                                "/"
+                                "/",
+                                "/h2/**"
                         ).permitAll()
 
+                        .requestMatchers(HttpMethod.POST, "/api/billing/webhook").permitAll()
 
-                        //ANALYTICS SECURITY
+                        .requestMatchers(HttpMethod.POST, "/api/users/create").hasAnyRole("MANAGER", "ADMIN", "OWNER")
+                        .requestMatchers(HttpMethod.GET, "/api/users/managers").hasAnyRole("ADMIN", "OWNER")
+                        .requestMatchers(HttpMethod.GET, "/api/users/organization/**").hasAnyRole("MANAGER", "ADMIN", "OWNER")
+                        .requestMatchers(HttpMethod.PUT, "/api/users/update").hasAnyRole("USER", "MANAGER", "ADMIN", "OWNER")
+                        .requestMatchers(HttpMethod.PUT, "/api/users/change-password").hasAnyRole("USER", "MANAGER", "ADMIN", "OWNER")
+                        .requestMatchers(HttpMethod.GET, "/api/users").hasAnyRole("ADMIN", "OWNER")
+
                         .requestMatchers("/api/analytics/admin/**").hasAnyRole("ADMIN", "OWNER")
                         .requestMatchers("/api/analytics/manager/**").hasAnyRole("MANAGER", "ADMIN", "OWNER")
                         .requestMatchers("/api/analytics/user/**").hasAnyRole("USER", "MANAGER", "ADMIN", "OWNER")
                         .requestMatchers("/api/tasks/organization-tasks").hasAnyRole("MANAGER", "ADMIN")
+
 
                         .requestMatchers(
                                 "/api/tasks/toggle-finish",
                                 "/api/tasks/*/update"
                         ).hasAnyRole("USER", "MANAGER", "ADMIN", "OWNER")
 
+
                         .requestMatchers("/api/notifications/**").hasAnyRole("USER", "MANAGER", "ADMIN", "OWNER")
                         .requestMatchers("/api/comments/**").hasAnyRole("USER", "MANAGER", "ADMIN", "OWNER")
-
-                        .requestMatchers("/api/users/create").hasAnyRole("MANAGER", "ADMIN", "OWNER")
-                        .requestMatchers("/api/users/managers").hasAnyRole("ADMIN", "OWNER")
-                        .requestMatchers("/api/users/organization/**").hasAnyRole("MANAGER", "ADMIN", "OWNER")  // ✅ Add this for your org-specific endpoints
-                        .requestMatchers("/api/users/update").hasAnyRole("USER", "MANAGER", "ADMIN", "OWNER")
-                        .requestMatchers("/api/users/change-password").hasAnyRole("USER", "MANAGER", "ADMIN", "OWNER")
-
-
+                        .requestMatchers("/api/billing/checkout").hasAnyRole("OWNER", "ADMIN", "MANAGER")
                         .requestMatchers("/api/organizations/**").hasAnyRole("ADMIN", "OWNER","MANAGER")
                         .requestMatchers(
                                 "/api/clients/**",
                                 "/api/tasks/**",
                                 "/api/records/**"
                         ).hasAnyRole("USER", "MANAGER", "ADMIN", "OWNER")
+
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

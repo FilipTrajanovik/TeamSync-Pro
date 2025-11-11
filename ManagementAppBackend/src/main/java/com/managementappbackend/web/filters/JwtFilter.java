@@ -41,7 +41,36 @@ public class JwtFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
+
+        String requestPath = request.getRequestURI();
+        String method = request.getMethod();
+
+        System.out.println("=== JWT FILTER DEBUG ===");
+        System.out.println("Full URL: " + request.getRequestURL());
+        System.out.println("URI: " + requestPath);
+        System.out.println("Method: " + method);
+        System.out.println("Query String: " + request.getQueryString());
+
+        // Check if it's a public endpoint
+        boolean isPublicEndpoint = requestPath.equals("/api/users/register") ||
+                requestPath.equals("/api/users/login") ||
+                requestPath.startsWith("/swagger-ui") ||
+                requestPath.equals("/api/billing/webhook") ||
+                requestPath.startsWith("/v3/api-docs") ||
+                requestPath.startsWith("/h2-console") ||
+                requestPath.equals("/api/billing/plans");
+
+
+        System.out.println("Is Public Endpoint? " + isPublicEndpoint);
+
+        if (isPublicEndpoint) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+
         String headerValue = request.getHeader(JwtConstants.HEADER);
+
         if (headerValue == null || !headerValue.startsWith(JwtConstants.TOKEN_PREFIX)) {
             filterChain.doFilter(request, response);
             return;
@@ -52,6 +81,8 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             String username = jwtHelper.extractUsername(token);
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+
             if (username == null || authentication != null) {
                 filterChain.doFilter(request, response);
                 return;
@@ -66,6 +97,8 @@ public class JwtFilter extends OncePerRequestFilter {
                 );
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+            } else {
+                System.out.println("❌ JWT Invalid");
             }
         } catch (JwtException jwtException) {
             handlerExceptionResolver.resolveException(

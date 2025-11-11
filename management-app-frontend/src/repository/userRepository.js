@@ -30,6 +30,9 @@ const userRepository = {
     },
     changePassword: async (data) => {
         return axiosInstance.put("/users/change-password", data);
-    }
+    },
+    registerOrganization: async (data) => {
+        return axiosInstance.post("/users/register", data);
+    },
 };
 export default userRepository;

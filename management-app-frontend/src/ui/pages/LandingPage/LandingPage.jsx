@@ -13,8 +13,13 @@ import {
     TrendingUp
 } from 'lucide-react';
 import './LandingPage.css'
+import useSubscriptionPlans from "../../../hooks/useSubscriptionPlans.js";
+import {useNavigate} from "react-router-dom";
 
 const LandingPage = () => {
+
+    const {plans, error, loading, fetchPlans, startCheckout} = useSubscriptionPlans()
+    const navigate = useNavigate()
     const [contactOpen, setContactOpen] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
@@ -47,6 +52,15 @@ const LandingPage = () => {
         setFormData({ name: '', email: '', company: '', message: '', plan: 'Free' });
     };
 
+    const handleUpgrade = (planId) => {
+        if(planId){
+            startCheckout(planId)
+        }
+    }
+    const handleFreeSignup = () => {
+        navigate('/register');
+    };
+
     return (
         <div className="landing-page">
             <div className="purple-lines">
@@ -60,10 +74,10 @@ const LandingPage = () => {
                 <div className="container">
                     <div className="nav-content">
                         <div className="logo">
-                            <Sparkles className="logo-icon" />
+                            <Sparkles className="logo-icon"/>
                             <span className="logo-text">TeamSync Pro</span>
                         </div>
-                        <button className="btn-outline" onClick={() => handleContactOpen()}>
+                        <button className="btn-outline" onClick={() => handleFreeSignup()}>
                             Get Started
                         </button>
                     </div>
@@ -74,12 +88,12 @@ const LandingPage = () => {
                 <div className="container">
                     <div className="hero-content">
                         <div className="badge">
-                            <Zap size={14} />
+                            <Zap size={14}/>
                             <span>Zero Clutter. Maximum Focus.</span>
                         </div>
                         <h1 className="hero-title">
                             Crisp workflows.
-                            <br />
+                            <br/>
                             <span className="gradient-text">Zero noise.</span>
                         </h1>
                         <p className="hero-description">
@@ -87,23 +101,23 @@ const LandingPage = () => {
                             synchronized without visual chaos. Built for modern teams who value clarity.
                         </p>
                         <div className="hero-cta">
-                            <button className="btn-primary" onClick={() => handleContactOpen('Free')}>
+                            <button className="btn-primary" onClick={() => handleFreeSignup()}>
                                 Start Free
-                                <ArrowRight size={18} />
+                                <ArrowRight size={18}/>
                             </button>
                             <button className="btn-ghost">View Demo</button>
                         </div>
                         <div className="hero-stats">
                             <div className="stat">
-                                <CheckCircle2 size={16} />
+                                <CheckCircle2 size={16}/>
                                 <span>No credit card</span>
                             </div>
                             <div className="stat">
-                                <Clock size={16} />
+                                <Clock size={16}/>
                                 <span>Setup in 2 mins</span>
                             </div>
                             <div className="stat">
-                                <Shield size={16} />
+                                <Shield size={16}/>
                                 <span>Enterprise secure</span>
                             </div>
                         </div>
@@ -121,46 +135,46 @@ const LandingPage = () => {
                     <div className="features-grid">
                         <div className="feature-card glass">
                             <div className="feature-icon purple">
-                                <Target size={28} />
+                                <Target size={28}/>
                             </div>
                             <h3 className="feature-title">Task Management</h3>
                             <p className="feature-description">
                                 Assign, track, and complete work with clarity. No bloat, just pure productivity.
                             </p>
                             <ul className="feature-list">
-                                <li><CheckCircle2 size={16} />Clear status indicators</li>
-                                <li><CheckCircle2 size={16} />Smart assignments</li>
-                                <li><CheckCircle2 size={16} />Deadline tracking</li>
+                                <li><CheckCircle2 size={16}/>Clear status indicators</li>
+                                <li><CheckCircle2 size={16}/>Smart assignments</li>
+                                <li><CheckCircle2 size={16}/>Deadline tracking</li>
                             </ul>
                         </div>
 
                         <div className="feature-card glass">
                             <div className="feature-icon purple">
-                                <Users size={28} />
+                                <Users size={28}/>
                             </div>
                             <h3 className="feature-title">Team Collaboration</h3>
                             <p className="feature-description">
                                 Isolated workspaces with role-based access. Admins lead, teams execute.
                             </p>
                             <ul className="feature-list">
-                                <li><CheckCircle2 size={16} />Secure org spaces</li>
-                                <li><CheckCircle2 size={16} />Role management</li>
-                                <li><CheckCircle2 size={16} />Real-time updates</li>
+                                <li><CheckCircle2 size={16}/>Secure org spaces</li>
+                                <li><CheckCircle2 size={16}/>Role management</li>
+                                <li><CheckCircle2 size={16}/>Real-time updates</li>
                             </ul>
                         </div>
 
                         <div className="feature-card glass">
                             <div className="feature-icon purple">
-                                <BarChart3 size={28} />
+                                <BarChart3 size={28}/>
                             </div>
                             <h3 className="feature-title">Live Analytics</h3>
                             <p className="feature-description">
                                 Data-driven decisions with beautiful dashboards. Track trends at a glance.
                             </p>
                             <ul className="feature-list">
-                                <li><CheckCircle2 size={16} />Real-time metrics</li>
-                                <li><CheckCircle2 size={16} />Performance insights</li>
-                                <li><CheckCircle2 size={16} />Team workload</li>
+                                <li><CheckCircle2 size={16}/>Real-time metrics</li>
+                                <li><CheckCircle2 size={16}/>Performance insights</li>
+                                <li><CheckCircle2 size={16}/>Team workload</li>
                             </ul>
                         </div>
                     </div>
@@ -202,11 +216,11 @@ const LandingPage = () => {
                                     </div>
                                     <div className="stats-grid">
                                         <div className="stat-box">
-                                            <TrendingUp size={20} className="stat-icon" />
+                                            <TrendingUp size={20} className="stat-icon"/>
                                             <div className="stat-value">+24%</div>
                                         </div>
                                         <div className="stat-box">
-                                            <Target size={20} className="stat-icon" />
+                                            <Target size={20} className="stat-icon"/>
                                             <div className="stat-value">127</div>
                                         </div>
                                     </div>
@@ -223,7 +237,7 @@ const LandingPage = () => {
                             <div className="showcase-points">
                                 <div className="point">
                                     <div className="point-icon purple">
-                                        <Zap size={18} />
+                                        <Zap size={18}/>
                                     </div>
                                     <div>
                                         <h4>Lightning Fast</h4>
@@ -232,7 +246,7 @@ const LandingPage = () => {
                                 </div>
                                 <div className="point">
                                     <div className="point-icon purple">
-                                        <Shield size={18} />
+                                        <Shield size={18}/>
                                     </div>
                                     <div>
                                         <h4>Bank-Level Security</h4>
@@ -253,55 +267,59 @@ const LandingPage = () => {
                         <p className="section-description">Start free. Scale when ready.</p>
                     </div>
 
-                    <div className="pricing-grid">
-                        <div className="pricing-card glass">
-                            <div className="pricing-header">
-                                <h3 className="pricing-name">Free</h3>
-                                <div className="pricing-price">
-                                    <span className="price">$0</span>
-                                    <span className="period">/month</span>
-                                </div>
-                            </div>
-                            <p className="pricing-description">Perfect for small teams getting started</p>
-                            <ul className="pricing-features">
-                                <li><CheckCircle2 size={16} />Unlimited tasks</li>
-                                <li><CheckCircle2 size={16} />Client management</li>
-                                <li><CheckCircle2 size={16} />Role-based access</li>
-                                <li><CheckCircle2 size={16} />Real-time analytics</li>
-                                <li><CheckCircle2 size={16} />Comments & notifications</li>
-                                <li><CheckCircle2 size={16} />Secure authentication</li>
-                                <li><CheckCircle2 size={16} />Email support</li>
-                            </ul>
-                            <button className="btn-outline full" onClick={() => handleContactOpen('Free')}>
-                                Get Started
-                            </button>
-                        </div>
+                    {loading ? (
+                        <div>Loading plans...</div>
+                    ) : (
+                        <div className="pricing-grid">
+                            {plans.map((plan) => (
+                                <div
+                                    key={plan.id}
+                                    className={`pricing-card glass ${plan.name === 'PRO' ? 'featured' : ''}`}
+                                >
+                                    {plan.name === 'PRO' && <div className="popular-badge">Most Popular</div>}
 
-                        <div className="pricing-card glass featured">
-                            <div className="popular-badge">Coming Soon</div>
-                            <div className="pricing-header">
-                                <h3 className="pricing-name">Pro</h3>
-                                <div className="pricing-price">
-                                    <span className="price">Custom</span>
+                                    <div className="pricing-header">
+                                        <h3 className="pricing-name">{plan.displayName}</h3>
+                                        <div className="pricing-price">
+                                        <span className="price">
+                                            {plan.pricePerMonth === 0 ? '$0' : `$${plan.pricePerMonth}`}
+                                        </span>
+                                            <span className="period">/month</span>
+                                        </div>
+                                    </div>
+
+                                    <p className="pricing-description">
+                                        {plan.name === 'FREE' && 'Perfect for small teams getting started'}
+                                        {plan.name === 'PRO' && 'Advanced features for growing teams'}
+                                        {plan.name === 'ENTERPRISE' && 'Complete solution for large organizations'}
+                                    </p>
+
+                                    <ul className="pricing-features">
+                                        <li><CheckCircle2 size={16}/>
+                                            {plan.maxUsers === -1 ? 'Unlimited' : plan.maxUsers} Users
+                                        </li>
+                                        <li><CheckCircle2 size={16}/>
+                                            {plan.maxClients === -1 ? 'Unlimited' : plan.maxClients} Clients
+                                        </li>
+                                        {/* Add more features based on plan */}
+                                    </ul>
+
+                                    <button
+                                        className={plan.pricePerMonth === 0 ? "btn-outline full" : "btn-primary full"}
+                                        onClick={() => {
+                                            if (plan.pricePerMonth === 0) {
+                                                handleContactOpen('Free');
+                                            } else {
+                                                handleUpgrade(plan.id);
+                                            }
+                                        }}
+                                    >
+                                        {plan.pricePerMonth === 0 ? 'Get Started' : 'Upgrade Now'}
+                                    </button>
                                 </div>
-                            </div>
-                            <p className="pricing-description">Advanced features for growing teams</p>
-                            <ul className="pricing-features">
-                                <li><CheckCircle2 size={16} />Everything in Free</li>
-                                <li><CheckCircle2 size={16} />Automation & recurring tasks</li>
-                                <li><CheckCircle2 size={16} />AI-powered suggestions</li>
-                                <li><CheckCircle2 size={16} />Calendar integration</li>
-                                <li><CheckCircle2 size={16} />Client portal access</li>
-                                <li><CheckCircle2 size={16} />Advanced reporting</li>
-                                <li><CheckCircle2 size={16} />File attachments</li>
-                                <li><CheckCircle2 size={16} />Time tracking</li>
-                                <li><CheckCircle2 size={16} />Priority support</li>
-                            </ul>
-                            <button className="btn-primary full" onClick={() => handleContactOpen('Pro')}>
-                                Contact Sales
-                            </button>
+                            ))}
                         </div>
-                    </div>
+                    )}
                 </div>
             </section>
 
@@ -313,9 +331,9 @@ const LandingPage = () => {
                         <p className="cta-description">
                             Join teams who've ditched the chaos for clarity. Setup takes 2 minutes.
                         </p>
-                        <button className="btn-primary large" onClick={() => handleContactOpen()}>
+                        <button className="btn-primary large" onClick={() => handleContactOpen("Free")}>
                             Start Free Today
-                            <ArrowRight size={20} />
+                            <ArrowRight size={20}/>
                         </button>
                     </div>
                 </div>
@@ -325,7 +343,7 @@ const LandingPage = () => {
                 <div className="container">
                     <div className="footer-content">
                         <div className="footer-brand">
-                            <Sparkles size={24} />
+                            <Sparkles size={24}/>
                             <span>TeamSync Pro</span>
                         </div>
                         <p className="footer-copy">© 2025 TeamSync Pro. All rights reserved.</p>
@@ -337,7 +355,7 @@ const LandingPage = () => {
                 <div className="modal-overlay" onClick={handleContactClose}>
                     <div className="modal glass" onClick={(e) => e.stopPropagation()}>
                         <button className="modal-close" onClick={handleContactClose}>
-                            <X size={20} />
+                            <X size={20}/>
                         </button>
                         <h3 className="modal-title">Let's set up your {formData.plan} plan</h3>
                         <p className="modal-description">

@@ -11,7 +11,7 @@ public interface UserApplicationService {
 
     List<DisplayUserDto> findAll();
 
-    Optional<DisplayUserDto> register(CreateUserDto createUserDto);
+    Optional<DisplayUserDto> register(CreateRegistrationOrganizationDto dto);
 
     Optional<LoginResponseDto> login(LoginUserDto loginUserDto);
     Optional<DisplayUserDto>  findByUsername(String username);

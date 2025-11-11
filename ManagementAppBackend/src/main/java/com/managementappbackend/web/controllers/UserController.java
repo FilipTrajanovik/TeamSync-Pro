@@ -34,9 +34,10 @@ public class UserController {
             )}
     )
     @PostMapping("/register")
-    public ResponseEntity<DisplayUserDto> register(@RequestBody CreateUserDto createUserDto) {
+    public ResponseEntity<DisplayUserDto> register(@RequestBody CreateRegistrationOrganizationDto createRegistrationOrganizationDto) {
+
         try {
-            return userApplicationService.register(createUserDto)
+            return userApplicationService.register(createRegistrationOrganizationDto)
                     .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
         } catch (InvalidArgumentsException | PasswordsDoNotMatchException exception) {
